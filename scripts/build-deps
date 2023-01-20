@@ -13,7 +13,6 @@ build_highs() {
     mkdir build
     cd build
     cmake \
-      -DBUILD_EXAMPLES=OFF \
       -DBUILD_TESTING=OFF \
       -DCI=OFF \
       -DSHARED=OFF \

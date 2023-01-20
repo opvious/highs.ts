@@ -1,0 +1,36 @@
+name: PR
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          registry-url: https://registry.npmjs.org
+      - name: Install
+        run: npm i
+      - name: Build
+        run: npm run build
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm t
+        env:
+          DB_URL: postgres://default_user:default_pass@localhost/default_db
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: out/coverage
