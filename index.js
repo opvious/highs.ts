@@ -1,5 +1,5 @@
 const binding = require('pkg-prebuilds')(__dirname, {
-  name: 'highs-solver',
+  name: 'highs_solver',
   napi_versions: [8],
 });
 

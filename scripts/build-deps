@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -o nounset
+set -o errexit
+set -o pipefail
+shopt -s nullglob
+
+__dirname="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+build_highs() {
+  (
+    cd "$__dirname/../deps/HiGHS"
+    mkdir build
+    cd build
+    cmake \
+      -DBUILD_EXAMPLES=OFF \
+      -DBUILD_TESTING=OFF \
+      -DCI=OFF \
+      -DSHARED=OFF \
+      ..
+    make
+  )
+}
+
+main() {
+  build_highs
+}
+
+main "$@"

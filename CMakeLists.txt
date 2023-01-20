@@ -2,20 +2,27 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
-project (highs-solver)
+project(highs_solver)
 
 add_definitions(-DNAPI_VERSION=8)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include_directories(${CMAKE_JS_INC})
+find_package(Threads)
+
+set(highs_DIR "deps/HiGHS/build")
+find_package(highs REQUIRED)
+
+include_directories(${CMAKE_JS_INC} ${HIGHS_INCLUDE_DIRS})
 
 file(GLOB SOURCE_FILES "src/*.cc")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
+add_dependencies(highs_solver libhighs)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} libhighs)
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib

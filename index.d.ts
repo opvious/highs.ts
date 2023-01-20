@@ -1,1 +1,1 @@
-export function magicValue(): number;
+export function vendorVersion(): string;

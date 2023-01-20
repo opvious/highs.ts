@@ -2,8 +2,8 @@
 #include "solver.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set("magicValue", Napi::Function::New(env, MagicValue));
+  exports.Set("vendorVersion", Napi::Function::New(env, VendorVersion));
   return exports;
 }
 
-NODE_API_MODULE(highs, Init)
+NODE_API_MODULE(highs_solver, Init)
