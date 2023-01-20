@@ -1,0 +1,3 @@
+[submodule "vendor/HiGHS"]
+	path = vendor/HiGHS
+	url = https://github.com/ERGO-Code/HiGHS.git
