@@ -18,13 +18,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          registry-url: https://registry.npmjs.org
+          registry-url: https://npm.pkg.github.com
       - name: Install
         run: npm i
-      - name: Build
-        run: npm run build
       - name: Lint
         run: npm run lint
+      - name: Build
+        run: npm run build
       - name: Test
         run: npm t
         env:
