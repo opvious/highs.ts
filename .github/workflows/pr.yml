@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Test
-    timeout-minutes: 5
+    timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
       - name: Check out
