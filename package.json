@@ -1,6 +1,6 @@
 {
   "name": "highs-solver-packages",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "repository": "github:opvious/highs-solver",
   "author": "Opvious Engineering <oss@opvious.io>",
