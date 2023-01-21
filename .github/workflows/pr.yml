@@ -32,7 +32,7 @@ jobs:
         run: pnpm run lint
       - name: Build addon binding
         run: |
-          pnpm run -F highs-solver-addon build \
+          pnpm -F highs-solver-addon run build \
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
         run: pnpm t
