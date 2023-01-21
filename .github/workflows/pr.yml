@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Test
-    timeout-minutes: 4
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -21,16 +21,11 @@ jobs:
           registry-url: https://npm.pkg.github.com
       - name: Install
         run: npm i
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Lint
         run: npm run lint
       - name: Build
         run: npm run build
       - name: Test
         run: npm t
-        env:
-          DB_URL: postgres://default_user:default_pass@localhost/default_db
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: out/coverage
