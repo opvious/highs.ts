@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "cmake-js compile",
-    "clean": "rm -rf build node_modules out deps/*/build",
+    "clean": "rm -rf build node_modules out",
     "fix": "prettier --write index.d.ts 'test/*.ts' && npm run lint --fix",
     "lint": "eslint index.d.ts 'test/*.ts'",
     "rebuild": "cmake-js rebuild",
