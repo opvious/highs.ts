@@ -19,7 +19,8 @@ ExternalProject_Add(highs_download
   CMAKE_ARGS -DBUILD_TESTING=OFF -DCI=OFF -DSHARED=OFF
 )
 
-find_package(Threads) # Required for building HiGHS
+find_package(Threads REQUIRED) # Required for building HiGHS
+find_package(ZLIB REQUIRED)
 ExternalProject_Get_Property(highs_download binary_dir)
 set(highs_DIR binary_dir)
 find_package(highs REQUIRED)
