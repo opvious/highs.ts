@@ -1,5 +1,5 @@
 {
-  "name": "highs-solver-binding",
+  "name": "highs-solver-addon",
   "version": "0.1.0",
   "private": true,
   "repository": "github:opvious/highs-solver",
@@ -40,7 +40,7 @@
     ]
   },
   "jest": {
-    "coverageDirectory": "../../out/coverage/highs-solver-binding",
+    "coverageDirectory": "../../out/coverage/highs-solver-addon",
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/test/"
