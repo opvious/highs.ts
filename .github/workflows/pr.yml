@@ -1,0 +1,31 @@
+name: PR
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          registry-url: https://npm.pkg.github.com
+      - name: Install
+        run: npm i
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm t
