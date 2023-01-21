@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'highs_solver',
+  name: 'highs_addon',
   napi_versions: [8],
 };

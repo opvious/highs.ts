@@ -71,14 +71,21 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-11
+          - os: macos-12
             arch: arm64
-          - os: macos-10.15
+            libc: glibc
+          - os: macos-12
             arch: x64
-          - os: ubuntu-18.04
+            libc: glibc
+          - os: ubuntu-22.04
             arch: x64
-    name: Prebuild ${{ matrix.arch }} bindings on ${{ matrix.os }}
-    timeout-minutes: 15
+            libc: glibc
+          - os: ubuntu-22.04
+            arch: x64
+            libc: musl
+            image: node:16-alpine
+    name: Prebuild ${{ matrix.arch }} binding on ${{ matrix.os }} (${{ matrix.glibc }})
+    timeout-minutes: 25
     runs-on: ${{ matrix.os }}
     needs: test
     if: needs.test.outputs.tagged == 'true'
@@ -96,6 +103,11 @@ jobs:
         with:
           cache: pnpm
           registry-url: https://npm.pkg.github.com
+      - name: Install toolchain
+        if: matrix.image
+        run: |
+          apk update
+          apk add clang clang-dev cmake gcc g++ libc-dev linux-headers make
       - name: Install
         run: pnpm i
         env:
@@ -106,6 +118,7 @@ jobs:
             --napi_version=$NAPI_VERSION \
             --source build/Release/$BINDING_NAME.node \
             --name=$BINDING_NAME \
+            --libc=${{ matrix.libc }} \
             --strip
       - name: Git status
         run: git status -v
@@ -136,19 +149,19 @@ jobs:
         run: pnpm i --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
+      - name: Create prebuild directories
+        run: mkdir -p out/prebuilds packages/highs-solver-addon/prebuilds
       - name: Download prebuilds
         uses: actions/download-artifact@v3
         with:
-          path: packages/highs-solver-addon/prebuilds
+          path: out/prebuilds
+      - name: Flatten prebuilds
+        run: mv out/prebuilds/*/* packages/highs-solver-addon/prebuilds
       - name: Point to NPM registry
         uses: actions/setup-node@v3
         with:
           cache: pnpm
           registry-url: https://registry.npmjs.org
-      - name: List files
-        run: |
-          git status -v
-          ls packages/highs-solver-addon/prebuilds
       - name: Publish
         run: pnpm -r exec pnpm publish
         env:

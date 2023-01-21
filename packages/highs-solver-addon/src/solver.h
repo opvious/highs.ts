@@ -1,5 +1,5 @@
-#ifndef OPVIOUS_HIGHS_SOLVER_H
-#define OPVIOUS_HIGHS_SOLVER_H
+#ifndef HIGHS_ADDON_SOLVER_H
+#define HIGHS_ADDON_SOLVER_H
 
 #include "util.h"
 

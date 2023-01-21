@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
-project(highs_solver)
+project(highs_addon)
 
 add_definitions(-DNAPI_VERSION=8)
 

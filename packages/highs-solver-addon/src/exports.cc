@@ -6,4 +6,4 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
-NODE_API_MODULE(highs_solver, Init)
+NODE_API_MODULE(highs_addon, Init)
