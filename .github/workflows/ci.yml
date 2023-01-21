@@ -67,10 +67,19 @@ jobs:
           github_repo: ${{ github.repository }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ steps.extract-version.outputs.version }}
-  publish:
-    name: Publish packages
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
+  prebuild:
+    strategy:
+      matrix:
+        include:
+          - os: macos-11
+            arch: arm64
+          - os: macos-10.15
+            arch: x64
+          - os: ubuntu-18.04
+            arch: x64
+    name: Prebuild ${{ matrix.arch }} bindings on ${{ matrix.os }}
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
     needs: test
     if: needs.test.outputs.tagged == 'true'
     steps:
@@ -98,12 +107,49 @@ jobs:
             --source build/Release/$BINDING_NAME.node \
             --name=$BINDING_NAME \
             --strip
+      - name: Git status
+        run: git status -v
+      - name: Upload prebuild
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ runner.os }}-${{ matrix.arch }}-${{ matrix.libc }}-prebuilds
+          path: packages/highs-solver-addon/prebuilds
+          retention-days: 1
+  publish:
+    name: Publish packages
+    timeout-minutes: 5
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+      - name: Install
+        run: pnpm i --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
+      - name: Download prebuilds
+        uses: actions/download-artifact@v3
+        with:
+          path: packages/highs-solver-addon/prebuilds
       - name: Point to NPM registry
         uses: actions/setup-node@v3
         with:
           cache: pnpm
           registry-url: https://registry.npmjs.org
-      - name: Publish # TODO: Publish with more than one prebuild.
+      - name: List files
+        run: |
+          git status -v
+          ls packages/highs-solver-addon/prebuilds
+      - name: Publish
         run: pnpm -r exec pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
