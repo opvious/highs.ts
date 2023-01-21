@@ -12,17 +12,17 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Download and build HiGHS
 
-include(ExternalProject)
-ExternalProject_Add(highs_download
+set(BUILD_TESTING OFF)
+set(CI OFF)
+set(SHARED OFF)
+
+include(FetchContent)
+FetchContent_Declare(highs
   GIT_REPOSITORY https://github.com/ERGO-Code/HiGHS.git
   GIT_TAG "b3381829e67eaea53637586a612164e296a7ac97"
-  CMAKE_ARGS -DBUILD_TESTING=OFF -DCI=OFF -DSHARED=OFF
 )
+FetchContent_MakeAvailable(highs)
 
-find_package(Threads REQUIRED) # Required for building HiGHS
-find_package(ZLIB REQUIRED)
-ExternalProject_Get_Property(highs_download binary_dir)
-set(highs_DIR binary_dir)
 find_package(highs REQUIRED)
 
 # Build binding
