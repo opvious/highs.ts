@@ -6,8 +6,8 @@ on:
     paths-ignore:
       - '**.md'
 env:
-  NAPI_VERSION: 8
   BINDING_NAME: highs_solver
+  NAPI_VERSION: 8
 jobs:
   test:
     name: Test
@@ -67,24 +67,13 @@ jobs:
           github_repo: ${{ github.repository }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ steps.extract-version.outputs.version }}
-  prebuild:
+  prebuild-native:
     strategy:
       matrix:
-        include:
-          - os: macos-12
-            arch: arm64
-            libc: glibc
-          - os: macos-12
-            arch: x64
-            libc: glibc
-          - os: ubuntu-22.04
-            arch: x64
-            libc: glibc
-          - os: ubuntu-22.04
-            arch: x64
-            libc: musl
-            image: node:16-alpine
-    name: Prebuild ${{ matrix.arch }} binding on ${{ matrix.os }} (${{ matrix.glibc }})
+        os:
+          - macos-12
+          - ubuntu-22.04
+    name: Prebuild natively on ${{ matrix.os }}
     timeout-minutes: 25
     runs-on: ${{ matrix.os }}
     needs: test
@@ -103,11 +92,6 @@ jobs:
         with:
           cache: pnpm
           registry-url: https://npm.pkg.github.com
-      - name: Install toolchain
-        if: matrix.image
-        run: |
-          apk update
-          apk add clang clang-dev cmake gcc g++ libc-dev linux-headers make
       - name: Install
         run: pnpm i
         env:
@@ -118,20 +102,18 @@ jobs:
             --napi_version=$NAPI_VERSION \
             --source build/Release/$BINDING_NAME.node \
             --name=$BINDING_NAME \
-            --libc=${{ matrix.libc }} \
             --strip
-      - name: Git status
-        run: git status -v
       - name: Upload prebuild
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ runner.os }}-${{ matrix.arch }}-${{ matrix.libc }}-prebuilds
+          name: ${{ env.RUNNER_OS }}-native-prebuilds
           path: packages/highs-solver-addon/prebuilds
           retention-days: 1
   publish:
     name: Publish packages
     timeout-minutes: 5
-    needs: prebuild
+    needs:
+      - prebuild-native
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -156,7 +138,9 @@ jobs:
         with:
           path: out/prebuilds
       - name: Flatten prebuilds
-        run: mv out/prebuilds/*/* packages/highs-solver-addon/prebuilds
+        run: |
+          mv out/prebuilds/*/* packages/highs-solver-addon/prebuilds
+          ls packages/highs-solver-addon/prebuilds
       - name: Point to NPM registry
         uses: actions/setup-node@v3
         with:
