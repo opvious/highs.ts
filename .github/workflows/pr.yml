@@ -24,12 +24,14 @@ jobs:
         with:
           registry-url: https://npm.pkg.github.com
       - name: Install
-        run: npm i
+        run: pnpm i
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Lint
-        run: npm run lint
-      - name: Build
-        run: npm run build -- --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        run: pnpm run lint
+      - name: Build binding
+        run: |
+          pnpm run --filter highs-solver-binding build -- \
+            --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
-        run: npm t
+        run: pnpm t

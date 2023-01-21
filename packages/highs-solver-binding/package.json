@@ -1,5 +1,5 @@
 {
-  "name": "highs-solver",
+  "name": "highs-solver-binding",
   "version": "0.1.0",
   "private": true,
   "repository": "github:opvious/highs-solver",

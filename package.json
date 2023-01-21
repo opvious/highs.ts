@@ -7,8 +7,8 @@
   "license": "Apache-2.0",
   "scripts": {
     "clean": "pnpm -r -F !. run clean && rm -rf docs node_modules out",
-    "fix": "prettier --write 'packages/*/*.{js,ts}' 'packages/*/{src,test}/**/*.{js,ts}' && pnpm run lint --fix",
-    "lint": "eslint 'packages/*/*.{js,ts}' 'packages/*/{src,test}/**/*.{js,ts}'",
+    "fix": "prettier --write 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts' && pnpm run lint --fix",
+    "lint": "eslint 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts'",
     "test": "pnpm -r run test --coverage"
   },
   "devDependencies": {
