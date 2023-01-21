@@ -1,6 +1,6 @@
 {
   "name": "highs-solver-addon",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": "github:opvious/highs-solver",
   "description": "Opvious SDK",
   "keywords": [
