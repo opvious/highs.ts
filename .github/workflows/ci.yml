@@ -35,3 +35,8 @@ jobs:
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
         run: pnpm t
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: out/coverage
