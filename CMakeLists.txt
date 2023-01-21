@@ -20,10 +20,11 @@ include(FetchContent)
 FetchContent_Declare(highs
   GIT_REPOSITORY https://github.com/ERGO-Code/HiGHS.git
   GIT_TAG "b3381829e67eaea53637586a612164e296a7ac97"
+  OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(highs)
 
-find_package(highs REQUIRED)
+# find_package(highs REQUIRED)
 
 # Build binding
 
