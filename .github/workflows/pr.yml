@@ -13,10 +13,12 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
