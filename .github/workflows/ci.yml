@@ -13,6 +13,8 @@ jobs:
     name: Test
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    outputs:
+      tagged: ${{ format(steps.check-version.outputs.exists == 'false') }}
     steps:
       - name: Check out
         uses: actions/checkout@v3
