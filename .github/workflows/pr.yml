@@ -25,7 +25,7 @@ jobs:
           cache: pnpm
           registry-url: https://npm.pkg.github.com
       - name: Install
-        run: pnpm i
+        run: pnpm i --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Lint
