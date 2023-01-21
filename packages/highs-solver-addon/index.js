@@ -1,6 +1,6 @@
-const binding = require('pkg-prebuilds')(__dirname, {
-  name: 'highs_solver',
-  napi_versions: [8],
-});
+const binding = require('pkg-prebuilds')(
+  __dirname,
+  require('./binding-options')
+);
 
 Object.assign(module.exports, binding);

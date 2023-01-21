@@ -5,6 +5,9 @@ on:
       - main
     paths-ignore:
       - '**.md'
+env:
+  NAPI_VERSION: 8
+  BINDING_NAME: highs_solver
 jobs:
   test:
     name: Test
@@ -25,14 +28,14 @@ jobs:
           cache: pnpm
           registry-url: https://npm.pkg.github.com
       - name: Install
-        run: pnpm i
+        run: pnpm i --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Lint
         run: pnpm run lint
       - name: Build addon binding
         run: |
-          pnpm run -F highs-solver-addon build \
+          pnpm -F highs-solver-addon run build \
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
         run: pnpm t
@@ -41,3 +44,64 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: out/coverage
+      - name: Extract version
+        id: extract-version
+        run: |
+          PACKAGE_VERSION="$(node -p 'require("./package.json").version')"
+          echo "::set-output name=version::$PACKAGE_VERSION"
+      - name: Check if tag exists
+        uses: mukunku/tag-exists-action@v1.1.0
+        id: check-version
+        with:
+          tag: v${{ steps.extract-version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create tag
+        if: steps.check-version.outputs.exists == 'false'
+        uses: pkgdeps/git-tag-action@v2
+        with:
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: v
+          github_repo: ${{ github.repository }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ steps.extract-version.outputs.version }}
+  publish:
+    name: Publish packages
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: test
+    if: needs.test.outputs.tagged == 'true'
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+      - name: Install
+        run: pnpm i
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
+      - name: Generate addon prebuild
+        run: |
+          pnpm -F highs-solver-addon exec pkg-prebuilds-copy \
+            --napi_version=$NAPI_VERSION \
+            --source build/Release/$BINDING_NAME.node \
+            --name=$BINDING_NAME \
+            --strip
+      - name: Point to NPM registry
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: Publish # TODO: Publish with more than one prebuild.
+        run: pnpm -r exec pnpm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

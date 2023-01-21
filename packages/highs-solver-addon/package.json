@@ -15,21 +15,24 @@
     "node": ">=16"
   },
   "files": [
+    "prebuilds/",
+    "src/",
+    "binding-options.js",
+    "CMakeLists.txt",
     "index.d.ts",
     "index.js"
   ],
   "scripts": {
     "build": "cmake-js build",
     "clean": "rm -rf build node_modules",
+    "postinstall": "pkg-prebuilds-verify ./binding-options.js || cmake-js build",
     "rebuild": "cmake-js rebuild",
     "test": "jest"
   },
   "dependencies": {
+    "cmake-js": "^7.1.1",
     "node-addon-api": "^5.1.0",
     "pkg-prebuilds": "^0.1.0"
-  },
-  "devDependencies": {
-    "cmake-js": "^7.1.1"
   },
   "cmake-js": {
     "runtime": "node"

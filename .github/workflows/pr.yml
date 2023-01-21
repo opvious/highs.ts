@@ -25,14 +25,14 @@ jobs:
           cache: pnpm
           registry-url: https://npm.pkg.github.com
       - name: Install
-        run: pnpm i
+        run: pnpm i --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Lint
         run: pnpm run lint
       - name: Build addon binding
         run: |
-          pnpm run -F highs-solver-addon build \
+          pnpm -F highs-solver-addon run build \
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
         run: pnpm t
