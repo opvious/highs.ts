@@ -1,0 +1,68 @@
+{
+  "name": "highs-solver",
+  "version": "0.1.0",
+  "private": true,
+  "repository": "github:opvious/highs-solver",
+  "description": "Opvious SDK",
+  "keywords": [
+    "highs",
+    "opvious",
+    "solver"
+  ],
+  "author": "Opvious Engineering <oss@opvious.io>",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "index.d.ts",
+    "index.js"
+  ],
+  "scripts": {
+    "build": "cmake-js build",
+    "clean": "rm -rf build node_modules",
+    "rebuild": "cmake-js rebuild",
+    "test": "jest"
+  },
+  "dependencies": {
+    "node-addon-api": "^5.1.0",
+    "pkg-prebuilds": "^0.1.0"
+  },
+  "devDependencies": {
+    "cmake-js": "^7.1.1"
+  },
+  "cmake-js": {
+    "runtime": "node"
+  },
+  "binary": {
+    "napi_versions": [
+      8
+    ]
+  },
+  "jest": {
+    "coverageDirectory": "../../out/coverage/highs-solver-binding",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ],
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      ".d.ts",
+      ".js"
+    ],
+    "transform": {
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "babelConfig": {
+            "compact": false
+          },
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
+  }
+}

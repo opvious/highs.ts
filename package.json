@@ -1,30 +1,15 @@
 {
-  "name": "highs-solver",
+  "name": "highs-solver-packages",
   "version": "0.1.0",
   "private": true,
   "repository": "github:opvious/highs-solver",
-  "description": "Opvious SDK",
-  "keywords": [
-    "highs",
-    "opvious",
-    "solver"
-  ],
   "author": "Opvious Engineering <oss@opvious.io>",
   "license": "Apache-2.0",
-  "engines": {
-    "node": ">=16"
-  },
   "scripts": {
-    "build": "cmake-js compile",
-    "clean": "rm -rf build node_modules out",
-    "fix": "prettier --write index.d.ts 'test/*.ts' && npm run lint --fix",
-    "lint": "eslint index.d.ts 'test/*.ts'",
-    "rebuild": "cmake-js rebuild",
-    "test": "jest"
-  },
-  "dependencies": {
-    "node-addon-api": "^5.1.0",
-    "pkg-prebuilds": "^0.1.0"
+    "clean": "pnpm -r -F !. run clean && rm -rf docs node_modules out",
+    "fix": "prettier --write 'packages/*/*.{js,ts}' 'packages/*/{src,test}/**/*.{js,ts}' && pnpm run lint --fix",
+    "lint": "eslint 'packages/*/*.{js,ts}' 'packages/*/{src,test}/**/*.{js,ts}'",
+    "test": "pnpm -r run test --coverage"
   },
   "devDependencies": {
     "@opvious/eslint-plugin": "^0.1.20",
@@ -32,7 +17,6 @@
     "@opvious/tsconfig": "^0.1.20",
     "@types/jest": "^29.2.2",
     "@types/node": "^18.11.7",
-    "cmake-js": "^7.1.1",
     "eslint": "^8.12.0",
     "husky": "^7.0.4",
     "jest": "^29.3.1",
@@ -42,35 +26,6 @@
     "ts-essentials": "^9.3.0",
     "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"
-  },
-  "cmake-js": {
-    "runtime": "node"
-  },
-  "binary": {
-    "napi_versions": [
-      8
-    ]
-  },
-  "jest": {
-    "setupFilesAfterEnv": [
-      "jest-extended/all"
-    ],
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      ".d.ts",
-      ".js"
-    ],
-    "transform": {
-      "^.+\\.ts$": [
-        "ts-jest",
-        {
-          "babelConfig": {
-            "compact": false
-          },
-          "tsconfig": "test/tsconfig.json"
-        }
-      ]
-    }
   },
   "lint-staged": {
     "*.{ts,tsx}": [
