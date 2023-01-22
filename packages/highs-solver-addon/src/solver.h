@@ -10,8 +10,12 @@ class Solver : public Napi::ObjectWrap<Solver> {
 
  private:
   void Clear(const Napi::CallbackInfo& info);
+  void ClearModel(const Napi::CallbackInfo& info);
+  void ClearSolver(const Napi::CallbackInfo& info);
+  void PassModel(const Napi::CallbackInfo& info);
   void ReadModel(const Napi::CallbackInfo& info);
   void Run(const Napi::CallbackInfo& info);
+  Napi::Value GetSolution(const Napi::CallbackInfo& info);
   void WriteSolution(const Napi::CallbackInfo& info);
 
   std::shared_ptr<Highs> highs_;

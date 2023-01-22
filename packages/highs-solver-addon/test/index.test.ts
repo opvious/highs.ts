@@ -11,30 +11,112 @@ test('vendor version', () => {
 });
 
 describe('solver', () => {
-  test('solves valid MPS file', async () => {
+  test('gets an empty solution', async () => {
     await withSolver(async (solver) => {
-      solver.readModel(resourcePath('unbounded.mps'));
-      const run = util.promisify(solver.run).bind(solver);
-      await run();
+      const sol = solver.getSolution();
+      expect(sol).toMatchObject({
+        isValid: false,
+        isDualValid: false,
+      });
+    });
+  });
+
+  test('solves from object', async () => {
+    await withSolver(async (solver) => {
+      solver.passModel({
+        isMaximization: true,
+        offset: 0,
+        columnLowerBounds: new Float64Array([0]),
+        columnUpperBounds: new Float64Array([2]),
+        rowLowerBounds: new Float64Array([0]),
+        rowUpperBounds: new Float64Array([1]),
+        costs: new Float64Array([1]),
+        integrality: new Int32Array([]),
+        matrix: {
+          columnCount: 1,
+          rowStarts: new Int32Array([0]),
+          indices: new Int32Array([0]),
+          values: new Float64Array([1]),
+        },
+      });
+      await p(solver, 'run');
+      const sol = solver.getSolution();
+      expect(cloneSolution(sol)).toEqual({
+        isValid: true,
+        isDualValid: true,
+        columnValues: new Float64Array([1]),
+        columnDualValues: new Float64Array([-0]),
+        rowValues: new Float64Array([1]),
+        rowDualValues: new Float64Array([1]),
+      });
+    });
+  });
+
+  test('solves reading LP file', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      await p(solver, 'run');
+      const sol = solver.getSolution();
+      expect(cloneSolution(sol)).toEqual({
+        isValid: true,
+        isDualValid: true,
+        columnValues: new Float64Array([17.5, 1, 16.5, 2]),
+        columnDualValues: new Float64Array([-0, -0, -0, -8.75]),
+        rowValues: new Float64Array([20, 30, 0]),
+        rowDualValues: new Float64Array([1.5, 2.5, 10.5]),
+      });
+    });
+  });
+
+  test('solves reading MPS file', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('unbounded.mps'));
+      await p(solver, 'run');
       await withFile(async (res) => {
-        solver.writeSolution(res.path);
+        await p(solver, 'writeSolution', res.path);
         const sol = await readFile(res.path, 'utf8');
         expect(sol).toContain('Unbounded');
       });
     });
   });
 
-  test('throws on missing file', async () => {
+  test('throws reading missing file', async () => {
     await withSolver(async (solver) => {
       try {
-        solver.readModel(resourcePath('missing.mps'));
+        await p(solver, 'readModel', resourcePath('missing.mps'));
         fail();
       } catch (err) {
-        expect(err.message).toMatch(/could not be read/);
+        expect(err.message).toMatch(/Read model failed/);
       }
     });
   });
+
+  test('clears solution', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      await p(solver, 'run');
+      expect(solver.getSolution()).toMatchObject({
+        isValid: true,
+        isDualValid: true,
+      });
+      solver.clearSolver();
+      expect(solver.getSolution()).toMatchObject({
+        isValid: false,
+        isDualValid: false,
+      });
+    });
+  });
 });
+
+function cloneSolution(sol: sut.Solution): sut.Solution {
+  return {
+    ...sol,
+    columnValues: new Float64Array(sol.columnValues),
+    columnDualValues: new Float64Array(sol.columnDualValues),
+    rowValues: new Float64Array(sol.rowValues),
+    rowDualValues: new Float64Array(sol.rowDualValues),
+  };
+}
 
 function withSolver(
   fn: (solver: sut.Solver) => AsyncOrSync<void>
@@ -42,6 +124,19 @@ function withSolver(
   return withFile(async (res) => {
     await fn(new sut.Solver(res.path));
   });
+}
+
+/** Executes a callback-based async method and returns a matching promise. */
+function p<M extends keyof sut.Solver>(
+  solver: sut.Solver,
+  method: M,
+  ...args: sut.Solver[M] extends (
+    ...args: [...infer A, (err: Error) => void]
+  ) => void
+    ? A
+    : never
+): Promise<void> {
+  return util.promisify(solver[method]).bind(solver)(...args);
 }
 
 function resourcePath(fn: string): string {
