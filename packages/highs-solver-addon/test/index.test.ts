@@ -12,7 +12,7 @@ test('vendor version', () => {
 describe('solver', () => {
   test('instantiate', async () => {
     await withSolver(async (solver) => {
-      solver.readModel(dataPath('simple.mps'));
+      solver.readModel(resourcePath('simple.mps'));
       solver.run();
       await withFile(async (res) => {
         solver.writeSolution(res.path);
@@ -31,6 +31,6 @@ function withSolver(
   });
 }
 
-function dataPath(fn: string): string {
-  return path.join(__dirname, 'data', fn);
+function resourcePath(fn: string): string {
+  return path.join(__dirname, 'resources', fn);
 }
