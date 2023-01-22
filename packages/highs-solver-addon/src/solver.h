@@ -9,6 +9,7 @@ class Solver : public Napi::ObjectWrap<Solver> {
   Solver(const Napi::CallbackInfo& info);
 
  private:
+  void SetOption(const Napi::CallbackInfo& info);
   void Clear(const Napi::CallbackInfo& info);
   void ClearModel(const Napi::CallbackInfo& info);
   void ClearSolver(const Napi::CallbackInfo& info);

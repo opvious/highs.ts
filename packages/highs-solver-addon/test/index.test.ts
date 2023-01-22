@@ -24,6 +24,8 @@ describe('solver', () => {
   test('solves from object', async () => {
     await withSolver(async (solver) => {
       solver.passModel({
+        columnCount: 1,
+        rowCount: 1,
         isMaximization: true,
         offset: 0,
         columnLowerBounds: new Float64Array([0]),
@@ -31,13 +33,13 @@ describe('solver', () => {
         rowLowerBounds: new Float64Array([0]),
         rowUpperBounds: new Float64Array([1]),
         costs: new Float64Array([1]),
-        integrality: new Int32Array([]),
         matrix: {
-          columnCount: 1,
-          rowStarts: new Int32Array([0]),
+          isColumnOriented: false,
+          starts: new Int32Array([0]),
           indices: new Int32Array([0]),
           values: new Float64Array([1]),
         },
+        integrality: new Int32Array([]),
       });
       await p(solver, 'run');
       const sol = solver.getSolution();
@@ -122,7 +124,10 @@ function withSolver(
   fn: (solver: sut.Solver) => AsyncOrSync<void>
 ): Promise<void> {
   return withFile(async (res) => {
-    await fn(new sut.Solver(res.path));
+    const solver = new sut.Solver()
+    solver.setOption('log_file', res.path);
+    solver.setOption('log_to_console', false);
+    await fn(solver);
   });
 }
 

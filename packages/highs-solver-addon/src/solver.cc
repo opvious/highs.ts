@@ -4,7 +4,8 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
   Napi::Function func =
       DefineClass(env,
                   "Solver",
-                  {InstanceMethod("passModel", &Solver::PassModel),
+                  {InstanceMethod("setOption", &Solver::SetOption),
+                   InstanceMethod("passModel", &Solver::PassModel),
                    InstanceMethod("readModel", &Solver::ReadModel),
                    InstanceMethod("run", &Solver::Run),
                    InstanceMethod("getSolution", &Solver::GetSolution),
@@ -24,21 +25,39 @@ Solver::Solver(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<Solver>(info) {
   Napi::Env env = info.Env();
   int length = info.Length();
-  if (length != 1 || !info[0].IsString()) {
-    ThrowTypeError(env, "Expected 1 argument [string]");
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
     return;
   }
-  std::string log_path = info[0].As<Napi::String>().Utf8Value();
   this->highs_ = std::make_shared<Highs>();
-  HighsStatus status;
-  status = this->highs_->setOptionValue(kLogFileString, log_path);
-  if (status != HighsStatus::kOk) {
-    ThrowError(env, "Invalid log path");
+}
+
+void Solver::SetOption(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 2 || !info[0].IsString()) {
+    ThrowTypeError(env, "Expected 2 arguments [string, boolean | number | string]");
     return;
   }
-  status = this->highs_->setOptionValue("log_to_console", false);
+  Napi::String name = info[0].As<Napi::String>();
+  Napi::Value val = info[1];
+  HighsStatus status = HighsStatus::kError;
+  if (val.IsBoolean()) {
+    status = this->highs_->setOptionValue(name, val.As<Napi::Boolean>().Value());
+  } else if (val.IsString()) {
+    status = this->highs_->setOptionValue(name, val.As<Napi::String>().Utf8Value());
+  } else {
+    Napi::Number num = val.As<Napi::Number>();
+    double d = num.DoubleValue();
+    if (trunc(d) == d && std::isfinite(d)) {
+      status = this->highs_->setOptionValue(name, num.Int32Value());
+    }
+    if (status == HighsStatus::kError) {
+      status = this->highs_->setOptionValue(name, d);
+    }
+  }
   if (status != HighsStatus::kOk) {
-    ThrowError(env, "Failed to disable console logging");
+    ThrowError(env, "Setting option failed");
     return;
   }
 }
@@ -68,10 +87,14 @@ class UpdateWorker : public Napi::AsyncWorker {
   std::string name_;
 };
 
-int32_t ToSense(const Napi::Value& val) {
+MatrixFormat ToMatrixFormat(const Napi::Value& val) {
   bool b = val.As<Napi::Boolean>().Value();
-  ObjSense s = b ? ObjSense::kMaximize : ObjSense::kMinimize;
-  return (int32_t) s;
+  return b ? MatrixFormat::kColwise : MatrixFormat::kRowwise;
+}
+
+ObjSense ToObjSense(const Napi::Value& val) {
+  bool b = val.As<Napi::Boolean>().Value();
+  return b ? ObjSense::kMaximize : ObjSense::kMinimize;
 }
 
 void Solver::PassModel(const Napi::CallbackInfo& info) {
@@ -89,7 +112,7 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
     return;
   }
   Napi::Object matrixObj = matrixVal.As<Napi::Object>();
-  Napi::Int32Array matrixStarts = matrixObj.Get("rowStarts").As<Napi::Int32Array>();
+  Napi::Int32Array matrixStarts = matrixObj.Get("starts").As<Napi::Int32Array>();
   Napi::Float64Array matrixVals = matrixObj.Get("values").As<Napi::Float64Array>();
 
   Napi::Value hessianVal = obj.Get("hessian");
@@ -103,21 +126,25 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
       return;
     }
     Napi::Object hessianObj = hessianVal.As<Napi::Object>();
+    if (ToMatrixFormat(hessianObj.Get("isColumnOriented")) != MatrixFormat::kColwise) {
+      ThrowTypeError(env, "Hessian must be column oriented");
+      return;
+    }
     Napi::Float64Array vals = hessianObj.Get("values").As<Napi::Float64Array>();
     hessianNonZeroCount = vals.ElementLength();
-    hessianStarts = hessianObj.Get("rowStarts").As<Napi::Int32Array>().Data();
+    hessianStarts = hessianObj.Get("starts").As<Napi::Int32Array>().Data();
     hessianIndices = hessianObj.Get("indices").As<Napi::Int32Array>().Data();
     hessianValues = vals.Data();
   }
 
   HighsStatus status = this->highs_->passModel(
-    matrixObj.Get("columnCount").As<Napi::Number>().Int64Value(),
-    matrixStarts.ElementLength(),
+    obj.Get("columnCount").As<Napi::Number>().Int64Value(),
+    obj.Get("rowCount").As<Napi::Number>().Int64Value(),
     matrixVals.ElementLength(),
     hessianNonZeroCount,
-    (HighsInt) MatrixFormat::kRowwise,
-    (HighsInt) MatrixFormat::kRowwise,
-    ToSense(obj.Get("isMaximization")),
+    (HighsInt) ToMatrixFormat(matrixObj.Get("isColumnOriented")),
+    (HighsInt) HessianFormat::kTriangular,
+    (HighsInt) ToObjSense(obj.Get("isMaximization")),
     obj.Get("offset").As<Napi::Number>().DoubleValue(),
     obj.Get("costs").As<Napi::Float64Array>().Data(),
     obj.Get("columnLowerBounds").As<Napi::Float64Array>().Data(),

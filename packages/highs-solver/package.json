@@ -1,0 +1,56 @@
+{
+  "name": "highs-solver",
+  "version": "0.1.8",
+  "repository": "github:opvious/highs-solver",
+  "description": "API for the HiGHS solver",
+  "keywords": [
+    "highs",
+    "opvious",
+    "solver"
+  ],
+  "author": "Opvious Engineering <oss@opvious.io>",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules",
+    "prepare": "pnpm run build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "highs-solver-addon": "workspace:*"
+  },
+  "devDependencies": {
+  },
+  "jest": {
+    "coverageDirectory": "../../out/coverage/highs-solver",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ],
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      ".d.ts",
+      ".js"
+    ],
+    "transform": {
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "babelConfig": {
+            "compact": false
+          },
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "@opvious/tsconfig",
+  "compilerOptions": {
+    "composite": true,
+    "noImplicitAny": false,
+    "outDir": "../out/test",
+    "useUnknownInCatchVariables": false
+  },
+  "references": [
+    {
+      "path": "../src"
+    }
+  ]
+}
