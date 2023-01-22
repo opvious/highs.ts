@@ -1,6 +1,6 @@
 {
   "name": "highs-solver-addon",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "repository": "github:opvious/highs-solver",
   "description": "Low-level API for the HiGHS solver",
   "keywords": [

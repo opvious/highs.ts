@@ -4,17 +4,18 @@ export declare class Solver {
   constructor(fp: string);
 
   clear(): void;
-  // clearModel(): void;
-  // clearSolver(): void;
 
+  run(cb: (err: Error) => void): void;
+
+  // Convenience utilities
   readModel(fp: string): string;
-
-  run(): void;
-
   writeSolution(fp: string): void;
 
+  // TODO:
   // passModel(model: Model): void;
   // getSolution(): Solution;
+  // clearModel(): void;
+  // clearSolver(): void;
 }
 
 /*
