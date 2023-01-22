@@ -1,7 +1,7 @@
+import {readFile} from 'fs/promises';
 import path from 'path';
 import {withFile} from 'tmp-promise';
 import {AsyncOrSync} from 'ts-essentials';
-import {readFile} from 'fs/promises';
 
 import * as sut from '../';
 
@@ -23,7 +23,9 @@ describe('solver', () => {
   });
 });
 
-function withSolver(fn: (solver: sut.Solver) => AsyncOrSync<void>): Promise<void> {
+function withSolver(
+  fn: (solver: sut.Solver) => AsyncOrSync<void>
+): Promise<void> {
   return withFile(async (res) => {
     await fn(new sut.Solver(res.path));
   });
