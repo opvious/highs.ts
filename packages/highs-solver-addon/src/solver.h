@@ -3,6 +3,18 @@
 
 #include "util.h"
 
-Napi::Value VendorVersion(const Napi::CallbackInfo &info);
+class Solver : public Napi::ObjectWrap<Solver> {
+ public:
+  static void Init(Napi::Env env, Napi::Object exports);
+  Solver(const Napi::CallbackInfo& info);
+
+ private:
+  void Clear(const Napi::CallbackInfo& info);
+  void ReadModel(const Napi::CallbackInfo& info);
+  void Run(const Napi::CallbackInfo& info);
+  void WriteSolution(const Napi::CallbackInfo& info);
+
+  Highs highs_;
+};
 
 #endif
