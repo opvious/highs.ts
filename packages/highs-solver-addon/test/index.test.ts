@@ -11,11 +11,14 @@ test('vendor version', () => {
 });
 
 describe('solver', () => {
-  test('gets an empty solution', async () => {
+  test('handles no model case', async () => {
     await withSolver(async (solver) => {
-      const sol = solver.getSolution();
-      expect(sol).toMatchObject({
-        isValid: false,
+      expect(solver.getModelStatus()).toEqual(0);
+      expect(solver.getInfo()).toMatchObject({
+        basisIsValid: false,
+      });
+      expect(solver.getSolution()).toMatchObject({
+        isValueValid: false,
         isDualValid: false,
       });
     });
@@ -24,6 +27,8 @@ describe('solver', () => {
   test('solves from object', async () => {
     await withSolver(async (solver) => {
       solver.passModel({
+        columnCount: 1,
+        rowCount: 1,
         isMaximization: true,
         offset: 0,
         columnLowerBounds: new Float64Array([0]),
@@ -31,18 +36,24 @@ describe('solver', () => {
         rowLowerBounds: new Float64Array([0]),
         rowUpperBounds: new Float64Array([1]),
         costs: new Float64Array([1]),
-        integrality: new Int32Array([]),
         matrix: {
-          columnCount: 1,
-          rowStarts: new Int32Array([0]),
+          isColumnOriented: false,
+          starts: new Int32Array([0]),
           indices: new Int32Array([0]),
           values: new Float64Array([1]),
         },
+        integrality: new Int32Array([]),
       });
       await p(solver, 'run');
-      const sol = solver.getSolution();
-      expect(cloneSolution(sol)).toEqual({
-        isValid: true,
+      expect(solver.getModelStatus()).toEqual(7); // Optimal
+      expect(solver.getInfo()).toMatchObject({
+        basisIsValid: true,
+        primalSolutionStatus: 2, // Feasible
+        dualSolutionStatus: 2, // Feasible
+        objectiveFunctionValue: 1,
+      });
+      expect(cloneSolution(solver.getSolution())).toEqual({
+        isValueValid: true,
         isDualValid: true,
         columnValues: new Float64Array([1]),
         columnDualValues: new Float64Array([-0]),
@@ -58,7 +69,7 @@ describe('solver', () => {
       await p(solver, 'run');
       const sol = solver.getSolution();
       expect(cloneSolution(sol)).toEqual({
-        isValid: true,
+        isValueValid: true,
         isDualValid: true,
         columnValues: new Float64Array([17.5, 1, 16.5, 2]),
         columnDualValues: new Float64Array([-0, -0, -0, -8.75]),
@@ -72,6 +83,7 @@ describe('solver', () => {
     await withSolver(async (solver) => {
       await p(solver, 'readModel', resourcePath('unbounded.mps'));
       await p(solver, 'run');
+      expect(solver.getModelStatus()).toEqual(10); // Unbounded
       await withFile(async (res) => {
         await p(solver, 'writeSolution', res.path);
         const sol = await readFile(res.path, 'utf8');
@@ -96,12 +108,12 @@ describe('solver', () => {
       await p(solver, 'readModel', resourcePath('simple.lp'));
       await p(solver, 'run');
       expect(solver.getSolution()).toMatchObject({
-        isValid: true,
+        isValueValid: true,
         isDualValid: true,
       });
       solver.clearSolver();
       expect(solver.getSolution()).toMatchObject({
-        isValid: false,
+        isValueValid: false,
         isDualValid: false,
       });
     });
@@ -122,7 +134,10 @@ function withSolver(
   fn: (solver: sut.Solver) => AsyncOrSync<void>
 ): Promise<void> {
   return withFile(async (res) => {
-    await fn(new sut.Solver(res.path));
+    const solver = new sut.Solver();
+    solver.setOption('log_file', res.path);
+    solver.setOption('log_to_console', false);
+    await fn(solver);
   });
 }
 

@@ -4,9 +4,12 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
   Napi::Function func =
       DefineClass(env,
                   "Solver",
-                  {InstanceMethod("passModel", &Solver::PassModel),
+                  {InstanceMethod("setOption", &Solver::SetOption),
+                   InstanceMethod("passModel", &Solver::PassModel),
                    InstanceMethod("readModel", &Solver::ReadModel),
                    InstanceMethod("run", &Solver::Run),
+                   InstanceMethod("getModelStatus", &Solver::GetModelStatus),
+                   InstanceMethod("getInfo", &Solver::GetInfo),
                    InstanceMethod("getSolution", &Solver::GetSolution),
                    InstanceMethod("writeSolution", &Solver::WriteSolution),
                    InstanceMethod("clearModel", &Solver::ClearModel),
@@ -24,21 +27,39 @@ Solver::Solver(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<Solver>(info) {
   Napi::Env env = info.Env();
   int length = info.Length();
-  if (length != 1 || !info[0].IsString()) {
-    ThrowTypeError(env, "Expected 1 argument [string]");
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
     return;
   }
-  std::string log_path = info[0].As<Napi::String>().Utf8Value();
   this->highs_ = std::make_shared<Highs>();
-  HighsStatus status;
-  status = this->highs_->setOptionValue(kLogFileString, log_path);
-  if (status != HighsStatus::kOk) {
-    ThrowError(env, "Invalid log path");
+}
+
+void Solver::SetOption(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 2 || !info[0].IsString()) {
+    ThrowTypeError(env, "Expected 2 arguments [string, boolean | number | string]");
     return;
   }
-  status = this->highs_->setOptionValue("log_to_console", false);
+  Napi::String name = info[0].As<Napi::String>();
+  Napi::Value val = info[1];
+  HighsStatus status = HighsStatus::kError;
+  if (val.IsBoolean()) {
+    status = this->highs_->setOptionValue(name, val.As<Napi::Boolean>().Value());
+  } else if (val.IsString()) {
+    status = this->highs_->setOptionValue(name, val.As<Napi::String>().Utf8Value());
+  } else {
+    Napi::Number num = val.As<Napi::Number>();
+    double d = num.DoubleValue();
+    if (trunc(d) == d && std::isfinite(d)) {
+      status = this->highs_->setOptionValue(name, num.Int32Value());
+    }
+    if (status == HighsStatus::kError) {
+      status = this->highs_->setOptionValue(name, d);
+    }
+  }
   if (status != HighsStatus::kOk) {
-    ThrowError(env, "Failed to disable console logging");
+    ThrowError(env, "Setting option failed");
     return;
   }
 }
@@ -68,10 +89,14 @@ class UpdateWorker : public Napi::AsyncWorker {
   std::string name_;
 };
 
-int32_t ToSense(const Napi::Value& val) {
+MatrixFormat ToMatrixFormat(const Napi::Value& val) {
   bool b = val.As<Napi::Boolean>().Value();
-  ObjSense s = b ? ObjSense::kMaximize : ObjSense::kMinimize;
-  return (int32_t) s;
+  return b ? MatrixFormat::kColwise : MatrixFormat::kRowwise;
+}
+
+ObjSense ToObjSense(const Napi::Value& val) {
+  bool b = val.As<Napi::Boolean>().Value();
+  return b ? ObjSense::kMaximize : ObjSense::kMinimize;
 }
 
 void Solver::PassModel(const Napi::CallbackInfo& info) {
@@ -89,7 +114,7 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
     return;
   }
   Napi::Object matrixObj = matrixVal.As<Napi::Object>();
-  Napi::Int32Array matrixStarts = matrixObj.Get("rowStarts").As<Napi::Int32Array>();
+  Napi::Int32Array matrixStarts = matrixObj.Get("starts").As<Napi::Int32Array>();
   Napi::Float64Array matrixVals = matrixObj.Get("values").As<Napi::Float64Array>();
 
   Napi::Value hessianVal = obj.Get("hessian");
@@ -103,21 +128,25 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
       return;
     }
     Napi::Object hessianObj = hessianVal.As<Napi::Object>();
+    if (ToMatrixFormat(hessianObj.Get("isColumnOriented")) != MatrixFormat::kColwise) {
+      ThrowTypeError(env, "Hessian must be column oriented");
+      return;
+    }
     Napi::Float64Array vals = hessianObj.Get("values").As<Napi::Float64Array>();
     hessianNonZeroCount = vals.ElementLength();
-    hessianStarts = hessianObj.Get("rowStarts").As<Napi::Int32Array>().Data();
+    hessianStarts = hessianObj.Get("starts").As<Napi::Int32Array>().Data();
     hessianIndices = hessianObj.Get("indices").As<Napi::Int32Array>().Data();
     hessianValues = vals.Data();
   }
 
   HighsStatus status = this->highs_->passModel(
-    matrixObj.Get("columnCount").As<Napi::Number>().Int64Value(),
-    matrixStarts.ElementLength(),
+    obj.Get("columnCount").As<Napi::Number>().Int64Value(),
+    obj.Get("rowCount").As<Napi::Number>().Int64Value(),
     matrixVals.ElementLength(),
     hessianNonZeroCount,
-    (HighsInt) MatrixFormat::kRowwise,
-    (HighsInt) MatrixFormat::kRowwise,
-    ToSense(obj.Get("isMaximization")),
+    (HighsInt) ToMatrixFormat(matrixObj.Get("isColumnOriented")),
+    (HighsInt) HessianFormat::kTriangular,
+    (HighsInt) ToObjSense(obj.Get("isMaximization")),
     obj.Get("offset").As<Napi::Number>().DoubleValue(),
     obj.Get("costs").As<Napi::Float64Array>().Data(),
     obj.Get("columnLowerBounds").As<Napi::Float64Array>().Data(),
@@ -186,6 +215,47 @@ void Solver::Run(const Napi::CallbackInfo& info) {
   worker->Queue();
 }
 
+Napi::Value Solver::GetModelStatus(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return env.Undefined();
+  }
+  return Napi::Number::New(env, (double) this->highs_->getModelStatus());
+}
+
+Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return env.Undefined();
+  }
+  Napi::Object obj = Napi::Object::New(env);
+  HighsInfo data = this->highs_->getInfo();
+  // obj.Set("isValid", Napi::Boolean::New(env, data.valid)); Fails.
+  obj.Set("mipNodeCount", Napi::Number::New(env, data.mip_node_count));
+  obj.Set("simplexIterationCount", Napi::Number::New(env, data.simplex_iteration_count));
+  obj.Set("ipmIterationCount", Napi::Number::New(env, data.ipm_iteration_count));
+  obj.Set("qpIterationCount", Napi::Number::New(env, data.qp_iteration_count));
+  obj.Set("crossoverIterationCount", Napi::Number::New(env, data.crossover_iteration_count));
+  obj.Set("primalSolutionStatus", Napi::Number::New(env, data.primal_solution_status));
+  obj.Set("dualSolutionStatus", Napi::Number::New(env, data.dual_solution_status));
+  obj.Set("basisIsValid", Napi::Boolean::New(env, bool(data.basis_validity)));
+  obj.Set("objectiveFunctionValue", Napi::Number::New(env, data.objective_function_value));
+  obj.Set("mipDualBound", Napi::Number::New(env, data.mip_dual_bound));
+  obj.Set("mipGap", Napi::Number::New(env, data.mip_gap));
+  obj.Set("maxIntegralityViolation", Napi::Number::New(env, data.max_integrality_violation));
+  obj.Set("numPrimalInfeasibilities", Napi::Number::New(env, data.num_primal_infeasibilities));
+  obj.Set("maxPrimalInfeasibility", Napi::Number::New(env, data.max_primal_infeasibility));
+  obj.Set("sumPrimalInfeasibilities", Napi::Number::New(env, data.sum_primal_infeasibilities));
+  obj.Set("numDualInfeasibilities", Napi::Number::New(env, data.num_dual_infeasibilities));
+  obj.Set("maxDualInfeasibility", Napi::Number::New(env, data.max_dual_infeasibility));
+  obj.Set("sumDualInfeasibilities", Napi::Number::New(env, data.sum_dual_infeasibilities));
+  return obj;
+}
+
 Napi::Value ToFloat64Array(const Napi::Env& env, const std::vector<double>& vec) {
   Napi::Float64Array arr = Napi::Float64Array::New(env, vec.size());
   std::copy(vec.begin(), vec.end(), arr.Data());
@@ -201,7 +271,7 @@ Napi::Value Solver::GetSolution(const Napi::CallbackInfo& info) {
   }
   Napi::Object obj = Napi::Object::New(env);
   const HighsSolution& sol = this->highs_->getSolution();
-  obj.Set("isValid", sol.value_valid);
+  obj.Set("isValueValid", sol.value_valid);
   obj.Set("isDualValid", sol.dual_valid);
   obj.Set("columnValues", ToFloat64Array(env, sol.col_value));
   obj.Set("columnDualValues", ToFloat64Array(env, sol.col_dual));
