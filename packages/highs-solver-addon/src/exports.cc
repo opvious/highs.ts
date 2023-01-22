@@ -1,9 +1,10 @@
-#include "util.h"
 #include "solver.h"
+#include "util.h"
 
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set("vendorVersion", Napi::Function::New(env, VendorVersion));
+Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+  Solver::Init(env, exports);
+  exports.Set("solverVersion", Napi::Function::New(env, SolverVersion));
   return exports;
 }
 
-NODE_API_MODULE(highs_addon, Init)
+NODE_API_MODULE(highs_addon, InitAll)

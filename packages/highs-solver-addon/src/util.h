@@ -4,4 +4,6 @@
 #include <napi.h>
 #include <Highs.h>
 
+Napi::Value SolverVersion(const Napi::CallbackInfo &info);
+
 #endif

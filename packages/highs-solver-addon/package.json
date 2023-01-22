@@ -1,8 +1,8 @@
 {
   "name": "highs-solver-addon",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "repository": "github:opvious/highs-solver",
-  "description": "Opvious SDK",
+  "description": "Low-level API for the HiGHS solver",
   "keywords": [
     "highs",
     "opvious",
@@ -32,6 +32,9 @@
     "cmake-js": "^7.1.1",
     "node-addon-api": "^5.1.0",
     "pkg-prebuilds": "^0.1.0"
+  },
+  "devDependencies": {
+    "tmp-promise": "^3.0.3"
   },
   "cmake-js": {
     "runtime": "node"
