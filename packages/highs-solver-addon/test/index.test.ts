@@ -10,9 +10,9 @@ test('vendor version', () => {
 });
 
 describe('solver', () => {
-  test('instantiate', async () => {
+  test('solves', async () => {
     await withSolver(async (solver) => {
-      solver.readModel(resourcePath('simple.mps'));
+      solver.readModel(resourcePath('unbounded.mps'));
       solver.run();
       await withFile(async (res) => {
         solver.writeSolution(res.path);
