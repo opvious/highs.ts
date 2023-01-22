@@ -23,9 +23,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "highs-solver-addon": "workspace:*"
+    "highs-solver-addon": "workspace:*",
+    "tail": "^2.2.6"
   },
   "devDependencies": {
+    "@types/tail": "^2.2.1"
   },
   "jest": {
     "coverageDirectory": "../../out/coverage/highs-solver",

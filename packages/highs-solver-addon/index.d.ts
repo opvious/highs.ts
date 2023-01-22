@@ -2,8 +2,14 @@ export function solverVersion(): string;
 
 export declare class Solver {
   // First signature to enable better auto-complete.
-  setOption<N extends keyof SolverOptions>(name: N, val: SolverOptions[N]): void;
-  setOption<N extends string>(name: N, val: N extends keyof SolveOptions ? SolverOptions[N] : (boolean | number | string)): void;
+  setOption<N extends keyof CommonOptions>(
+    name: N,
+    val: SolverOptions[N]
+  ): void;
+  setOption<N extends string>(
+    name: N,
+    val: N extends keyof CommonOptions ? SolverOptions[N] : OptionValue
+  ): void;
 
   passModel(model: Model): void;
   readModel(fp: string, cb: (err: Error) => void): string;
@@ -22,8 +28,9 @@ export declare class Solver {
   // addRows(matrix: SparseMatrix, bounds: Bounds): void;
 }
 
-/** Common options. */
-export interface SolverOptions {
+export type OptionValue = boolean | number | string;
+
+export interface CommonOptions {
   readonly presolve?: 'on' | 'off' | 'choose'; // kPresolveString
   readonly solver?: 'simplex' | 'choose' | 'ipm'; // kSolverString
   readonly parallel?: 'on' | 'off' | 'choose'; // kParallelString

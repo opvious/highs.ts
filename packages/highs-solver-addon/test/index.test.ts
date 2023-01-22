@@ -124,7 +124,7 @@ function withSolver(
   fn: (solver: sut.Solver) => AsyncOrSync<void>
 ): Promise<void> {
   return withFile(async (res) => {
-    const solver = new sut.Solver()
+    const solver = new sut.Solver();
     solver.setOption('log_file', res.path);
     solver.setOption('log_to_console', false);
     await fn(solver);
