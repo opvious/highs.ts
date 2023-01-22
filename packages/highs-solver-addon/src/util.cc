@@ -9,3 +9,11 @@ Napi::Value SolverVersion(const Napi::CallbackInfo &info) {
   }
   return Napi::String::New(env, highsVersion());
 }
+
+void ThrowError(const Napi::Env env, const std::string msg) {
+  Napi::Error::New(env, msg).ThrowAsJavaScriptException();
+}
+
+void ThrowTypeError(const Napi::Env env, const std::string msg) {
+  Napi::TypeError::New(env, msg).ThrowAsJavaScriptException();
+}

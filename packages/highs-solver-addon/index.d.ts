@@ -3,19 +3,17 @@ export function solverVersion(): string;
 export declare class Solver {
   constructor(fp: string);
 
-  // Main API
   passModel(model: Model): void;
+  readModel(fp: string, cb: (err: Error) => void): string;
+
   run(cb: (err: Error) => void): void;
+
   getSolution(): Solution;
+  writeSolution(fp: string, cb: (err: Error) => void): void;
+
   clear(): void;
 
-  // Convenience utilities
-  readModel(fp: string): string;
-  writeSolution(fp: string): void;
-
   // TODO:
-  // passModel(model: Model): void;
-  // getSolution(): Solution;
   // clearModel(): void;
   // clearSolver(): void;
 }
@@ -33,11 +31,11 @@ export interface Model {
   readonly hessian?: SparseMatrix;
 }
 
+/** Row-oriented sparse representation. */
 export interface SparseMatrix {
-  readonly nonZeroCount: number;
-  readonly isColumnOriented: boolean;
-  readonly offsets: Int32Array;
-  readonly columns: Int32Array;
+  readonly columnCount: number;
+  readonly rowStarts: Int32Array;
+  readonly indices: Int32Array;
   readonly values: Float64Array;
 }
 

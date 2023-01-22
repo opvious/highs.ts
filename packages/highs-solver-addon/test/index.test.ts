@@ -21,11 +21,41 @@ describe('solver', () => {
     });
   });
 
-  test('solves a valid LP file', async () => {
+  test('solves from object', async () => {
     await withSolver(async (solver) => {
-      solver.readModel(resourcePath('simple.lp'));
-      const run = util.promisify(solver.run).bind(solver);
-      await run();
+      solver.passModel({
+        isMaximization: true,
+        offset: 0,
+        columnLowerBounds: new Float64Array([0]),
+        columnUpperBounds: new Float64Array([2]),
+        rowLowerBounds: new Float64Array([0]),
+        rowUpperBounds: new Float64Array([1]),
+        costs: new Float64Array([1]),
+        integrality: new Int32Array([]),
+        matrix: {
+          columnCount: 1,
+          rowStarts: new Int32Array([0]),
+          indices: new Int32Array([0]),
+          values: new Float64Array([1]),
+        },
+      });
+      await p(solver, 'run');
+      const sol = solver.getSolution();
+      expect(cloneSolution(sol)).toEqual({
+        isValid: true,
+        isDualValid: true,
+        columnValues: new Float64Array([1]),
+        columnDualValues: new Float64Array([-0]),
+        rowValues: new Float64Array([1]),
+        rowDualValues: new Float64Array([1]),
+      });
+    });
+  });
+
+  test('solves from LP file', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      await p(solver, 'run');
       const sol = solver.getSolution();
       expect(cloneSolution(sol)).toEqual({
         isValid: true,
@@ -38,13 +68,12 @@ describe('solver', () => {
     });
   });
 
-  test('solves a valid MPS file', async () => {
+  test('solves from MPS file', async () => {
     await withSolver(async (solver) => {
-      solver.readModel(resourcePath('unbounded.mps'));
-      const run = util.promisify(solver.run).bind(solver);
-      await run();
+      await p(solver, 'readModel', resourcePath('unbounded.mps'));
+      await p(solver, 'run');
       await withFile(async (res) => {
-        solver.writeSolution(res.path);
+        await p(solver, 'writeSolution', res.path);
         const sol = await readFile(res.path, 'utf8');
         expect(sol).toContain('Unbounded');
       });
@@ -54,10 +83,10 @@ describe('solver', () => {
   test('throws on missing file', async () => {
     await withSolver(async (solver) => {
       try {
-        solver.readModel(resourcePath('missing.mps'));
+        await p(solver, 'readModel', resourcePath('missing.mps'));
         fail();
       } catch (err) {
-        expect(err.message).toMatch(/could not be read/);
+        expect(err.message).toMatch(/Read model failed/);
       }
     });
   });
@@ -79,6 +108,19 @@ function withSolver(
   return withFile(async (res) => {
     await fn(new sut.Solver(res.path));
   });
+}
+
+/** Executes a callback-based async method and returns a matching promise. */
+function p<M extends keyof sut.Solver>(
+  solver: sut.Solver,
+  method: M,
+  ...args: sut.Solver[M] extends (
+    ...args: [...infer A, (err: Error) => void]
+  ) => void
+    ? A
+    : never
+): Promise<void> {
+  return util.promisify(solver[method]).bind(solver)(...args);
 }
 
 function resourcePath(fn: string): string {
