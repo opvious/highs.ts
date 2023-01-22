@@ -14,7 +14,7 @@ class Solver : public Napi::ObjectWrap<Solver> {
   void Run(const Napi::CallbackInfo& info);
   void WriteSolution(const Napi::CallbackInfo& info);
 
-  Highs highs_;
+  std::shared_ptr<Highs> highs_;
 };
 
 #endif
