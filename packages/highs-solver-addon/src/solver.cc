@@ -8,6 +8,8 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("passModel", &Solver::PassModel),
                    InstanceMethod("readModel", &Solver::ReadModel),
                    InstanceMethod("run", &Solver::Run),
+                   InstanceMethod("getModelStatus", &Solver::GetModelStatus),
+                   InstanceMethod("getInfo", &Solver::GetInfo),
                    InstanceMethod("getSolution", &Solver::GetSolution),
                    InstanceMethod("writeSolution", &Solver::WriteSolution),
                    InstanceMethod("clearModel", &Solver::ClearModel),
@@ -213,6 +215,47 @@ void Solver::Run(const Napi::CallbackInfo& info) {
   worker->Queue();
 }
 
+Napi::Value Solver::GetModelStatus(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return env.Undefined();
+  }
+  return Napi::Number::New(env, (double) this->highs_->getModelStatus());
+}
+
+Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return env.Undefined();
+  }
+  Napi::Object obj = Napi::Object::New(env);
+  HighsInfo data = this->highs_->getInfo();
+  // obj.Set("isValid", Napi::Boolean::New(env, data.valid)); Fails.
+  obj.Set("mipNodeCount", Napi::Number::New(env, data.mip_node_count));
+  obj.Set("simplexIterationCount", Napi::Number::New(env, data.simplex_iteration_count));
+  obj.Set("ipmIterationCount", Napi::Number::New(env, data.ipm_iteration_count));
+  obj.Set("qpIterationCount", Napi::Number::New(env, data.qp_iteration_count));
+  obj.Set("crossoverIterationCount", Napi::Number::New(env, data.crossover_iteration_count));
+  obj.Set("primalSolutionStatus", Napi::Number::New(env, data.primal_solution_status));
+  obj.Set("dualSolutionStatus", Napi::Number::New(env, data.dual_solution_status));
+  obj.Set("basisIsValid", Napi::Boolean::New(env, bool(data.basis_validity)));
+  obj.Set("objectiveFunctionValue", Napi::Number::New(env, data.objective_function_value));
+  obj.Set("mipDualBound", Napi::Number::New(env, data.mip_dual_bound));
+  obj.Set("mipGap", Napi::Number::New(env, data.mip_gap));
+  obj.Set("maxIntegralityViolation", Napi::Number::New(env, data.max_integrality_violation));
+  obj.Set("numPrimalInfeasibilities", Napi::Number::New(env, data.num_primal_infeasibilities));
+  obj.Set("maxPrimalInfeasibility", Napi::Number::New(env, data.max_primal_infeasibility));
+  obj.Set("sumPrimalInfeasibilities", Napi::Number::New(env, data.sum_primal_infeasibilities));
+  obj.Set("numDualInfeasibilities", Napi::Number::New(env, data.num_dual_infeasibilities));
+  obj.Set("maxDualInfeasibility", Napi::Number::New(env, data.max_dual_infeasibility));
+  obj.Set("sumDualInfeasibilities", Napi::Number::New(env, data.sum_dual_infeasibilities));
+  return obj;
+}
+
 Napi::Value ToFloat64Array(const Napi::Env& env, const std::vector<double>& vec) {
   Napi::Float64Array arr = Napi::Float64Array::New(env, vec.size());
   std::copy(vec.begin(), vec.end(), arr.Data());
@@ -228,7 +271,7 @@ Napi::Value Solver::GetSolution(const Napi::CallbackInfo& info) {
   }
   Napi::Object obj = Napi::Object::New(env);
   const HighsSolution& sol = this->highs_->getSolution();
-  obj.Set("isValid", sol.value_valid);
+  obj.Set("isValueValid", sol.value_valid);
   obj.Set("isDualValid", sol.dual_valid);
   obj.Set("columnValues", ToFloat64Array(env, sol.col_value));
   obj.Set("columnDualValues", ToFloat64Array(env, sol.col_dual));

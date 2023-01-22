@@ -16,6 +16,8 @@ class Solver : public Napi::ObjectWrap<Solver> {
   void PassModel(const Napi::CallbackInfo& info);
   void ReadModel(const Napi::CallbackInfo& info);
   void Run(const Napi::CallbackInfo& info);
+  Napi::Value GetModelStatus(const Napi::CallbackInfo& info);
+  Napi::Value GetInfo(const Napi::CallbackInfo& info);
   Napi::Value GetSolution(const Napi::CallbackInfo& info);
   void WriteSolution(const Napi::CallbackInfo& info);
 

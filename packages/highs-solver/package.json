@@ -27,6 +27,7 @@
     "tail": "^2.2.6"
   },
   "devDependencies": {
+    "@opvious/stl-errors": "^0.14.34",
     "@types/tail": "^2.2.1"
   },
   "jest": {
