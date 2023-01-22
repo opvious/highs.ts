@@ -6,8 +6,8 @@
 
 Napi::Value SolverVersion(const Napi::CallbackInfo &info);
 
-void ThrowError(const Napi::Env env, const std::string msg);
+void ThrowError(const Napi::Env& env, const std::string msg);
 
-void ThrowTypeError(const Napi::Env env, const std::string msg);
+void ThrowTypeError(const Napi::Env& env, const std::string msg);
 
 #endif

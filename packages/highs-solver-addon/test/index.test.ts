@@ -52,7 +52,7 @@ describe('solver', () => {
     });
   });
 
-  test('solves from LP file', async () => {
+  test('solves reading LP file', async () => {
     await withSolver(async (solver) => {
       await p(solver, 'readModel', resourcePath('simple.lp'));
       await p(solver, 'run');
@@ -68,7 +68,7 @@ describe('solver', () => {
     });
   });
 
-  test('solves from MPS file', async () => {
+  test('solves reading MPS file', async () => {
     await withSolver(async (solver) => {
       await p(solver, 'readModel', resourcePath('unbounded.mps'));
       await p(solver, 'run');
@@ -80,7 +80,7 @@ describe('solver', () => {
     });
   });
 
-  test('throws on missing file', async () => {
+  test('throws reading missing file', async () => {
     await withSolver(async (solver) => {
       try {
         await p(solver, 'readModel', resourcePath('missing.mps'));
@@ -88,6 +88,22 @@ describe('solver', () => {
       } catch (err) {
         expect(err.message).toMatch(/Read model failed/);
       }
+    });
+  });
+
+  test('clears solution', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      await p(solver, 'run');
+      expect(solver.getSolution()).toMatchObject({
+        isValid: true,
+        isDualValid: true,
+      });
+      solver.clearSolver();
+      expect(solver.getSolution()).toMatchObject({
+        isValid: false,
+        isDualValid: false,
+      });
     });
   });
 });

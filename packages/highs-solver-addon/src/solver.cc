@@ -9,6 +9,8 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("run", &Solver::Run),
                    InstanceMethod("getSolution", &Solver::GetSolution),
                    InstanceMethod("writeSolution", &Solver::WriteSolution),
+                   InstanceMethod("clearModel", &Solver::ClearModel),
+                   InstanceMethod("clearSolver", &Solver::ClearSolver),
                    InstanceMethod("clear", &Solver::Clear)});
 
   Napi::FunctionReference* constructor = new Napi::FunctionReference();
@@ -184,7 +186,7 @@ void Solver::Run(const Napi::CallbackInfo& info) {
   worker->Queue();
 }
 
-Napi::Value ToFloat64Array(Napi::Env& env, const std::vector<double>& vec) {
+Napi::Value ToFloat64Array(const Napi::Env& env, const std::vector<double>& vec) {
   Napi::Float64Array arr = Napi::Float64Array::New(env, vec.size());
   std::copy(vec.begin(), vec.end(), arr.Data());
   return arr;
@@ -244,6 +246,34 @@ void Solver::Clear(const Napi::CallbackInfo& info) {
   HighsStatus status = this->highs_->clear();
   if (status != HighsStatus::kOk) {
     ThrowError(env, "Clear failed");
+    return;
+  }
+}
+
+void Solver::ClearModel(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return;
+  }
+  HighsStatus status = this->highs_->clearModel();
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Clear model failed");
+    return;
+  }
+}
+
+void Solver::ClearSolver(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return;
+  }
+  HighsStatus status = this->highs_->clearSolver();
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Clear solver failed");
     return;
   }
 }

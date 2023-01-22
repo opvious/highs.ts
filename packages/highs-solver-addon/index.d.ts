@@ -12,10 +12,12 @@ export declare class Solver {
   writeSolution(fp: string, cb: (err: Error) => void): void;
 
   clear(): void;
+  clearModel(): void;
+  clearSolver(): void;
 
   // TODO:
-  // clearModel(): void;
-  // clearSolver(): void;
+  // setSolution(sol: Solution): void;
+  // addRows(matrix: SparseMatrix, bounds: Bounds): void;
 }
 
 export interface Model {
