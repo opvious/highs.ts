@@ -1,3 +1,6 @@
+import {assert} from '@opvious/stl-errors';
+import {range} from '@opvious/stl-utils';
+
 export enum SolutionStatus {
   NO_SOLUTION = 0,
   INFEASIBLE,
@@ -49,6 +52,31 @@ export interface Constraint {
 export interface SparseRow {
   readonly indices: Int32Array;
   readonly values: Float64Array;
+}
+
+export function sparseRow(
+  values: Iterable<number>,
+  indices?: ReadonlyArray<number>
+): SparseRow {
+  let size = 0;
+  for (const val of values) {
+    if (val !== 0) {
+      size++;
+    }
+  }
+  const vixs = new Int32Array(size);
+  const vals = new Float64Array(size);
+  let ix = 0;
+  let vix = 0;
+  for (const val of values) {
+    if (val !== 0) {
+      vixs[vix] = indices?.[ix] ?? ix;
+      vals[vix] = val;
+      vix++;
+    }
+    ix++;
+  }
+  return {indices: vixs, values: vals};
 }
 
 export interface Solution {

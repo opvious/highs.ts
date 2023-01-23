@@ -8,9 +8,9 @@ export * from './solver';
 
 const [errors, codes] = errorFactories({
   definitions: {
-    nonOptimalStatus: (s: SolverStatus) => ({
+    nonOptimalStatus: (s: SolverStatus, solver: Solver) => ({
       message: `Solve ended with non-optimal status ${SolverStatus[s]}`,
-      tags: {status: s},
+      tags: {status: s, solver},
     }),
   },
   prefix: 'ERR_HIGHS_',
@@ -18,6 +18,11 @@ const [errors, codes] = errorFactories({
 
 export const errorCodes = codes;
 
+/**
+ * Solves an optimization problem asynchronously. The model can be specified
+ * inline or via a file, using any format supported by HiGHS. This method will
+ * throw an error if the solution is not optimal.
+ */
 export async function solve(
   model: Model | string,
   opts?: SolverOptions
@@ -31,7 +36,7 @@ export async function solve(
   await solver.solve();
   const status = solver.getStatus();
   if (status !== SolverStatus.OPTIMAL) {
-    throw errors.nonOptimalStatus(status);
+    throw errors.nonOptimalStatus(status, solver);
   }
   const sol = solver.getSolution();
   assert(sol, 'Missing solution');
