@@ -64,7 +64,9 @@ const solution = await highs.solve({
 
 ```typescript
 const solver = highs.Solver.create();
-await solver.readModel('my-model.mps');
+
+await solver.setModelFromFile('my-model.mps');
+
 const interval = setInterval(() => {
   const {objectiveFunctionValue: objective, mipGap} = solver.getInfo();
   console.log(`Current info: objective = ${objective}, gap = ${mipGap}`);
