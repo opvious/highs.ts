@@ -84,6 +84,10 @@ export class Solver {
     return asSolverStatus(this.delegate.getModelStatus());
   }
 
+  getInfo(): SolverInfo {
+    return this.delegate.getInfo();
+  }
+
   getSolution(): Solution | undefined {
     const sol = this.delegate.getSolution();
     if (!sol.isValueValid) {
@@ -115,6 +119,8 @@ export class Solver {
     return util.promisify(delegate[method]).bind(delegate)(...args);
   }
 }
+
+export type SolverInfo = addon.Info;
 
 function assertBalanced(row: SparseRow): void {
   const {indices, values} = row;
