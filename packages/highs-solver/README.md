@@ -1,0 +1,5 @@
+# HiGHS solver
+
+Node.js binding for the [HiGHS optimization solver][highs].
+
+[highs]: https://github.com/ERGO-COde/HiGHS

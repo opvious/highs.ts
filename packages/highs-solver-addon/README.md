@@ -1,5 +1,5 @@
 # HiGHS solver addon
 
-Low-level Node.js addon for the [HiGHS solver][highs].
+Low-level Node.js binding for the [HiGHS optimization solver][highs].
 
 [highs]: https://github.com/ERGO-COde/HiGHS
