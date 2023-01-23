@@ -1,29 +1,31 @@
-import {assert} from '@opvious/stl-errors';
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L162
-export enum SolverStatus {
-  NOT_SET = 0,
-  LOAD_ERROR,
-  MODEL_ERROR,
-  PRESOLVE_ERROR,
-  SOLVE_ERROR,
-  POSTSOLVE_ERROR,
-  MODEL_EMPTY,
-  OPTIMAL,
+export enum SolutionStatus {
+  NO_SOLUTION = 0,
   INFEASIBLE,
-  UNBOUNDED_OR_INFEASIBLE,
-  UNBOUNDED,
-  OBJECTIVE_BOUND,
-  OBJECTIVE_TARGET,
-  TIME_LIMIT,
-  ITERATION_LIMIT,
-  UNKNOWN,
-  SOLUTION_LIMIT,
+  FEASIBLE,
 }
 
-export function asSolverStatus(num: number): SolverStatus {
-  assert(SolverStatus[num], 'Invalid status: %s', num);
-  return num as SolverStatus;
+export interface Model {
+  readonly objective?: Objective;
+  readonly variables: ReadonlyArray<Variable>;
+  readonly constraints: ReadonlyArray<Constraint>;
+}
+
+export interface Objective {
+  readonly isMaximization: boolean;
+  readonly weights: SparseRow;
+  readonly offset?: number;
+}
+
+export interface Variable {
+  /** Defaults to false. */
+  readonly type: VariableType;
+
+  /** Defaults to -infinity. */
+  readonly lowerBound?: number;
+
+  /** Defaults to +infinity. */
+  readonly upperBound?: number;
 }
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L87
@@ -35,8 +37,27 @@ export enum VariableType {
   IMPLICIT_INTEGER,
 }
 
-export enum SolutionStatus {
-  NO_SOLUTION = 0,
-  INFEASIBLE,
-  FEASIBLE,
+export interface Constraint {
+  readonly weights: SparseRow;
+
+  /** Defaults to -infinity. */
+  readonly lowerBound?: number;
+
+  /** Defaults to +infinity. */
+  readonly upperBound?: number;
+}
+
+export interface SparseRow {
+  readonly indices: Int32Array;
+  readonly values: Float64Array;
+}
+
+export interface Solution {
+  readonly primal: SolutionValues;
+  readonly dual?: SolutionValues;
+}
+
+export interface SolutionValues {
+  readonly variables: SparseRow;
+  readonly constraints: SparseRow;
 }
