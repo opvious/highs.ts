@@ -1,6 +1,6 @@
 {
   "name": "highs-solver",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "repository": "github:opvious/highs-solver",
   "description": "API for the HiGHS solver",
   "keywords": [

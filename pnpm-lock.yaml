@@ -42,11 +42,11 @@ importers:
       highs-solver-addon: workspace:*
       tail: ^2.2.6
     dependencies:
+      '@opvious/stl-errors': 0.14.34
       '@opvious/stl-utils': 0.14.34
       highs-solver-addon: link:../highs-solver-addon
       tail: 2.2.6
     devDependencies:
-      '@opvious/stl-errors': 0.14.34
       '@types/tail': 2.2.1
 
   packages/highs-solver-addon:
@@ -753,6 +753,7 @@ packages:
     dependencies:
       change-case: 4.1.2
       upper-case-first: 2.0.2
+    dev: false
 
   /@opvious/stl-utils/0.14.34:
     resolution: {integrity: sha512-Jka0x5KhsQfQgnL9uePPpz1WIA2mRJhn90j7QU630NAkyV3Gwr5YMmBXm3zmQCWJ9xmMGEHCAchLCsstxwy2CA==, tarball: download/@opvious/stl-utils/0.14.34/6bedb678f6ac34fef628e15b0530bfff0cd544d4}
@@ -1256,6 +1257,7 @@ packages:
     dependencies:
       pascal-case: 3.1.2
       tslib: 2.4.1
+    dev: false
 
   /camelcase/5.3.1:
     resolution: {integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==}
@@ -1277,6 +1279,7 @@ packages:
       no-case: 3.0.4
       tslib: 2.4.1
       upper-case-first: 2.0.2
+    dev: false
 
   /chalk/2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
@@ -1310,6 +1313,7 @@ packages:
       sentence-case: 3.0.4
       snake-case: 3.0.4
       tslib: 2.4.1
+    dev: false
 
   /char-regex/1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
@@ -1451,6 +1455,7 @@ packages:
       no-case: 3.0.4
       tslib: 2.4.1
       upper-case: 2.0.2
+    dev: false
 
   /convert-source-map/1.9.0:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
@@ -1549,6 +1554,7 @@ packages:
     dependencies:
       no-case: 3.0.4
       tslib: 2.4.1
+    dev: false
 
   /eastasianwidth/0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -2026,6 +2032,7 @@ packages:
     dependencies:
       capital-case: 1.0.4
       tslib: 2.4.1
+    dev: false
 
   /html-escaper/2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -2775,6 +2782,7 @@ packages:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
       tslib: 2.4.1
+    dev: false
 
   /lru-cache/5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -2899,6 +2907,7 @@ packages:
     dependencies:
       lower-case: 2.0.2
       tslib: 2.4.1
+    dev: false
 
   /node-addon-api/5.1.0:
     resolution: {integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==}
@@ -3012,6 +3021,7 @@ packages:
     dependencies:
       dot-case: 3.0.4
       tslib: 2.4.1
+    dev: false
 
   /parent-module/1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -3035,12 +3045,14 @@ packages:
     dependencies:
       no-case: 3.0.4
       tslib: 2.4.1
+    dev: false
 
   /path-case/3.0.4:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
     dependencies:
       dot-case: 3.0.4
       tslib: 2.4.1
+    dev: false
 
   /path-exists/4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -3258,6 +3270,7 @@ packages:
       no-case: 3.0.4
       tslib: 2.4.1
       upper-case-first: 2.0.2
+    dev: false
 
   /set-blocking/2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
@@ -3318,6 +3331,7 @@ packages:
     dependencies:
       dot-case: 3.0.4
       tslib: 2.4.1
+    dev: false
 
   /source-map-support/0.5.13:
     resolution: {integrity: sha512-SHSKFHadjVA5oR4PPqhtAVdcBWwRYVd6g6cAXnIbRiIwc2EhPrTuKUBdSLvlEKyIP3GCf89fltvcZiP9MMFA1w==}
@@ -3615,11 +3629,13 @@ packages:
     resolution: {integrity: sha512-514ppYHBaKwfJRK/pNC6c/OxfGa0obSnAl106u97Ed0I625Nin96KAjttZF6ZL3e1XLtphxnqrOi9iWgm+u+bg==}
     dependencies:
       tslib: 2.4.1
+    dev: false
 
   /upper-case/2.0.2:
     resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
     dependencies:
       tslib: 2.4.1
+    dev: false
 
   /uri-js/4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
