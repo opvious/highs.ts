@@ -1,8 +1,8 @@
 # HiGHS solver addon
 
 Low-level Node.js binding for the [HiGHS optimization solver][highs]. Consider
-using [`highs-solver`](/packages/highs-solver) unless you need direct access to
-the underlying API.
+using [`highs-solver`](/packages/highs-solver) for a more idiomatic TypeScript
+API.
 
 ## Installation
 
