@@ -13,9 +13,10 @@ Node.js binding for the [HiGHS optimization solver][highs].
 npm i highs-solver
 ```
 
-If your system's architecture doesn't match one of the prebuilt addons, one will
-be built automatically during installation. This requires a compatible
-toolchain, refer to the [addon's installation steps][addon] for details.
+If your system's architecture doesn't match one of the prebuilt addons, the
+addon will be built automatically during installation. This requires a
+compatible toolchain, refer to the corresponding [installation steps][addon] for
+details.
 
 ## Examples
 

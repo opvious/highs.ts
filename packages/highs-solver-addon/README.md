@@ -8,6 +8,8 @@ Low-level Node.js binding for the [HiGHS optimization solver][highs].
 npm i highs-solver-addon
 ```
 
-TODO
+If your system's architecture doesn't match one of the prebuilt addons, the
+addon will be built automatically during installation. This requires a toolchain
+capable of compiling [HiGHS][highs] and native Node.js addons.
 
 [highs]: https://github.com/ERGO-COde/HiGHS

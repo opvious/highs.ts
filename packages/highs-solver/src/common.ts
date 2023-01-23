@@ -52,6 +52,10 @@ export interface SparseRow {
   readonly values: Float64Array;
 }
 
+/**
+ * Computes a sparse representation of the input values. When the indices
+ * argument is omitted, the input values array is assumed dense.
+ */
 export function sparseRow(
   values: Iterable<number>,
   indices?: ReadonlyArray<number>
