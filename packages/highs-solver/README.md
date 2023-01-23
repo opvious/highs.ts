@@ -60,24 +60,6 @@ const solution = await highs.solve({
 });
 ```
 
-### Track solver progress
-
-```typescript
-const solver = highs.Solver.create();
-
-await solver.setModelFromFile('my-model.mps');
-
-const interval = setInterval(() => {
-  const {objectiveFunctionValue: objective, mipGap} = solver.getInfo();
-  console.log(`Current info: objective = ${objective}, gap = ${mipGap}`);
-}, 1_500)
-try {
-  await solver.solve();
-} finally {
-  clearInterval(interval);
-}
-```
-
 [highs]: https://github.com/ERGO-COde/HiGHS
 [highs-options]: https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsOptions.h
 [addon]: /packages/highs-solver-addon
