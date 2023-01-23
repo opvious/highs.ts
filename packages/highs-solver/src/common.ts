@@ -1,4 +1,3 @@
-
 export enum SolutionStatus {
   NO_SOLUTION = 0,
   INFEASIBLE,

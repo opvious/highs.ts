@@ -3,10 +3,9 @@ import {assert, errorFactories} from '@opvious/stl-errors';
 import {Model, Solution} from './common';
 import {Solver, SolverOptions, SolverStatus} from './solver';
 
-export {solverVersion} from 'highs-solver-addon';
-
 export * from './common';
 export * from './solver';
+export {solverVersion} from 'highs-solver-addon';
 
 const [errors, codes] = errorFactories({
   definitions: {
