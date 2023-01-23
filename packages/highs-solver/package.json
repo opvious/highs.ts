@@ -1,6 +1,6 @@
 {
   "name": "highs-solver",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "repository": "github:opvious/highs-solver",
   "description": "API for the HiGHS solver",
   "keywords": [
@@ -20,14 +20,16 @@
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules",
     "prepare": "pnpm run build",
-    "test": "jest"
+    "test": "jest",
+    "watch": "tsc -b -w src test"
   },
   "dependencies": {
+    "@opvious/stl-errors": "^0.14.34",
+    "@opvious/stl-utils": "^0.14.34",
     "highs-solver-addon": "workspace:*",
     "tail": "^2.2.6"
   },
   "devDependencies": {
-    "@opvious/stl-errors": "^0.14.34",
     "@types/tail": "^2.2.1"
   },
   "jest": {
