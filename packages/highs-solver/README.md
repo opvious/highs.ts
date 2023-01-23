@@ -2,14 +2,20 @@
 
 Node.js binding for the [HiGHS optimization solver][highs].
 
-```sh
-npm i highs-solver
-```
-
 ## Features
 
 + Native solver performance
 + Asynchronous type-safe API
+
+## Installation
+
+```sh
+npm i highs-solver
+```
+
+If your system's architecture doesn't match one of the prebuilt addons, one will
+be built automatically during installation. This requires a compatible
+toolchain, refer to the [addon's installation steps][addon] for details.
 
 ## Examples
 
@@ -37,3 +43,4 @@ const solution = await highs.solve({
 ```
 
 [highs]: https://github.com/ERGO-COde/HiGHS
+[addon]: /packages/highs-solver-addon
