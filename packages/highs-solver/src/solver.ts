@@ -3,7 +3,14 @@ import {ifPresent} from '@opvious/stl-utils';
 import * as addon from 'highs-solver-addon';
 import util from 'util';
 
-import {Constraint, Model, Solution, SparseRow, Variable} from './common';
+import {
+  Constraint,
+  Model,
+  Solution,
+  SparseRow,
+  sparseRow,
+  Variable,
+} from './common';
 
 export class Solver {
   private solving = false;
@@ -84,13 +91,13 @@ export class Solver {
     }
     return {
       primal: {
-        variables: sparsifyRow(sol.columnValues),
-        constraints: sparsifyRow(sol.rowValues),
+        variables: sparseRow(sol.columnValues),
+        constraints: sparseRow(sol.rowValues),
       },
       dual: sol.isDualValid
         ? {
-            variables: sparsifyRow(sol.columnDualValues),
-            constraints: sparsifyRow(sol.rowDualValues),
+            variables: sparseRow(sol.columnDualValues),
+            constraints: sparseRow(sol.rowDualValues),
           }
         : undefined,
     };
@@ -148,26 +155,6 @@ function computeMatrix(
     wix += w.indices.length;
   }
   return {isColumnOriented: false, starts, indices, values};
-}
-
-function sparsifyRow(arr: Float64Array): SparseRow {
-  let size = 0;
-  for (const val of arr) {
-    if (val !== 0) {
-      size++;
-    }
-  }
-  const indices = new Int32Array(size);
-  const values = new Float64Array(size);
-  let ix = 0;
-  for (const [vix, val] of arr.entries()) {
-    if (val !== 0) {
-      indices[ix] = vix;
-      values[ix] = val;
-      ix++;
-    }
-  }
-  return {indices, values};
 }
 
 function densify<V>(

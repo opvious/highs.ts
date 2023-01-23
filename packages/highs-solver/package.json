@@ -1,10 +1,11 @@
 {
   "name": "highs-solver",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "repository": "github:opvious/highs-solver",
-  "description": "API for the HiGHS solver",
+  "description": "Node.js binding for the HiGHS optimization solver",
   "keywords": [
     "highs",
+    "optimization",
     "opvious",
     "solver"
   ],

@@ -1,3 +1,4 @@
+/** Returns the underlying optimization solver's version. */
 export function solverVersion(): string;
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/Highs.h
