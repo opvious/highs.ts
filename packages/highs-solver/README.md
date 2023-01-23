@@ -22,7 +22,24 @@ details.
 
 ```typescript
 import * as highs from 'highs-solver';
+```
 
+### Solve from file
+
+```typescript
+const solution = await highs.solve('my-model.lp', {
+  time_limit: 30,
+  mip_rel_gap: 0.05,
+  // Other options...
+});
+```
+
+All the file formats (`.lp`, `.mps`, ...) and [options][highs-options] supported
+by HiGHS may be passed in.
+
+### Solve inline model
+
+```typescript
 const solution = await highs.solve({
   objective: {
     isMaximization: true,
@@ -44,4 +61,5 @@ const solution = await highs.solve({
 ```
 
 [highs]: https://github.com/ERGO-COde/HiGHS
+[highs-options]: https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsOptions.h
 [addon]: /packages/highs-solver-addon

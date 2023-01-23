@@ -52,6 +52,8 @@ export interface CommonOptions {
   readonly output_flag?: boolean;
   readonly log_file?: string; // kLogFileString
   readonly log_to_console?: boolean;
+  readonly mip_abs_gap?: number;
+  readonly mip_rel_gap?: number;
 }
 
 export interface Model {
