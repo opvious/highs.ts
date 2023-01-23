@@ -38,16 +38,11 @@ importers:
     specifiers:
       '@opvious/stl-errors': ^0.14.34
       '@opvious/stl-utils': ^0.14.34
-      '@types/tail': ^2.2.1
       highs-solver-addon: workspace:*
-      tail: ^2.2.6
     dependencies:
       '@opvious/stl-errors': 0.14.34
       '@opvious/stl-utils': 0.14.34
       highs-solver-addon: link:../highs-solver-addon
-      tail: 2.2.6
-    devDependencies:
-      '@types/tail': 2.2.1
 
   packages/highs-solver-addon:
     specifiers:
@@ -861,10 +856,6 @@ packages:
 
   /@types/stack-utils/2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
-    dev: true
-
-  /@types/tail/2.2.1:
-    resolution: {integrity: sha512-j75Gs5MiIpNR14wztQ4vtViUqxZi+lcgflyXC7P9iMgNnMab7XcV5p+2590IO3njsWWn5l8C+55ILk2CDDyaHg==}
     dev: true
 
   /@types/yargs-parser/21.0.0:
@@ -3455,11 +3446,6 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
-
-  /tail/2.2.6:
-    resolution: {integrity: sha512-IQ6G4wK/t8VBauYiGPLx+d3fA5XjSVagjWV5SIYzvEvglbQjwEcukeYI68JOPpdydjxhZ9sIgzRlSmwSpphHyw==}
-    engines: {node: '>= 6.0.0'}
-    dev: false
 
   /tar/6.1.13:
     resolution: {integrity: sha512-jdIBIN6LTIe2jqzay/2vtYLlBHa3JF42ot3h1dW8Q0PaAG4v8rm0cvpVePtau5C6OKXGGcgO9q2AMNSWxiLqKw==}

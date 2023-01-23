@@ -12,6 +12,10 @@ export declare class Solver {
     name: N,
     val: N extends keyof CommonOptions ? CommonOptions[N] : OptionValue
   ): void;
+  getOption<N extends keyof CommonOptions>(name: N): CommonOptions[N];
+  getOption<N extends string>(
+    name: N
+  ): N extends keyof CommonOptions ? CommonOptions[N] : OptionValue;
 
   passModel(model: Model): void;
   readModel(fp: string, cb: (err: Error) => void): string;
@@ -90,7 +94,6 @@ export interface Model {
   readonly hessian?: SparseMatrix;
 }
 
-/** Sparse matric representation. */
 export interface SparseMatrix {
   readonly isColumnOriented: boolean;
   readonly starts: Int32Array;
@@ -106,25 +109,14 @@ export type ModelStatus = number;
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsInfo.h#L152
 export interface Info {
-  readonly isValid: boolean;
-  readonly mipNodeCount: number;
-  readonly simplexIterationCount: number;
-  readonly ipmIterationCount: number;
-  readonly qpIterationCount: number;
-  readonly crossoverIterationCount: number;
-  readonly primalSolutionStatus: SolutionStatus;
-  readonly dualSolutionStatus: SolutionStatus;
-  readonly basisIsValid: boolean;
-  readonly objectiveFunctionValue: number;
-  readonly mipDualBound: number;
-  readonly mipGap: number;
-  readonly maxIntegralityViolation: number;
-  readonly numPrimalInfeasibilities: number;
-  readonly maxPrimalInfeasibility: number;
-  readonly sumPrimalInfeasibilities: number;
-  readonly numDualInfeasibilities: number;
-  readonly maxDualInfeasibility: number;
-  readonly sumDualInfeasibilities: number;
+  readonly basis_validity: number;
+  readonly simplex_iteration_count: number;
+  readonly ipm_iteration_count: number;
+  readonly qp_iteration_count: number;
+  readonly objective_function_value: number;
+  readonly mip_gap: number;
+  readonly mip_dual_bound: number;
+  readonly [name: string]: number;
 }
 
 // 0 = no solution, 1 = infeasible, 2 = feasible

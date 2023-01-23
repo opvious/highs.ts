@@ -5,6 +5,7 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
       DefineClass(env,
                   "Solver",
                   {InstanceMethod("setOption", &Solver::SetOption),
+                   InstanceMethod("getOption", &Solver::GetOption),
                    InstanceMethod("passModel", &Solver::PassModel),
                    InstanceMethod("readModel", &Solver::ReadModel),
                    InstanceMethod("run", &Solver::Run),
@@ -62,6 +63,58 @@ void Solver::SetOption(const Napi::CallbackInfo& info) {
     ThrowError(env, "Setting option failed");
     return;
   }
+}
+
+Napi::Value Solver::GetOption(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsString()) {
+    ThrowTypeError(env, "Expected 1 argument [string]");
+    return env.Undefined();
+  }
+  std::string name = info[0].As<Napi::String>().Utf8Value();
+  HighsStatus status = HighsStatus::kError;
+  HighsOptionType type;
+  if ((this->highs_->getOptionType(name, type)) != HighsStatus::kOk) {
+    ThrowError(env, "Getting option type failed");
+    return env.Undefined();
+  }
+  Napi::Value val = env.Undefined();
+  switch (type) {
+    case HighsOptionType::kBool: {
+      bool prim = false;
+      if ((status = this->highs_->getOptionValue(name, prim)) == HighsStatus::kOk) {
+        val = Napi::Boolean::New(env, prim);
+      }
+      break;
+    }
+    case HighsOptionType::kDouble: {
+      double prim = false;
+      if ((status = this->highs_->getOptionValue(name, prim)) == HighsStatus::kOk) {
+        val = Napi::Number::New(env, prim);
+      }
+      break;
+    }
+    case HighsOptionType::kInt: {
+      HighsInt prim = false;
+      if ((status = this->highs_->getOptionValue(name, prim)) == HighsStatus::kOk) {
+        val = Napi::Number::New(env, prim);
+      }
+      break;
+    }
+    case HighsOptionType::kString: {
+      std::string prim = "";
+      if ((status = this->highs_->getOptionValue(name, prim)) == HighsStatus::kOk) {
+        val = Napi::String::New(env, prim);
+      }
+      break;
+    }
+  }
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Getting option value failed");
+    return env.Undefined();
+  }
+  return val;
 }
 
 /** Generic async solver update worker. */
@@ -234,25 +287,19 @@ Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
   }
   Napi::Object obj = Napi::Object::New(env);
   HighsInfo data = this->highs_->getInfo();
-  // obj.Set("isValid", Napi::Boolean::New(env, data.valid)); Fails.
-  obj.Set("mipNodeCount", Napi::Number::New(env, data.mip_node_count));
-  obj.Set("simplexIterationCount", Napi::Number::New(env, data.simplex_iteration_count));
-  obj.Set("ipmIterationCount", Napi::Number::New(env, data.ipm_iteration_count));
-  obj.Set("qpIterationCount", Napi::Number::New(env, data.qp_iteration_count));
-  obj.Set("crossoverIterationCount", Napi::Number::New(env, data.crossover_iteration_count));
-  obj.Set("primalSolutionStatus", Napi::Number::New(env, data.primal_solution_status));
-  obj.Set("dualSolutionStatus", Napi::Number::New(env, data.dual_solution_status));
-  obj.Set("basisIsValid", Napi::Boolean::New(env, bool(data.basis_validity)));
-  obj.Set("objectiveFunctionValue", Napi::Number::New(env, data.objective_function_value));
-  obj.Set("mipDualBound", Napi::Number::New(env, data.mip_dual_bound));
-  obj.Set("mipGap", Napi::Number::New(env, data.mip_gap));
-  obj.Set("maxIntegralityViolation", Napi::Number::New(env, data.max_integrality_violation));
-  obj.Set("numPrimalInfeasibilities", Napi::Number::New(env, data.num_primal_infeasibilities));
-  obj.Set("maxPrimalInfeasibility", Napi::Number::New(env, data.max_primal_infeasibility));
-  obj.Set("sumPrimalInfeasibilities", Napi::Number::New(env, data.sum_primal_infeasibilities));
-  obj.Set("numDualInfeasibilities", Napi::Number::New(env, data.num_dual_infeasibilities));
-  obj.Set("maxDualInfeasibility", Napi::Number::New(env, data.max_dual_infeasibility));
-  obj.Set("sumDualInfeasibilities", Napi::Number::New(env, data.sum_dual_infeasibilities));
+  for (auto & grec : data.records) {
+    Napi::Value val = env.Undefined();
+    if (auto* srec = dynamic_cast<InfoRecordInt64*>(grec)) {
+      val = Napi::Number::New(env, srec->value == nullptr ? srec->default_value : *srec->value);
+    } else if (auto* srec = dynamic_cast<InfoRecordInt*>(grec)) {
+      val = Napi::Number::New(env, srec->value == nullptr ? srec->default_value : *srec->value);
+    } else if (auto* srec = dynamic_cast<InfoRecordDouble*>(grec)) {
+      val = Napi::Number::New(env, srec->value == nullptr ? srec->default_value : *srec->value);
+    }
+    if (!val.IsUndefined()) {
+      obj.Set(grec->name, val);
+    }
+  }
   return obj;
 }
 
