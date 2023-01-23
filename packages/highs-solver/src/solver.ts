@@ -34,7 +34,8 @@ export class Solver {
       rowCount: constraints.length,
       isMaximization: obj?.isMaximization ?? false,
       offset: obj?.offset ?? 0,
-      costs: ifPresent(obj?.weights, (w) => densifyRow(w, width)) ??
+      costs:
+        ifPresent(obj?.weights, (w) => densifyRow(w, width)) ??
         new Float64Array(width),
       matrix: computeMatrix(constraints),
       columnLowerBounds: densify(variables, (v) => v.lowerBound ?? -Infinity),

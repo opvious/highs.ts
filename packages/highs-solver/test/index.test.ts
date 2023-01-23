@@ -49,7 +49,10 @@ function resourcePath(name: string): string {
   return path.join(__dirname, 'resources', name);
 }
 
-function sparseRow(indices: ReadonlyArray<number>, values: ReadonlyArray<number>): sut.SparseRow {
+function sparseRow(
+  indices: ReadonlyArray<number>,
+  values: ReadonlyArray<number>
+): sut.SparseRow {
   return {
     indices: new Int32Array(indices),
     values: new Float64Array(values),
