@@ -20,7 +20,11 @@ describe('solve', () => {
       constraints: [
         {weights: sut.sparseRow([-1, 1, 1, 10]), upperBound: 20},
         {weights: sut.sparseRow([1, -4, 1]), upperBound: 30},
-        {weights: sut.sparseRow([1, -0.5], [1, 3]), lowerBound: 0, upperBound: 0},
+        {
+          weights: sut.sparseRow([1, -0.5], [1, 3]),
+          lowerBound: 0,
+          upperBound: 0,
+        },
       ],
     });
     expect(sol).toEqual({

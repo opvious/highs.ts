@@ -3,7 +3,14 @@ import {ifPresent} from '@opvious/stl-utils';
 import * as addon from 'highs-solver-addon';
 import util from 'util';
 
-import {Constraint, Model, Solution, SparseRow, sparseRow, Variable} from './common';
+import {
+  Constraint,
+  Model,
+  Solution,
+  SparseRow,
+  sparseRow,
+  Variable,
+} from './common';
 
 export class Solver {
   private solving = false;

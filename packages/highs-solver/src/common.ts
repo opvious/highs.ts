@@ -1,5 +1,3 @@
-import {assert} from '@opvious/stl-errors';
-import {range} from '@opvious/stl-utils';
 
 export enum SolutionStatus {
   NO_SOLUTION = 0,
