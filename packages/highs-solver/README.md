@@ -80,7 +80,7 @@ const solution = await highs.solve(
 );
 ```
 
-The monitor's `'progress'` event includes information such aas optimality gap,
+The monitor's `'progress'` event includes information such as optimality gap,
 number of LP iterations, ...
 
 [highs]: https://github.com/ERGO-COde/HiGHS
