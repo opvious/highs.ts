@@ -2,6 +2,15 @@
 
 Native Node.js bindings for the [HiGHS optimization solver][highs].
 
+```typescript
+import * as highs from 'highs-solver';
+
+const solution = await highs.solve('model.lp', {
+  time_limit: 30,
+  mip_rel_gap: 0.05,
+});
+```
+
 ## Packages
 
 The following packages are available:
