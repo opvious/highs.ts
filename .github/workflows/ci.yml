@@ -37,7 +37,7 @@ jobs:
         run: pnpm run lint
       - name: Build addon binding
         run: |
-          pnpm -F highs-solver-addon run build \
+          pnpm -F highs-addon run build \
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
         run: pnpm t
@@ -98,7 +98,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Generate addon prebuild
         run: |
-          pnpm -F highs-solver-addon exec pkg-prebuilds-copy \
+          pnpm -F highs-addon exec pkg-prebuilds-copy \
             --napi_version=$NAPI_VERSION \
             --source build/Release/$BINDING_NAME.node \
             --name=$BINDING_NAME \
@@ -107,7 +107,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: native-${{ matrix.key }}-prebuilds
-          path: packages/highs-solver-addon/prebuilds
+          path: packages/highs-addon/prebuilds
           retention-days: 1
   prebuild-docker:
     strategy:
@@ -153,7 +153,7 @@ jobs:
               apk update
               apk add clang clang-dev cmake gcc git g++ libc-dev libstdc++ linux-headers make
             fi
-            cd workspace/packages/highs-solver-addon
+            cd workspace/packages/highs-addon
             npm run build
             npm exec pkg-prebuilds-copy -- \
               --napi_version=$NAPI_VERSION \
@@ -165,7 +165,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: docker-${{ matrix.key }}-prebuilds
-          path: packages/highs-solver-addon/prebuilds
+          path: packages/highs-addon/prebuilds
           retention-days: 1
   publish:
     name: Publish packages
@@ -191,15 +191,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Create prebuild directories
-        run: mkdir -p out/prebuilds packages/highs-solver-addon/prebuilds
+        run: mkdir -p out/prebuilds packages/highs-addon/prebuilds
       - name: Download prebuilds
         uses: actions/download-artifact@v3
         with:
           path: out/prebuilds
       - name: Flatten prebuilds
         run: |
-          mv out/prebuilds/*/* packages/highs-solver-addon/prebuilds
-          ls packages/highs-solver-addon/prebuilds
+          mv out/prebuilds/*/* packages/highs-addon/prebuilds
+          ls packages/highs-addon/prebuilds
       - name: Point to NPM registry
         uses: actions/setup-node@v3
         with:
