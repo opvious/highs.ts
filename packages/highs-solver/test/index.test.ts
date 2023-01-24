@@ -39,13 +39,22 @@ describe('solve', () => {
     });
   });
 
-  test('handles model from file', async () => {
+  test('handles unbounded model from file', async () => {
     try {
-      await sut.solve(resourcePath('simple.mps'));
+      await sut.solve(resourcePath('unbounded.mps'));
       fail();
     } catch (err) {
-      expect(errorCode(err)).toEqual(sut.errorCodes.NonOptimalStatus);
+      expect(errorCode(err)).toEqual(sut.errorCodes.SolveNotOptimal);
     }
+  });
+
+  test('monitors progress', async () => {
+    let progressed = false;
+    const monitor = sut.solveMonitor().on('progress', () => {
+      progressed = true;
+    });
+    await sut.solve(resourcePath('queens-15.lp'), monitor);
+    expect(progressed).toBe(true);
   });
 });
 

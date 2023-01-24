@@ -1,4 +1,4 @@
-# HiGHS solver
+# HiGHS solver [![NPM version](https://img.shields.io/npm/v/highs-solver.svg)](https://www.npmjs.com/package/highs-solver)
 
 Node.js binding for the [HiGHS optimization solver][highs].
 
@@ -24,18 +24,14 @@ details.
 import * as highs from 'highs-solver';
 ```
 
-### Solve from file
+### Solve LP file
 
 ```typescript
-const solution = await highs.solve('my-model.lp', {
-  time_limit: 30,
-  mip_rel_gap: 0.05,
-  // Other options...
-});
+const solution = await highs.solve('my-model.lp');
 ```
 
-All the file formats (`.lp`, `.mps`, ...) and [options][highs-options] supported
-by HiGHS may be passed in.
+All file formats (`.lp`, `.mps`, ...) supported by HiGHS may be passed in as
+well.
 
 ### Solve inline model
 
@@ -59,6 +55,33 @@ const solution = await highs.solve({
   ],
 });
 ```
+
+### Customize solver options
+
+```typescript
+const solution = await highs.solve('my-model.lp', {
+  time_limit: 30,
+  mip_rel_gap: 0.05,
+  // ...
+});
+```
+
+All [options][highs-options] supported by HiGHS may be specified.
+
+### Monitor solving progress
+
+```typescript
+const solution = await highs.solve(
+  'my-large-model.mps',
+  highs.solveMonitor().on('progress', (prog) => {
+    // Called each time the solver emits a progress notification.
+    console.log(prog);
+  })
+);
+```
+
+The monitor's `'progress'` event includes information such as optimality gap,
+number of LP iterations, ...
 
 [highs]: https://github.com/ERGO-COde/HiGHS
 [highs-options]: https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsOptions.h

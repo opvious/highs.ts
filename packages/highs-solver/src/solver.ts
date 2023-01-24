@@ -1,6 +1,8 @@
 import {assert} from '@opvious/stl-errors';
 import {ifPresent} from '@opvious/stl-utils';
+import {writeFile} from 'fs/promises';
 import * as addon from 'highs-solver-addon';
+import * as tmp from 'tmp-promise';
 import util from 'util';
 
 import {
@@ -11,6 +13,7 @@ import {
   sparseRow,
   Variable,
 } from './common';
+import {SolveMonitor, SolveTracker} from './monitor';
 
 export class Solver {
   private solving = false;
@@ -67,11 +70,33 @@ export class Solver {
    * performed on the solver until the returned promise is resolved (i.e. the
    * solve ends).
    */
-  async solve(): Promise<void> {
+  async solve(opts?: {readonly monitor?: SolveMonitor}): Promise<void> {
+    assert(!this.solving, 'Solve in progress');
+
+    let logPath = this.delegate.getOption('log_file');
+    let tempLog: tmp.FileResult | undefined;
+    let tracker: SolveTracker | undefined;
+    if (opts?.monitor) {
+      if (!logPath) {
+        // We need the logs to track progress.
+        tempLog = await tmp.file();
+        logPath = tempLog.path;
+        this.delegate.setOption('log_file', logPath);
+      }
+      // Make sure the file exists to we can tail it.
+      await writeFile(logPath, '', {flag: 'a'});
+      tracker = SolveTracker.create({logPath, monitor: opts.monitor});
+    }
+
     this.solving = true;
     try {
-      return await this.promisified('run');
+      await this.promisified('run');
     } finally {
+      tracker?.shutdown();
+      if (tempLog) {
+        this.delegate.setOption('log_file', '');
+        await tempLog.cleanup();
+      }
       this.solving = false;
     }
   }

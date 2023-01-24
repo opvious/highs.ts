@@ -11,11 +11,25 @@ test('vendor version', () => {
 });
 
 describe('solver', () => {
+  describe('sets and gets option', () => {
+    const solver = new sut.Solver();
+    test.each([
+      ['time_limit', 123],
+      ['ranging', 'on'],
+      ['run_crossover', 'choose'],
+      ['random_seed', 1234],
+      ['mip_rel_gap', 0.1],
+    ])('%s', (name, val) => {
+      solver.setOption(name, val);
+      expect(solver.getOption(name)).toEqual(val);
+    });
+  });
+
   test('handles no model case', async () => {
     await withSolver(async (solver) => {
       expect(solver.getModelStatus()).toEqual(0);
       expect(solver.getInfo()).toMatchObject({
-        basisIsValid: false,
+        basis_validity: 0,
       });
       expect(solver.getSolution()).toMatchObject({
         isValueValid: false,
@@ -47,10 +61,10 @@ describe('solver', () => {
       await p(solver, 'run');
       expect(solver.getModelStatus()).toEqual(7); // Optimal
       expect(solver.getInfo()).toMatchObject({
-        basisIsValid: true,
-        primalSolutionStatus: 2, // Feasible
-        dualSolutionStatus: 2, // Feasible
-        objectiveFunctionValue: 1,
+        basis_validity: 1,
+        primal_solution_status: 2, // Feasible
+        dual_solution_status: 2, // Feasible
+        objective_function_value: 1,
       });
       expect(cloneSolution(solver.getSolution())).toEqual({
         isValueValid: true,
