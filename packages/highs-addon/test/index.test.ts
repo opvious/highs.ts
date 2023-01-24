@@ -132,6 +132,20 @@ describe('solver', () => {
       });
     });
   });
+
+  test('writes model', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      await withFile(
+        async (res) => {
+          await p(solver, 'writeModel', res.path);
+          const data = await readFile(res.path, 'utf8');
+          expect(data).toContain('c1');
+        },
+        {postfix: '.mps'}
+      );
+    });
+  });
 });
 
 function cloneSolution(sol: sut.Solution): sut.Solution {

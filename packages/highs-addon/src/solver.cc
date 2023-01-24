@@ -8,6 +8,7 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("getOption", &Solver::GetOption),
                    InstanceMethod("passModel", &Solver::PassModel),
                    InstanceMethod("readModel", &Solver::ReadModel),
+                   InstanceMethod("writeModel", &Solver::WriteModel),
                    InstanceMethod("run", &Solver::Run),
                    InstanceMethod("getModelStatus", &Solver::GetModelStatus),
                    InstanceMethod("getInfo", &Solver::GetInfo),
@@ -243,6 +244,32 @@ void Solver::ReadModel(const Napi::CallbackInfo& info) {
   std::string path = info[0].As<Napi::String>().Utf8Value();
   Napi::Function cb = info[1].As<Napi::Function>();
   ReadModelWorker* worker = new ReadModelWorker(cb, this->highs_, path);
+  worker->Queue();
+}
+
+class WriteModelWorker : public UpdateWorker {
+ public:
+  WriteModelWorker(Napi::Function& cb, std::shared_ptr<Highs> highs, std::string path)
+  : UpdateWorker(cb, highs, "Write model"), path_(path) {}
+
+  HighsStatus Update(Highs& highs) override {
+    return highs.writeModel(this->path_);
+  }
+
+ private:
+  std::string path_;
+};
+
+void Solver::WriteModel(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 2 || !info[0].IsString() || !info[1].IsFunction()) {
+    ThrowTypeError(env, "Expected 2 arguments [string, function]");
+    return;
+  }
+  std::string path = info[0].As<Napi::String>().Utf8Value();
+  Napi::Function cb = info[1].As<Napi::Function>();
+  WriteModelWorker* worker = new WriteModelWorker(cb, this->highs_, path);
   worker->Queue();
 }
 

@@ -88,6 +88,14 @@ export class Solver {
   }
 
   /**
+   * Write the current model. The file path must end in one HiGHS' supported
+   * extensions (`.lp`, `.mps`, ...).
+   */
+  async writeModel(fp: string): Promise<void> {
+    await this.promisified('writeModel', fp);
+  }
+
+  /**
    * Runs the solver on the last set model using the current options. No
    * mutating operations may be performed on the solver until the returned
    * promise is resolved (i.e. the solve ends).

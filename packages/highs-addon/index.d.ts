@@ -19,6 +19,7 @@ export declare class Solver {
 
   passModel(model: Model): void;
   readModel(fp: string, cb: (err: Error) => void): string;
+  writeModel(fp: string, cb: (err: Error) => void): string;
 
   run(cb: (err: Error) => void): void;
   getModelStatus(): ModelStatus;
