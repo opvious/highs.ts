@@ -28,7 +28,9 @@
   "dependencies": {
     "@opvious/stl-errors": "^0.14.34",
     "@opvious/stl-utils": "^0.14.34",
-    "highs-solver-addon": "workspace:*"
+    "highs-solver-addon": "workspace:*",
+    "tail": "^2.2.6",
+    "tmp-promise": "^3.0.3"
   },
   "jest": {
     "coverageDirectory": "../../out/coverage/highs-solver",
@@ -55,5 +57,8 @@
         }
       ]
     }
+  },
+  "devDependencies": {
+    "@types/tail": "^2.2.1"
   }
 }

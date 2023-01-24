@@ -8,6 +8,6 @@ describe('solver', () => {
 
   test('returns unset info', () => {
     const solver = sut.Solver.create();
-    expect(solver.getInfo()).toMatchObject({basisIsValid: false});
+    expect(solver.getInfo()).toMatchObject({basis_validity: 0});
   });
 });

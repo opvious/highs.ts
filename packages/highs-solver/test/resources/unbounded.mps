@@ -1,5 +1,5 @@
 * Test
-NAME simple
+NAME unbounded
 ROWS
  G C0G
  G C1G
