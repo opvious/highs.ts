@@ -32,6 +32,9 @@
     "tail": "^2.2.6",
     "tmp-promise": "^3.0.3"
   },
+  "devDependencies": {
+    "@types/tail": "^2.2.1"
+  },
   "jest": {
     "coverageDirectory": "../../out/coverage/highs-solver",
     "coveragePathIgnorePatterns": [
@@ -57,8 +60,5 @@
         }
       ]
     }
-  },
-  "devDependencies": {
-    "@types/tail": "^2.2.1"
   }
 }

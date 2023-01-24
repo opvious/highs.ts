@@ -1,4 +1,4 @@
-# HiGHS solver addon
+# HiGHS solver addon [![NPM version](https://img.shields.io/npm/v/highs-solver-addon.svg)](https://www.npmjs.com/package/highs-solver-addon)
 
 Low-level Node.js binding for the [HiGHS optimization solver][highs]. Consider
 using [`highs-solver`](/packages/highs-solver) for a more idiomatic TypeScript
