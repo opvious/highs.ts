@@ -58,10 +58,9 @@ describe('solve', () => {
   });
 
   test('outputs styled solution', async () => {
-    const sol = await sut.solve(
-      resourcePath('queens-15.lp'),
-      {style: sut.SolutionStyle.PRETTY}
-    );
+    const sol = await sut.solve(resourcePath('queens-15.lp'), {
+      style: sut.SolutionStyle.PRETTY,
+    });
     expect(sol).toContain('V222');
   });
 });

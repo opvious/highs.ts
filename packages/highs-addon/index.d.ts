@@ -25,7 +25,11 @@ export declare class Solver {
   getInfo(): Info;
 
   getSolution(): Solution;
-  writeSolution(fp: string, style: SolutionStyle, cb: (err: Error) => void): void;
+  writeSolution(
+    fp: string,
+    style: SolutionStyle,
+    cb: (err: Error) => void
+  ): void;
 
   clear(): void;
   clearModel(): void;

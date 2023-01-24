@@ -1,6 +1,5 @@
 import {assert, mergeErrorCodes} from '@opvious/stl-errors';
 import {MarkPresent} from '@opvious/stl-utils';
-import events from 'events';
 import {readFile} from 'fs/promises';
 import * as tmp from 'tmp-promise';
 
@@ -71,7 +70,7 @@ export interface SolveOptions {
 
 function intoFile(fn: (fp: string) => Promise<void>): Promise<string> {
   return tmp.withFile(async (res) => {
-    await fn(res.path)
+    await fn(res.path);
     return readFile(res.path, 'utf8');
   });
 }
