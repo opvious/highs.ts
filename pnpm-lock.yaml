@@ -34,24 +34,7 @@ importers:
       ts-jest: 29.0.5_p6ekqnroyms5nhqbfxosryz7rm
       typescript: 4.9.4
 
-  packages/highs-solver:
-    specifiers:
-      '@opvious/stl-errors': ^0.14.34
-      '@opvious/stl-utils': ^0.14.34
-      '@types/tail': ^2.2.1
-      highs-solver-addon: workspace:*
-      tail: ^2.2.6
-      tmp-promise: ^3.0.3
-    dependencies:
-      '@opvious/stl-errors': 0.14.34
-      '@opvious/stl-utils': 0.14.34
-      highs-solver-addon: link:../highs-solver-addon
-      tail: 2.2.6
-      tmp-promise: 3.0.3
-    devDependencies:
-      '@types/tail': 2.2.1
-
-  packages/highs-solver-addon:
+  packages/highs-addon:
     specifiers:
       cmake-js: ^7.1.1
       node-addon-api: ^5.1.0
@@ -63,6 +46,23 @@ importers:
       pkg-prebuilds: 0.1.0
     devDependencies:
       tmp-promise: 3.0.3
+
+  packages/highs-solver:
+    specifiers:
+      '@opvious/stl-errors': ^0.14.34
+      '@opvious/stl-utils': ^0.14.34
+      '@types/tail': ^2.2.1
+      highs-addon: workspace:*
+      tail: ^2.2.6
+      tmp-promise: ^3.0.3
+    dependencies:
+      '@opvious/stl-errors': 0.14.34
+      '@opvious/stl-utils': 0.14.34
+      highs-addon: link:../highs-addon
+      tail: 2.2.6
+      tmp-promise: 3.0.3
+    devDependencies:
+      '@types/tail': 2.2.1
 
 packages:
 

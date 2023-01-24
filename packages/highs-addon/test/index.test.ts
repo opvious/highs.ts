@@ -99,7 +99,7 @@ describe('solver', () => {
       await p(solver, 'run');
       expect(solver.getModelStatus()).toEqual(10); // Unbounded
       await withFile(async (res) => {
-        await p(solver, 'writeSolution', res.path);
+        await p(solver, 'writeSolution', res.path, 0);
         const sol = await readFile(res.path, 'utf8');
         expect(sol).toContain('Unbounded');
       });

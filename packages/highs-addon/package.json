@@ -1,7 +1,7 @@
 {
-  "name": "highs-solver-addon",
-  "version": "0.1.13",
-  "repository": "github:opvious/highs-solver",
+  "name": "highs-addon",
+  "version": "0.2.0",
+  "repository": "github:opvious/highs.ts",
   "description": "Low-level Node.js binding for the HiGHS optimization solver",
   "keywords": [
     "highs",
@@ -46,7 +46,7 @@
     ]
   },
   "jest": {
-    "coverageDirectory": "../../out/coverage/highs-solver-addon",
+    "coverageDirectory": "../../out/coverage/highs-addon",
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/test/"

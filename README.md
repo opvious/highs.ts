@@ -1,13 +1,15 @@
-# HiGHS solver [![CI](https://github.com/opvious/highs-solver/actions/workflows/ci.yml/badge.svg)](https://github.com/opvious/highs-solver/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/opvious/highs-solver/branch/main/graph/badge.svg?token=yZatY8V1oT)](https://codecov.io/gh/opvious/highs-solver)
+# HiGHS for Node.js [![CI](https://github.com/opvious/highs.ts/actions/workflows/ci.yml/badge.svg)](https://github.com/opvious/highs.ts/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/opvious/highs.ts/branch/main/graph/badge.svg?token=yZatY8V1oT)](https://codecov.io/gh/opvious/highs.ts)
 
 Native Node.js bindings for the [HiGHS optimization solver][highs].
 
 ```typescript
 import * as highs from 'highs-solver';
 
+// Solves an LP model, outputting regular progress updates (gap, ...).
 const solution = await highs.solve('model.lp', {
-  time_limit: 30,
-  mip_rel_gap: 0.05,
+  monitor: highs.solveMonitor().on('progress', console.log),
+  options: {time_limit: 600, mip_rel_gap: 0.05},
+  style: highs.SolutionStyle.PRETTY,
 });
 ```
 
@@ -16,7 +18,7 @@ const solution = await highs.solve('model.lp', {
 The following packages are available:
 
 + [`highs-solver`](/packages/highs-solver), high-level idiomatic TypeScript API
-+ [`highs-solver-addon`](/packages/highs-solver-addon), low-level API mirroring
++ [`highs-addon`](/packages/highs-addon), low-level API mirroring
   the underlying C++ solver
 
 ## Related projects

@@ -329,27 +329,33 @@ Napi::Value Solver::GetSolution(const Napi::CallbackInfo& info) {
 
 class WriteSolutionWorker : public UpdateWorker {
  public:
-  WriteSolutionWorker(Napi::Function& cb, std::shared_ptr<Highs> highs, std::string path)
-  : UpdateWorker(cb, highs, "Write solution"), path_(path) {}
+  WriteSolutionWorker(Napi::Function& cb, std::shared_ptr<Highs> highs, std::string path, SolutionStyle style)
+  : UpdateWorker(cb, highs, "Write solution"), path_(path), style_(style) {}
 
   HighsStatus Update(Highs& highs) override {
-    return highs.writeSolution(this->path_);
+    return highs.writeSolution(this->path_, this->style_);
   }
 
  private:
   std::string path_;
+  SolutionStyle style_;
 };
 
 void Solver::WriteSolution(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   int length = info.Length();
-  if (length != 2 || !info[0].IsString() ||!info[1].IsFunction()) {
-    ThrowTypeError(env, "Expected 2 arguments [string, function]");
+  if (length != 3 || !info[0].IsString() || !info[1].IsNumber() || !info[2].IsFunction()) {
+    ThrowTypeError(env, "Expected 3 arguments [string, number, function]");
     return;
   }
   std::string path = info[0].As<Napi::String>().Utf8Value();
-  Napi::Function cb = info[1].As<Napi::Function>();
-  WriteSolutionWorker* worker = new WriteSolutionWorker(cb, this->highs_, path);
+  int style = info[1].As<Napi::Number>().Int32Value();
+  if (style < 0 || style > SolutionStyle::kSolutionStyleMax) {
+    ThrowError(env, "Unexpected style");
+    return;
+  }
+  Napi::Function cb = info[2].As<Napi::Function>();
+  WriteSolutionWorker* worker = new WriteSolutionWorker(cb, this->highs_, path, (SolutionStyle) style);
   worker->Queue();
 }
 
