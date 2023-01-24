@@ -1,7 +1,7 @@
 import {assert, errorFactories} from '@opvious/stl-errors';
 import {ifPresent} from '@opvious/stl-utils';
 import {writeFile} from 'fs/promises';
-import * as addon from 'highs-solver-addon';
+import * as addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
 import util from 'util';
 
@@ -10,6 +10,7 @@ import {
   Constraint,
   Model,
   Solution,
+  SolutionStyle,
   SparseRow,
   sparseRow,
   Variable,
@@ -162,6 +163,12 @@ export class Solver {
           }
         : undefined,
     };
+  }
+
+  /** Write the current solution to the given path. */
+  async writeSolution(fp: string, style?: SolutionStyle): Promise<void> {
+    this.assertNotSolving();
+    await this.promisified('writeSolution', fp, style ?? SolutionStyle.RAW);
   }
 
   private promisified<M extends keyof addon.Solver>(

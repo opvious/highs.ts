@@ -53,8 +53,16 @@ describe('solve', () => {
     const monitor = sut.solveMonitor().on('progress', () => {
       progressed = true;
     });
-    await sut.solve(resourcePath('queens-15.lp'), monitor);
+    await sut.solve(resourcePath('queens-15.lp'), {monitor});
     expect(progressed).toBe(true);
+  });
+
+  test('outputs styled solution', async () => {
+    const sol = await sut.solve(
+      resourcePath('queens-15.lp'),
+      {style: sut.SolutionStyle.PRETTY}
+    );
+    expect(sol).toContain('V222');
   });
 });
 

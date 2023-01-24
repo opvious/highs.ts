@@ -1,7 +1,10 @@
 import {assert, mergeErrorCodes} from '@opvious/stl-errors';
+import {MarkPresent} from '@opvious/stl-utils';
 import events from 'events';
+import {readFile} from 'fs/promises';
+import * as tmp from 'tmp-promise';
 
-import {commonErrorCodes, Model, Solution} from './common';
+import {commonErrorCodes, Model, Solution, SolutionStyle} from './common';
 import {SolveMonitor} from './monitor';
 import {Solver, solverErrorCodes, SolverOptions} from './solver';
 
@@ -11,6 +14,7 @@ export {
   Objective,
   Solution,
   SolutionStatus,
+  SolutionStyle,
   SolutionValues,
   SparseRow,
   sparseRow,
@@ -19,7 +23,7 @@ export {
 } from './common';
 export {SolveMonitor, solveMonitor, SolveProgress} from './monitor';
 export {Solver, SolverInfo, SolverOptions, SolverStatus} from './solver';
-export {solverVersion} from 'highs-solver-addon';
+export {solverVersion} from 'highs-addon';
 
 /** All error codes produced by this library. */
 export const errorCodes = mergeErrorCodes({
@@ -34,35 +38,40 @@ export const errorCodes = mergeErrorCodes({
  */
 export async function solve(
   model: Model | string,
-  opts?: SolverOptions
+  opts?: SolveOptions
 ): Promise<Solution>;
 export async function solve(
   model: Model | string,
-  monitor: SolveMonitor | undefined,
-  opts?: SolverOptions
-): Promise<Solution>;
+  opts: MarkPresent<SolveOptions, 'style'>
+): Promise<string>;
 export async function solve(
   model: Model | string,
-  arg2?: SolveMonitor | SolverOptions,
-  arg3?: SolverOptions
-): Promise<Solution> {
-  let monitor: SolveMonitor | undefined;
-  let opts: SolverOptions | undefined;
-  if (arg2 instanceof events.EventEmitter || arg3 != null) {
-    monitor = arg2 as any;
-    opts = arg3;
-  } else {
-    opts = arg2 as any;
-  }
-
-  const solver = Solver.create(opts);
+  opts?: SolveOptions
+): Promise<Solution | string> {
+  const solver = Solver.create(opts?.options);
   if (typeof model == 'string') {
     await solver.setModelFromFile(model);
   } else {
     solver.setModel(model);
   }
-  await solver.solve({monitor});
+  await solver.solve({monitor: opts?.monitor});
+  if (opts?.style != null) {
+    return intoFile((fp) => solver.writeSolution(fp, opts?.style));
+  }
   const sol = solver.getSolution();
   assert(sol, 'Missing solution');
   return sol;
+}
+
+export interface SolveOptions {
+  readonly monitor?: SolveMonitor;
+  readonly options?: SolverOptions;
+  readonly style?: SolutionStyle;
+}
+
+function intoFile(fn: (fp: string) => Promise<void>): Promise<string> {
+  return tmp.withFile(async (res) => {
+    await fn(res.path)
+    return readFile(res.path, 'utf8');
+  });
 }

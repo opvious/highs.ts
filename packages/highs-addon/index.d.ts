@@ -25,7 +25,7 @@ export declare class Solver {
   getInfo(): Info;
 
   getSolution(): Solution;
-  writeSolution(fp: string, cb: (err: Error) => void): void;
+  writeSolution(fp: string, style: SolutionStyle, cb: (err: Error) => void): void;
 
   clear(): void;
   clearModel(): void;
@@ -131,3 +131,6 @@ export interface Solution {
   readonly rowValues: Float64Array;
   readonly rowDualValues: Float64Array;
 }
+
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L127
+export type SolutionStyle = number;

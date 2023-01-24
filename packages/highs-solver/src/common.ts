@@ -110,3 +110,12 @@ export interface SolutionValues {
   readonly variables: SparseRow;
   readonly constraints: SparseRow;
 }
+
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L127
+export enum SolutionStyle {
+  RAW = 0,
+  PRETTY,
+  GLPSOL_RAW,
+  GLPSOL_PRETTY,
+  SPARSE,
+}
