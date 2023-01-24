@@ -22,4 +22,13 @@ describe('solver', () => {
       expect(data).toContain('Not Set');
     });
   });
+
+  test('writes empty model', async () => {
+    const solver = sut.Solver.create();
+    await tmp.withFile(async (res) => {
+      await solver.writeModel(res.path);
+      const data = await readFile(res.path, 'utf8');
+      expect(data).toContain('min');
+    }, {postfix: '.lp'});
+  });
 });
