@@ -1,3 +1,5 @@
+import {errorCode, fail} from '@opvious/stl-errors';
+
 import * as sut from '../src/common';
 
 describe('sparse row', () => {
@@ -19,5 +21,17 @@ describe('sparse row', () => {
     ],
   ])('(%j, %j) => %j', (vals, ixs, want) => {
     expect(sut.sparseRow(vals, ixs)).toEqual(want);
+  });
+
+  test('unbalanced', async () => {
+    try {
+      sut.assertBalanced({
+        indices: new Int32Array([1, 2]),
+        values: new Float64Array([2.5]),
+      });
+      fail();
+    } catch (err) {
+      expect(errorCode(err)).toEqual(sut.commonErrorCodes.UnbalancedSparseRow);
+    }
   });
 });

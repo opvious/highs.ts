@@ -1,4 +1,4 @@
-import {assert} from '@opvious/stl-errors';
+import {assert, errorFactories} from '@opvious/stl-errors';
 import {ifPresent} from '@opvious/stl-utils';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-solver-addon';
@@ -6,6 +6,7 @@ import * as tmp from 'tmp-promise';
 import util from 'util';
 
 import {
+  assertBalanced,
   Constraint,
   Model,
   Solution,
@@ -14,6 +15,24 @@ import {
   Variable,
 } from './common';
 import {SolveMonitor, SolveTracker} from './monitor';
+
+const [errors, codes] = errorFactories({
+  definitions: {
+    solveInProgress: 'No mutations may be performed while a solve is running',
+    solveNotOptimal: (solver: Solver, cause?: unknown) => ({
+      message: `Solve ended with status ${SolverStatus[solver.getStatus()]}`,
+      tags: {
+        solution: solver.getSolution(),
+        solver,
+        status: solver.getStatus(),
+      },
+      cause,
+    }),
+  },
+  prefix: 'ERR_HIGHS_',
+});
+
+export const solverErrorCodes = codes;
 
 export class Solver {
   private solving = false;
@@ -28,7 +47,7 @@ export class Solver {
 
   /** Merges options with existing ones. */
   updateOptions(opts: SolverOptions): void {
-    assert(!this.solving, 'Solve in progress');
+    this.assertNotSolving();
     for (const [name, val] of Object.entries(opts)) {
       if (val != null) {
         this.delegate.setOption(name, val);
@@ -36,7 +55,9 @@ export class Solver {
     }
   }
 
+  /** Sets the model to be solved. */
   setModel(model: Model): void {
+    this.assertNotSolving();
     const {objective: obj, constraints, variables} = model;
     const width = variables.length;
     this.delegate.passModel({
@@ -57,21 +78,23 @@ export class Solver {
   }
 
   /**
-   * Sets the solved model from a file stored on disk. Any format accepted by
-   * HiGHS is permissible (e.g. `.lp,` `.mps`).
+   * Sets the model to be solved from a file stored on disk. Any format accepted
+   * by HiGHS is permissible (e.g. `.lp,` `.mps`).
    */
   async setModelFromFile(fp: string): Promise<void> {
-    assert(!this.solving, 'Solve in progress');
+    this.assertNotSolving();
     return this.promisified('readModel', fp);
   }
 
   /**
-   * Runs the solver using the current options. No mutating operations may be
-   * performed on the solver until the returned promise is resolved (i.e. the
-   * solve ends).
+   * Runs the solver on the last set model using the current options. No
+   * mutating operations may be performed on the solver until the returned
+   * promise is resolved (i.e. the solve ends).
+   *
+   * This method will throw if the solver did not find an optimal solution.
    */
   async solve(opts?: {readonly monitor?: SolveMonitor}): Promise<void> {
-    assert(!this.solving, 'Solve in progress');
+    this.assertNotSolving();
 
     let logPath = this.delegate.getOption('log_file');
     let tempLog: tmp.FileResult | undefined;
@@ -91,6 +114,8 @@ export class Solver {
     this.solving = true;
     try {
       await this.promisified('run');
+    } catch (cause) {
+      throw errors.solveNotOptimal(this, cause);
     } finally {
       tracker?.shutdown();
       if (tempLog) {
@@ -99,20 +124,27 @@ export class Solver {
       }
       this.solving = false;
     }
+    if (this.getStatus() !== SolverStatus.OPTIMAL) {
+      throw errors.solveNotOptimal(this);
+    }
   }
 
+  /** Returns true if the solver is currently solving the model. */
   isSolving(): boolean {
     return this.solving;
   }
 
+  /** Returns the current solver status, set from the last solve. */
   getStatus(): SolverStatus {
     return asSolverStatus(this.delegate.getModelStatus());
   }
 
+  /** Returns the current solver info, set from the last solve. */
   getInfo(): SolverInfo {
     return this.delegate.getInfo();
   }
 
+  /** Returns the current solution, set from the last solve. */
   getSolution(): Solution | undefined {
     const sol = this.delegate.getSolution();
     if (!sol.isValueValid) {
@@ -143,19 +175,15 @@ export class Solver {
     const {delegate} = this;
     return util.promisify(delegate[method]).bind(delegate)(...args);
   }
+
+  private assertNotSolving(): void {
+    if (this.solving) {
+      throw errors.solveInProgress();
+    }
+  }
 }
 
 export type SolverInfo = addon.Info;
-
-function assertBalanced(row: SparseRow): void {
-  const {indices, values} = row;
-  assert(
-    indices.length === values.length,
-    'Mismatched row: len(%o) != len(%o)',
-    indices,
-    values
-  );
-}
 
 function densifyRow(row: SparseRow, size: number): Float64Array {
   const arr = new Float64Array(size);

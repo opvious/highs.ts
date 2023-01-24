@@ -1,3 +1,17 @@
+import {errorFactories} from '@opvious/stl-errors';
+
+const [errors, codes] = errorFactories({
+  definitions: {
+    unbalancedSparseRow: (row: SparseRow) => ({
+      message: 'A sparse row has mismatched indices and values',
+      tags: {row},
+    }),
+  },
+  prefix: 'ERR_HIGHS_',
+});
+
+export const commonErrorCodes = codes;
+
 export enum SolutionStatus {
   NO_SOLUTION = 0,
   INFEASIBLE,
@@ -78,6 +92,13 @@ export function sparseRow(
     ix++;
   }
   return {indices: vixs, values: vals};
+}
+
+export function assertBalanced(row: SparseRow): void {
+  const {indices, values} = row;
+  if (indices.length !== values.length) {
+    throw errors.unbalancedSparseRow(row);
+  }
 }
 
 export interface Solution {
