@@ -4,8 +4,10 @@ Node.js binding for the [HiGHS optimization solver][highs].
 
 ## Features
 
-+ Native solver performance
-+ Asynchronous type-safe API
++ Native solver performance, equivalent to running the C++ HiGHS executable
+  directly
++ Non-blocking solves, optionally emitting progress updates (optimality gap,
+  LP iterations, ...)
 
 ## Installation
 

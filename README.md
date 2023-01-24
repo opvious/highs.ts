@@ -18,13 +18,16 @@ const solution = await highs.solve('model.lp', {
 The following packages are available:
 
 + [`highs-solver`](/packages/highs-solver), high-level idiomatic TypeScript API
-+ [`highs-addon`](/packages/highs-addon), low-level API mirroring
-  the underlying C++ solver
++ [`highs-addon`](/packages/highs-addon), low-level API mirroring the underlying
+  C++ solver's
 
 ## Related projects
 
++ https://github.com/lovasoa/highs-js, WebAssembly solver port. Both projects
+  are complementary: `highs-js` runs in browsers and is well-suited for Web
+  Workers; `highs-solver` provides non-blocking native performance on Node.js
+  (~3x faster).
 + https://github.com/ERGO-Code/HiGHS, the underlying C++ HiGHS optimization
-  solver
-+ https://github.com/lovasoa/highs-js, WebAssembly solver port
+  solver which both this repository and `highs-js` bind to.
 
 [highs]: https://github.com/ERGO-COde/HiGHS
