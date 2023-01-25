@@ -6,7 +6,7 @@
   "author": "Opvious Engineering <oss@opvious.io>",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "pnpm -r -F !. run clean && rm -rf docs node_modules out",
+    "clean": "pnpm -r -F !. run clean && rm -rf node_modules out",
     "fix": "prettier --write 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts' && pnpm run lint --fix",
     "lint": "eslint 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts'",
     "test": "pnpm -r run test --coverage"
