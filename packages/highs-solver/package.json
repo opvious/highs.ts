@@ -1,6 +1,6 @@
 {
   "name": "highs-solver",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repository": "github:opvious/highs.ts",
   "description": "Node.js binding for the HiGHS optimization solver",
   "keywords": [
@@ -17,7 +17,7 @@
   "files": [
     "lib/"
   ],
-  "main": "./lib",
+  "main": "lib/",
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules",
@@ -26,8 +26,8 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@opvious/stl-errors": "^0.14.34",
-    "@opvious/stl-utils": "^0.14.34",
+    "@opvious/stl-errors": "^0.14.44",
+    "@opvious/stl-utils": "^0.14.44",
     "highs-addon": "workspace:*",
     "tail": "^2.2.6",
     "tmp-promise": "^3.0.3"
