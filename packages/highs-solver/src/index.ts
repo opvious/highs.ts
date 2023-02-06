@@ -62,9 +62,18 @@ export async function solve(
   return sol;
 }
 
+/** Solving options. */
 export interface SolveOptions {
+  /** Listening hooks for solver events. */
   readonly monitor?: SolveMonitor;
+
+  /** Underlying solver creation options. */
   readonly options?: SolverOptions;
+
+  /**
+   * Solution formatting style. If omitted, the solution will be returned in
+   * its in-memory format.
+   */
   readonly style?: SolutionStyle;
 }
 

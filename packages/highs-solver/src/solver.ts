@@ -35,14 +35,18 @@ const [errors, codes] = errorFactories({
 
 export const solverErrorCodes = codes;
 
+/** Higher level wrapping class around the HiGHS addon. */
 export class Solver {
   private solving = false;
   private constructor(private readonly delegate: addon.Solver) {}
 
-  /** Creates a new solver. Console logging is disabled by default. */
+  /**
+   * Creates a new solver. Console logging (`log_to_console` option) is disabled
+   * by default.
+   */
   static create(opts?: SolverOptions): Solver {
     const solver = new Solver(new addon.Solver());
-    solver.updateOptions({...opts, log_to_console: false});
+    solver.updateOptions({log_to_console: false, ...opts});
     return solver;
   }
 
@@ -276,6 +280,6 @@ export enum SolverStatus {
 }
 
 function asSolverStatus(num: number): SolverStatus {
-  assert(SolverStatus[num], 'Invalid status: %s', num);
+  assert(SolverStatus[num] != null, 'Invalid status: %s', num);
   return num as SolverStatus;
 }
