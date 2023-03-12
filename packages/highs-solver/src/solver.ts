@@ -1,4 +1,5 @@
 import {assert, errorFactories} from '@opvious/stl-errors';
+import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
 import {ifPresent} from '@opvious/stl-utils';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-addon';
@@ -9,6 +10,7 @@ import {
   assertBalanced,
   Constraint,
   Model,
+  packageInfo,
   Solution,
   SolutionStyle,
   SparseRow,
@@ -38,15 +40,19 @@ export const solverErrorCodes = codes;
 /** Higher level wrapping class around the HiGHS addon. */
 export class Solver {
   private solving = false;
-  private constructor(private readonly delegate: addon.Solver) {}
+  private constructor(
+    private readonly delegate: addon.Solver,
+    private readonly telemetry: Telemetry
+  ) {}
 
   /**
    * Creates a new solver. Console logging (`log_to_console` option) is disabled
    * by default.
    */
-  static create(opts?: SolverOptions): Solver {
-    const solver = new Solver(new addon.Solver());
-    solver.updateOptions({log_to_console: false, ...opts});
+  static create(opts?: SolverCreationOptions): Solver {
+    const tel = opts?.telemetry?.via(packageInfo) ?? noopTelemetry();
+    const solver = new Solver(new addon.Solver(), tel);
+    solver.updateOptions({log_to_console: false, ...opts?.options});
     return solver;
   }
 
@@ -63,6 +69,7 @@ export class Solver {
   /** Sets the model to be solved. */
   setModel(model: Model): void {
     this.assertNotSolving();
+    this.telemetry.logger.debug('Setting inline model.');
     const {objective: obj, constraints, variables} = model;
     const width = variables.length;
     this.delegate.passModel({
@@ -88,6 +95,7 @@ export class Solver {
    */
   async setModelFromFile(fp: string): Promise<void> {
     this.assertNotSolving();
+    this.telemetry.logger.debug('Setting model from %j.', fp);
     return this.promisified('readModel', fp);
   }
 
@@ -108,6 +116,8 @@ export class Solver {
    */
   async solve(opts?: {readonly monitor?: SolveMonitor}): Promise<void> {
     this.assertNotSolving();
+    const {logger} = this.telemetry;
+    logger.debug('Starting solve...');
 
     let logPath = this.delegate.getOption('log_file');
     let tempLog: tmp.FileResult | undefined;
@@ -140,6 +150,7 @@ export class Solver {
     if (this.getStatus() !== SolverStatus.OPTIMAL) {
       throw errors.solveNotOptimal(this);
     }
+    logger.info('Solver found optimal solution.');
   }
 
   /** Returns true if the solver is currently solving the model. */
@@ -180,6 +191,7 @@ export class Solver {
   /** Write the current solution to the given path. */
   async writeSolution(fp: string, style?: SolutionStyle): Promise<void> {
     this.assertNotSolving();
+    this.telemetry.logger.debug('Writing solution to %j...', fp);
     await this.promisified('writeSolution', fp, style ?? SolutionStyle.RAW);
   }
 
@@ -200,6 +212,17 @@ export class Solver {
       throw errors.solveInProgress();
     }
   }
+}
+
+export interface SolverCreationOptions {
+  /**
+   * Initial options for the underlying solver. These can be updated later via
+   * the `updateOptions` method.
+   */
+  readonly options?: SolverOptions;
+
+  /** Solver telemetry instance, defaults to a no-op implementation. */
+  readonly telemetry?: Telemetry;
 }
 
 export type SolverInfo = addon.Info;
