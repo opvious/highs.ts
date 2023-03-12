@@ -5,7 +5,7 @@ import * as tmp from 'tmp-promise';
 
 import {commonErrorCodes, Model, Solution, SolutionStyle} from './common';
 import {SolveMonitor} from './monitor';
-import {Solver, solverErrorCodes, SolverOptions} from './solver';
+import {Solver, SolverCreationOptions,solverErrorCodes} from './solver';
 
 export {
   Constraint,
@@ -21,7 +21,13 @@ export {
   VariableType,
 } from './common';
 export {SolveMonitor, solveMonitor, SolveProgress} from './monitor';
-export {Solver, SolverInfo, SolverOptions, SolverStatus} from './solver';
+export {
+  Solver,
+  SolverCreationOptions,
+  SolverInfo,
+  SolverOptions,
+  SolverStatus,
+} from './solver';
 export {solverVersion} from 'highs-addon';
 
 /** All error codes produced by this library. */
@@ -68,7 +74,7 @@ export interface SolveOptions {
   readonly monitor?: SolveMonitor;
 
   /** Underlying solver creation options. */
-  readonly options?: SolverOptions;
+  readonly options?: SolverCreationOptions;
 
   /**
    * Solution formatting style. If omitted, the solution will be returned in

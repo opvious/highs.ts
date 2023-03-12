@@ -1,5 +1,5 @@
 import {assert, errorFactories} from '@opvious/stl-errors';
-import {noopTelemetry,Telemetry} from '@opvious/stl-telemetry';
+import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
 import {ifPresent} from '@opvious/stl-utils';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-addon';
@@ -49,10 +49,7 @@ export class Solver {
    * Creates a new solver. Console logging (`log_to_console` option) is disabled
    * by default.
    */
-  static create(opts?: {
-    readonly options?: SolverOptions;
-    readonly telemetry?: Telemetry;
-  }): Solver {
+  static create(opts?: SolverCreationOptions): Solver {
     const tel = opts?.telemetry?.via(packageInfo) ?? noopTelemetry();
     const solver = new Solver(new addon.Solver(), tel);
     solver.updateOptions({log_to_console: false, ...opts?.options});
@@ -215,6 +212,17 @@ export class Solver {
       throw errors.solveInProgress();
     }
   }
+}
+
+export interface SolverCreationOptions {
+  /**
+   * Initial options for the underlying solver. These can be updated later via
+   * the `updateOptions` method.
+   */
+  readonly options?: SolverOptions;
+
+  /** Solver telemetry instance, defaults to a no-op implementation. */
+  readonly telemetry?: Telemetry;
 }
 
 export type SolverInfo = addon.Info;
