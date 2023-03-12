@@ -1,4 +1,7 @@
 import {errorFactories} from '@opvious/stl-errors';
+import {enclosingPackageInfo} from '@opvious/stl-telemetry';
+
+export const packageInfo = enclosingPackageInfo(__dirname);
 
 const [errors, codes] = errorFactories({
   definitions: {
