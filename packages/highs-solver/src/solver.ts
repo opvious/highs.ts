@@ -60,11 +60,11 @@ export class Solver {
   setModel(model: SolverModel): void {
     this.assertNotSolving();
     this.telemetry.logger.debug('Setting inline model.');
-    const width = model.columnTypes.length;
+    const width = model.columnLowerBounds.length;
     const height = model.rowLowerBounds.length;
     assert(
-      model.columnLowerBounds.length === width &&
-        model.columnUpperBounds.length === width &&
+      model.columnUpperBounds.length === width &&
+        (model.columnTypes?.length ?? width) === width &&
         model.objectiveLinearWeights.length === width,
       'Inconsistent width'
     );
@@ -180,7 +180,10 @@ export class Solver {
     if (!sol.isValueValid) {
       return undefined;
     }
+    const info = this.delegate.getInfo();
     return {
+      objectiveValue: info.objective_function_value,
+      relativeGap: info.mip_node_count > 0 ? info.mip_gap : undefined,
       primal: {rows: sol.rowValues, columns: sol.columnValues},
       dual: sol.isDualValid
         ? {rows: sol.rowDualValues, columns: sol.columnDualValues}
@@ -233,6 +236,8 @@ export type SolverInfo = addon.Info;
 export type SolverModel = Omit<addon.Model, 'columnCount' | 'rowCount'>;
 
 export interface SolverSolution {
+  readonly objectiveValue: number;
+  readonly relativeGap?: number;
   readonly primal: SolverSolutionValues;
   readonly dual?: SolverSolutionValues;
 }

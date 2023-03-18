@@ -69,8 +69,11 @@ export interface Model {
   /** Number of variables. */
   readonly columnCount: number;
 
-  /** Integrality of variables, values must be one of `ColumnType`'s. */
-  readonly columnTypes: Int32Array;
+  /**
+   * Integrality of variables, values must be one of `ColumnType`'s. Can
+   * (should) be omitted if all variables are continuous.
+   */
+  readonly columnTypes?: Int32Array;
 
   /** Variable bounds. */
   readonly columnLowerBounds: Float64Array;
@@ -95,7 +98,12 @@ export interface Model {
   /** Objective weights. */
   readonly objectiveLinearWeights: Float64Array;
 
-  /** Only top-left half (assuming row-wise) need be present. */
+  /**
+   * Only top-right half (assuming row-wise) entries need be present. The matrix
+   * will be assumed symmetric and entries in the lower-left half will be
+   * ignored. Note also that the effective objective weight is 1/2 of the values
+   * in this matrix.
+   */
   readonly objectiveQuadraticWeights?: Matrix;
 }
 
@@ -124,6 +132,7 @@ export interface Info {
   readonly objective_function_value: number;
   readonly mip_gap: number;
   readonly mip_dual_bound: number;
+  readonly mip_node_count: number;
   readonly [name: string]: number;
 }
 
