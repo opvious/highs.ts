@@ -302,7 +302,7 @@ Napi::Value Solver::GetModelStatus(const Napi::CallbackInfo& info) {
     ThrowTypeError(env, "Expected 0 arguments");
     return env.Undefined();
   }
-  return Napi::Number::New(env, (double) this->highs_->getModelStatus());
+  return Napi::Number::New(env, (int) this->highs_->getModelStatus());
 }
 
 Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {

@@ -1,7 +1,7 @@
 import {errorCode, fail} from '@opvious/stl-errors';
-import path from 'path';
 
 import * as sut from '../src';
+import {resourcePath} from './helpers';
 
 describe('solve', () => {
   test('handles inline model', async () => {
@@ -44,7 +44,7 @@ describe('solve', () => {
       await sut.solve(resourcePath('unbounded.mps'));
       fail();
     } catch (err) {
-      expect(errorCode(err)).toEqual(sut.errorCodes.SolveNotOptimal);
+      expect(errorCode(err)).toEqual(sut.errorCodes.SolveNonOptimal);
     }
   });
 
@@ -64,7 +64,3 @@ describe('solve', () => {
     expect(sol).toContain('V222');
   });
 });
-
-function resourcePath(name: string): string {
-  return path.join(__dirname, 'resources', name);
-}

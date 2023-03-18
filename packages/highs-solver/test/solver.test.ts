@@ -1,7 +1,9 @@
+import {fail} from '@opvious/stl-errors';
 import {readFile} from 'fs/promises';
 import * as tmp from 'tmp-promise';
 
 import * as sut from '../src/solver';
+import {resourcePath} from './helpers';
 
 describe('solver', () => {
   test('returns unset status', () => {
@@ -33,5 +35,26 @@ describe('solver', () => {
       },
       {postfix: '.lp'}
     );
+  });
+
+  test('solves unbounded problem', async () => {
+    const solver = sut.Solver.create();
+    await solver.setModelFromFile(resourcePath('unbounded.mps'));
+    try {
+      await solver.solve();
+      fail();
+    } catch (err) {
+      expect(err).toMatchObject({
+        code: sut.solverErrorCodes.SolveNonOptimal,
+        tags: {status: sut.SolverStatus.UNBOUNDED},
+      });
+    }
+  });
+
+  test('allows non-optimal statuses', async () => {
+    const solver = sut.Solver.create();
+    await solver.setModelFromFile(resourcePath('unbounded.mps'));
+    await solver.solve({allowNonOptimal: true});
+    expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
   });
 });
