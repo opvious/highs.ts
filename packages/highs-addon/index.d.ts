@@ -69,48 +69,51 @@ export interface Model {
   /** Number of variables. */
   readonly columnCount: number;
 
-  /** Number of constraints. */
-  readonly rowCount: number;
-
-  /** Data matrix. */
-  readonly matrix: SparseMatrix;
-
-  /** Objective sense. */
-  readonly isMaximization: boolean;
-
-  /** Objective offset. */
-  readonly offset: number;
-
-  /** Objective weights. */
-  readonly costs: Float64Array;
+  /** Integrality of variables, values must be one of `ColumnType`'s. */
+  readonly columnTypes: Int32Array;
 
   /** Variable bounds. */
   readonly columnLowerBounds: Float64Array;
   readonly columnUpperBounds: Float64Array;
 
+  /** Number of constraints. */
+  readonly rowCount: number;
+
   /** Constraint bounds. */
   readonly rowLowerBounds: Float64Array;
   readonly rowUpperBounds: Float64Array;
 
-  /** Integrality of variables, values must be one of VariableType's. */
-  readonly integrality: Int32Array;
+  /** Row-oriented weight matrix. */
+  readonly weights: Matrix;
 
-  /** Must be column oriented if present. */
-  readonly hessian?: SparseMatrix;
+  /** Objective sense. */
+  readonly isMaximization: boolean;
+
+  /** Objective offset. */
+  readonly objectiveOffset?: number;
+
+  /** Objective weights. */
+  readonly objectiveLinearWeights: Float64Array;
+
+  /** Only top-left half (assuming row-wise) need be present. */
+  readonly objectiveQuadraticWeights?: Matrix;
 }
 
-export interface SparseMatrix {
-  readonly isColumnOriented: boolean;
-  readonly starts: Int32Array;
+export interface Matrix {
+  readonly offsets: Int32Array;
   readonly indices: Int32Array;
   readonly values: Float64Array;
 }
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L87
-export type VariableType = number;
-
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L162
-export type ModelStatus = number;
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HStruct.h#L30
+export interface Solution {
+  readonly isValueValid: boolean;
+  readonly isDualValid: boolean;
+  readonly columnValues: Float64Array;
+  readonly columnDualValues: Float64Array;
+  readonly rowValues: Float64Array;
+  readonly rowDualValues: Float64Array;
+}
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsInfo.h#L152
 export interface Info {
@@ -124,18 +127,18 @@ export interface Info {
   readonly [name: string]: number;
 }
 
+// Enums placeholders (not included here since this is a declaration file only)
+
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L87
+// 0 = continuous, 1 = integer, ...
+export type ColumnType = number;
+
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L162
+export type ModelStatus = number;
+
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L112
 // 0 = no solution, 1 = infeasible, 2 = feasible
 export type SolutionStatus = number;
-
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HStruct.h#L30
-export interface Solution {
-  readonly isValueValid: boolean;
-  readonly isDualValid: boolean;
-  readonly columnValues: Float64Array;
-  readonly columnDualValues: Float64Array;
-  readonly rowValues: Float64Array;
-  readonly rowDualValues: Float64Array;
-}
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L127
 export type SolutionStyle = number;

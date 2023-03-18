@@ -6,37 +6,32 @@ import {resourcePath} from './helpers';
 describe('solve', () => {
   test('handles inline model', async () => {
     const sol = await sut.solve({
-      objective: {
-        isMaximization: true,
-        weights: sut.sparseRow([1, 2, 4, 1]),
-        offset: 10,
+      isMaximization: true,
+      objectiveOffset: 10,
+      objectiveLinearWeights: new Float64Array([1, 2, 4, 1]),
+      columnTypes: new Int32Array(4),
+      columnLowerBounds: new Float64Array([0, -Infinity, -Infinity, 2]),
+      columnUpperBounds: new Float64Array([40, Infinity, Infinity, 3]),
+      rowLowerBounds: new Float64Array([-Infinity, -Infinity, 0]),
+      rowUpperBounds: new Float64Array([20, 30, 0]),
+      weights: {
+        offsets: new Int32Array([0, 4, 7]),
+        indices: new Int32Array([0, 1, 2, 3, 0, 1, 2, 1, 3]),
+        values: new Float64Array([-1, 1, 1, 10, 1, -4, 1, 1, -0.5]),
       },
-      variables: [
-        {type: sut.VariableType.CONTINUOUS, lowerBound: 0, upperBound: 40},
-        {type: sut.VariableType.CONTINUOUS},
-        {type: sut.VariableType.CONTINUOUS},
-        {type: sut.VariableType.CONTINUOUS, lowerBound: 2, upperBound: 3},
-      ],
-      constraints: [
-        {weights: sut.sparseRow([-1, 1, 1, 10]), upperBound: 20},
-        {weights: sut.sparseRow([1, -4, 1]), upperBound: 30},
-        {
-          weights: sut.sparseRow([1, -0.5], [1, 3]),
-          lowerBound: 0,
-          upperBound: 0,
+    });
+    expect(jsonify(sol)).toEqual(
+      jsonify({
+        primal: {
+          columns: new Float64Array([17.5, 1, 16.5, 2]),
+          rows: new Float64Array([20, 30, 0]),
         },
-      ],
-    });
-    expect(sol).toEqual({
-      primal: {
-        variables: sut.sparseRow([17.5, 1, 16.5, 2]),
-        constraints: sut.sparseRow([20, 30]),
-      },
-      dual: {
-        variables: sut.sparseRow([-8.75], [3]),
-        constraints: sut.sparseRow([1.5, 2.5, 10.5]),
-      },
-    });
+        dual: {
+          columns: new Float64Array([0, 0, 0, -8.75]),
+          rows: new Float64Array([1.5, 2.5, 10.5]),
+        },
+      })
+    );
   });
 
   test('handles unbounded model from file', async () => {
@@ -64,3 +59,7 @@ describe('solve', () => {
     expect(sol).toContain('V222');
   });
 });
+
+function jsonify(arg: unknown): unknown {
+  return JSON.parse(JSON.stringify(arg));
+}

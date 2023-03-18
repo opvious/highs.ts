@@ -143,11 +143,6 @@ class UpdateWorker : public Napi::AsyncWorker {
   std::string name_;
 };
 
-MatrixFormat ToMatrixFormat(const Napi::Value& val) {
-  bool b = val.As<Napi::Boolean>().Value();
-  return b ? MatrixFormat::kColwise : MatrixFormat::kRowwise;
-}
-
 ObjSense ToObjSense(const Napi::Value& val) {
   bool b = val.As<Napi::Boolean>().Value();
   return b ? ObjSense::kMaximize : ObjSense::kMinimize;
@@ -162,58 +157,57 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
   }
   Napi::Object obj = info[0].As<Napi::Object>();
 
-  Napi::Value matrixVal = obj.Get("matrix");
+  Napi::Value matrixVal = obj.Get("weights");
   if (!matrixVal.IsObject()) {
     ThrowTypeError(env, "Invalid matrix");
     return;
   }
   Napi::Object matrixObj = matrixVal.As<Napi::Object>();
-  Napi::Int32Array matrixStarts = matrixObj.Get("starts").As<Napi::Int32Array>();
+  Napi::Int32Array matrixOffsets = matrixObj.Get("offsets").As<Napi::Int32Array>();
   Napi::Float64Array matrixVals = matrixObj.Get("values").As<Napi::Float64Array>();
 
-  Napi::Value hessianVal = obj.Get("hessian");
+  Napi::Value hessianVal = obj.Get("objectiveQuadraticWeights");
   HighsInt hessianNonZeroCount = 0;
-  HighsInt *hessianStarts = nullptr;
+  HighsInt *hessianOffsets = nullptr;
   HighsInt *hessianIndices = nullptr;
   double *hessianValues = nullptr;
   if (!hessianVal.IsUndefined()) {
     if (!hessianVal.IsObject()) {
-      ThrowTypeError(env, "Invalid hessian");
+      ThrowTypeError(env, "Invalid objective quadratic weights");
       return;
     }
     Napi::Object hessianObj = hessianVal.As<Napi::Object>();
-    if (ToMatrixFormat(hessianObj.Get("isColumnOriented")) != MatrixFormat::kColwise) {
-      ThrowTypeError(env, "Hessian must be column oriented");
-      return;
-    }
     Napi::Float64Array vals = hessianObj.Get("values").As<Napi::Float64Array>();
     hessianNonZeroCount = vals.ElementLength();
-    hessianStarts = hessianObj.Get("starts").As<Napi::Int32Array>().Data();
+    hessianOffsets = hessianObj.Get("offsets").As<Napi::Int32Array>().Data();
     hessianIndices = hessianObj.Get("indices").As<Napi::Int32Array>().Data();
     hessianValues = vals.Data();
   }
+
+  Napi::Value offsetVal = obj.Get("objectiveOffset");
+  double offset = offsetVal.IsUndefined() ? 0 : offsetVal.As<Napi::Number>().DoubleValue();
 
   HighsStatus status = this->highs_->passModel(
     obj.Get("columnCount").As<Napi::Number>().Int64Value(),
     obj.Get("rowCount").As<Napi::Number>().Int64Value(),
     matrixVals.ElementLength(),
     hessianNonZeroCount,
-    (HighsInt) ToMatrixFormat(matrixObj.Get("isColumnOriented")),
+    (HighsInt) MatrixFormat::kRowwise,
     (HighsInt) HessianFormat::kTriangular,
     (HighsInt) ToObjSense(obj.Get("isMaximization")),
-    obj.Get("offset").As<Napi::Number>().DoubleValue(),
-    obj.Get("costs").As<Napi::Float64Array>().Data(),
+    offset,
+    obj.Get("objectiveLinearWeights").As<Napi::Float64Array>().Data(),
     obj.Get("columnLowerBounds").As<Napi::Float64Array>().Data(),
     obj.Get("columnUpperBounds").As<Napi::Float64Array>().Data(),
     obj.Get("rowLowerBounds").As<Napi::Float64Array>().Data(),
     obj.Get("rowUpperBounds").As<Napi::Float64Array>().Data(),
-    matrixStarts.Data(),
+    matrixOffsets.Data(),
     matrixObj.Get("indices").As<Napi::Int32Array>().Data(),
     matrixVals.Data(),
-    hessianStarts,
+    hessianOffsets,
     hessianIndices,
     hessianValues,
-    obj.Get("integrality").As<Napi::Int32Array>().Data()
+    obj.Get("columnTypes").As<Napi::Int32Array>().Data()
   );
   if (status != HighsStatus::kOk) {
     ThrowError(env, "Pass model failed");

@@ -1,40 +1,34 @@
-import {assert, mergeErrorCodes} from '@opvious/stl-errors';
+import {assert} from '@opvious/stl-errors';
 import {MarkPresent} from '@opvious/stl-utils';
 import {readFile} from 'fs/promises';
+import {SolutionStyle} from 'highs-addon';
 import * as tmp from 'tmp-promise';
 
-import {commonErrorCodes, Model, Solution, SolutionStyle} from './common';
 import {SolveMonitor} from './monitor';
-import {Solver, SolverCreationOptions, solverErrorCodes} from './solver';
+import {
+  Solver,
+  SolverCreationOptions,
+  solverErrorCodes,
+  SolverModel,
+  SolverSolution,
+} from './solver';
 
-export {
-  Constraint,
-  Model,
-  Objective,
-  Solution,
-  SolutionStatus,
-  SolutionStyle,
-  SolutionValues,
-  SparseRow,
-  sparseRow,
-  Variable,
-  VariableType,
-} from './common';
+export {ColumnType, SolutionStatus, SolutionStyle} from './common';
 export {SolveMonitor, solveMonitor, SolveProgress} from './monitor';
 export {
   Solver,
   SolverCreationOptions,
   SolverInfo,
+  SolverModel,
   SolverOptions,
+  SolverSolution,
+  SolverSolutionValues,
   SolverStatus,
 } from './solver';
-export {solverVersion} from 'highs-addon';
+export {Matrix, OptionValue, solverVersion} from 'highs-addon';
 
 /** All error codes produced by this library. */
-export const errorCodes = mergeErrorCodes({
-  ...commonErrorCodes,
-  ...solverErrorCodes,
-});
+export const errorCodes = solverErrorCodes;
 
 /**
  * Solves an optimization problem asynchronously. The model can be specified
@@ -42,17 +36,17 @@ export const errorCodes = mergeErrorCodes({
  * will throw an error if the solution is not optimal.
  */
 export async function solve(
-  model: Model | string,
+  model: SolverModel | string,
   opts?: SolveOptions
-): Promise<Solution>;
+): Promise<SolverSolution>;
 export async function solve(
-  model: Model | string,
+  model: SolverModel | string,
   opts: MarkPresent<SolveOptions, 'style'>
 ): Promise<string>;
 export async function solve(
-  model: Model | string,
+  model: SolverModel | string,
   opts?: SolveOptions
-): Promise<Solution | string> {
+): Promise<SolverSolution | string> {
   const solver = Solver.create(opts?.options);
   if (typeof model == 'string') {
     await solver.setModelFromFile(model);
