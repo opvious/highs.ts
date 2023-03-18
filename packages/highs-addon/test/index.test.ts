@@ -44,19 +44,17 @@ describe('solver', () => {
         columnCount: 1,
         rowCount: 1,
         isMaximization: true,
-        offset: 0,
+        columnTypes: new Int32Array(1),
         columnLowerBounds: new Float64Array([0]),
         columnUpperBounds: new Float64Array([2]),
         rowLowerBounds: new Float64Array([0]),
         rowUpperBounds: new Float64Array([1]),
-        costs: new Float64Array([1]),
-        matrix: {
-          isColumnOriented: false,
-          starts: new Int32Array([0]),
+        objectiveLinearWeights: new Float64Array([1]),
+        weights: {
+          offsets: new Int32Array([0]),
           indices: new Int32Array([0]),
           values: new Float64Array([1]),
         },
-        integrality: new Int32Array([]),
       });
       await p(solver, 'run');
       expect(solver.getModelStatus()).toEqual(7); // Optimal
