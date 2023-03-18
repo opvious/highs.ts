@@ -64,7 +64,8 @@ export class Solver {
     const height = model.rowLowerBounds.length;
     assert(
       model.columnLowerBounds.length === width &&
-        model.columnUpperBounds.length === width,
+        model.columnUpperBounds.length === width &&
+        model.objectiveLinearWeights.length === width,
       'Inconsistent width'
     );
     assert(
