@@ -1,6 +1,6 @@
 {
   "name": "highs-solver",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "repository": "github:opvious/highs.ts",
   "description": "Node.js binding for the HiGHS optimization solver",
   "keywords": [
@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules",
+    "fix": "prettier --write",
     "prepare": "pnpm run build",
     "test": "jest",
     "watch": "tsc -b -w src test"
