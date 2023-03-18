@@ -23,11 +23,7 @@ const [errors, codes] = errorFactories({
   definitions: {
     solveFailed: (solver: Solver, cause: unknown) => ({
       message: `Solve failed with status ${currentStatusName(solver)}`,
-      tags: {
-        solution: solver.getSolution(),
-        solver,
-        status: solver.getStatus(),
-      },
+      tags: {solver, status: solver.getStatus()},
       cause,
     }),
     solveInProgress: 'No mutations may be performed while a solve is running',
@@ -100,8 +96,11 @@ export class Solver {
    */
   async setModelFromFile(fp: string): Promise<void> {
     this.assertNotSolving();
-    this.telemetry.logger.debug('Setting model from %j.', fp);
-    return this.promisified('readModel', fp);
+    const {telemetry: tel} = this;
+    tel.logger.debug('Setting model from %j...', fp);
+    await tel.withActiveSpan({name: 'HiGHS read model file'}, () =>
+      this.promisified('readModel', fp)
+    );
   }
 
   /**
@@ -109,7 +108,11 @@ export class Solver {
    * extensions (`.lp`, `.mps`, ...).
    */
   async writeModel(fp: string): Promise<void> {
-    await this.promisified('writeModel', fp);
+    const {telemetry: tel} = this;
+    tel.logger.debug('Wring model to %j...', fp);
+    await tel.withActiveSpan({name: 'HiGHS write model'}, () =>
+      this.promisified('writeModel', fp)
+    );
   }
 
   /**
@@ -127,8 +130,8 @@ export class Solver {
     readonly allowNonOptimal?: boolean;
   }): Promise<void> {
     this.assertNotSolving();
-    const {logger} = this.telemetry;
-    logger.debug('Starting solve...');
+    const {telemetry: tel} = this;
+    tel.logger.debug('Starting solve...');
 
     let logPath = this.delegate.getOption('log_file');
     let tempLog: tmp.FileResult | undefined;
@@ -146,8 +149,13 @@ export class Solver {
     }
 
     this.solving = true;
+    let status: SolverStatus | undefined;
     try {
-      await this.promisified('run');
+      await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
+        await this.promisified('run');
+        status = this.getStatus();
+        span.setAttribute('solve.status', SolverStatus[status]);
+      });
     } catch (cause) {
       throw errors.solveFailed(this, cause);
     } finally {
@@ -158,10 +166,11 @@ export class Solver {
       }
       this.solving = false;
     }
-    if (!opts?.allowNonOptimal && this.getStatus() !== SolverStatus.OPTIMAL) {
+    assert(status != null, 'Missing status');
+    if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
       throw errors.solveNonOptimal(this);
     }
-    logger.info('Solve ended with status %s.', currentStatusName(this));
+    tel.logger.info('Solve ended with status %s.', SolverStatus[status]);
   }
 
   /** Returns true if the solver is currently solving the model. */
@@ -202,8 +211,11 @@ export class Solver {
   /** Write the current solution to the given path. */
   async writeSolution(fp: string, style?: SolutionStyle): Promise<void> {
     this.assertNotSolving();
-    this.telemetry.logger.debug('Writing solution to %j...', fp);
-    await this.promisified('writeSolution', fp, style ?? SolutionStyle.RAW);
+    const {telemetry: tel} = this;
+    tel.logger.debug('Writing solution to %j...', fp);
+    await tel.withActiveSpan({name: 'HiGHS write solution'}, () =>
+      this.promisified('writeSolution', fp, style ?? SolutionStyle.RAW)
+    );
   }
 
   private promisified<M extends keyof addon.Solver>(

@@ -5,7 +5,7 @@ import * as tmp from 'tmp-promise';
 
 import {commonErrorCodes, Model, Solution, SolutionStyle} from './common';
 import {SolveMonitor} from './monitor';
-import {Solver, SolverCreationOptions,solverErrorCodes} from './solver';
+import {Solver, SolverCreationOptions, solverErrorCodes} from './solver';
 
 export {
   Constraint,
