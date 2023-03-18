@@ -185,7 +185,7 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
   }
 
   Napi::Value offsetVal = obj.Get("objectiveOffset");
-  double offset = offsetVal.IsUndefined() ? 0 : offsetVal.As<Napi::Number>().DoubleValue();
+  Napi::Value typesVal = obj.Get("columnTypes");
 
   HighsStatus status = this->highs_->passModel(
     obj.Get("columnCount").As<Napi::Number>().Int64Value(),
@@ -195,7 +195,7 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
     (HighsInt) MatrixFormat::kRowwise,
     (HighsInt) HessianFormat::kTriangular,
     (HighsInt) ToObjSense(obj.Get("isMaximization")),
-    offset,
+    offsetVal.IsUndefined() ? 0 : offsetVal.As<Napi::Number>().DoubleValue(),
     obj.Get("objectiveLinearWeights").As<Napi::Float64Array>().Data(),
     obj.Get("columnLowerBounds").As<Napi::Float64Array>().Data(),
     obj.Get("columnUpperBounds").As<Napi::Float64Array>().Data(),
@@ -207,7 +207,7 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
     hessianOffsets,
     hessianIndices,
     hessianValues,
-    obj.Get("columnTypes").As<Napi::Int32Array>().Data()
+    typesVal.IsUndefined() ? nullptr : typesVal.As<Napi::Int32Array>().Data()
   );
   if (status != HighsStatus::kOk) {
     ThrowError(env, "Pass model failed");

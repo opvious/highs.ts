@@ -22,6 +22,7 @@ describe('solve', () => {
     });
     expect(jsonify(sol)).toEqual(
       jsonify({
+        objectiveValue: 97.5,
         primal: {
           columns: new Float64Array([17.5, 1, 16.5, 2]),
           rows: new Float64Array([20, 30, 0]),
@@ -32,6 +33,31 @@ describe('solve', () => {
         },
       })
     );
+  });
+
+  test('handles inline quadratic model', async () => {
+    const sol = await sut.solve({
+      isMaximization: false,
+      objectiveLinearWeights: new Float64Array(2),
+      objectiveQuadraticWeights: {
+        offsets: new Int32Array([0, 2]),
+        indices: new Int32Array([0, 1, 1]),
+        values: new Float64Array([1, -0.5, 1]),
+      },
+      columnLowerBounds: new Float64Array(2),
+      columnUpperBounds: new Float64Array([1, 1]),
+      rowLowerBounds: new Float64Array([1]),
+      rowUpperBounds: new Float64Array([1]),
+      weights: {
+        offsets: new Int32Array([0]),
+        indices: new Int32Array([0, 1]),
+        values: new Float64Array([1, 1]),
+      },
+    });
+    expect(sol).toMatchObject({
+      objectiveValue: 0.125,
+      primal: {columns: {0: 0.5, 1: 0.5}, rows: {0: 1}},
+    });
   });
 
   test('handles unbounded model from file', async () => {
