@@ -37,6 +37,38 @@ describe('solver', () => {
     );
   });
 
+  test('writes QP to LP format', async () => {
+    const want = await readFile(resourcePath('quadratic.lp'), 'utf8');
+    const solver = sut.Solver.create();
+    await tmp.withFile(
+      async (res) => {
+        solver.setModel({
+          isMaximization: false,
+          objectiveOffset: 26,
+          objectiveLinearWeights: new Float64Array([-2, -12]),
+          objectiveQuadraticWeights: {
+            offsets: new Int32Array([0, 2]),
+            indices: new Int32Array([0, 1, 1]),
+            values: new Float64Array([2, 2, 4]),
+          },
+          columnLowerBounds: new Float64Array([-10, -10]),
+          columnUpperBounds: new Float64Array([10, 10]),
+          rowLowerBounds: new Float64Array(0),
+          rowUpperBounds: new Float64Array(0),
+          weights: {
+            offsets: new Int32Array(0),
+            indices: new Int32Array(0),
+            values: new Float64Array(0),
+          },
+        });
+        await solver.writeModel(res.path);
+        const got = await readFile(res.path, 'utf8');
+        expect(got).toContain(want);
+      },
+      {postfix: '.lp'}
+    );
+  });
+
   test('solves unbounded problem', async () => {
     const solver = sut.Solver.create();
     await solver.setModelFromFile(resourcePath('unbounded.mps'));

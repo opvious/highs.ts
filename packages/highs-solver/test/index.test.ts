@@ -84,6 +84,13 @@ describe('solve', () => {
     });
     expect(sol).toContain('V222');
   });
+
+  test('solves QP from LP file', async () => {
+    const sol = await sut.solve(resourcePath('quadratic.lp'));
+    const cols = sol.primal.columns;
+    expect(cols[0]).toBeCloseTo(-4);
+    expect(cols[1]).toBeCloseTo(5);
+  });
 });
 
 function jsonify(arg: unknown): unknown {
