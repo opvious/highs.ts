@@ -75,14 +75,20 @@ export interface Model {
    */
   readonly columnTypes?: Int32Array;
 
-  /** Variable bounds. */
+  /**
+   * Variable bounds. Both arrays must have the same length, equal to the
+   * number of variables.
+   */
   readonly columnLowerBounds: Float64Array;
   readonly columnUpperBounds: Float64Array;
 
   /** Number of constraints. */
   readonly rowCount: number;
 
-  /** Constraint bounds. */
+  /**
+   * Constraint bounds. Both arrays must have the same length, equal to the
+   * number of constraints.
+   */
   readonly rowLowerBounds: Float64Array;
   readonly rowUpperBounds: Float64Array;
 
@@ -101,10 +107,10 @@ export interface Model {
   /**
    * Only top-right half (assuming row-wise) entries need be present. The matrix
    * will be assumed symmetric and entries in the lower-left half will be
-   * ignored. Note also that the effective objective weight is 1/2 of the values
-   * in this matrix.
+   * ignored. Note also that the effective objective weight for diagonal entries
+   * is 1/2 of their value in this matrix.
    */
-  readonly objectiveQuadraticWeights?: Matrix;
+  readonly objectiveHessian?: Matrix;
 }
 
 export interface Matrix {

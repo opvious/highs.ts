@@ -42,7 +42,7 @@ describe('solve', () => {
       objectiveQuadraticWeights: {
         offsets: new Int32Array([0, 2]),
         indices: new Int32Array([0, 1, 1]),
-        values: new Float64Array([1, -0.5, 1]),
+        values: new Float64Array([0.5, -0.5, 0.5]),
       },
       columnLowerBounds: new Float64Array(2),
       columnUpperBounds: new Float64Array([1, 1]),
@@ -83,6 +83,13 @@ describe('solve', () => {
       style: sut.SolutionStyle.PRETTY,
     });
     expect(sol).toContain('V222');
+  });
+
+  test('solves QP from LP file', async () => {
+    const sol = await sut.solve(resourcePath('quadratic.lp'));
+    const cols = sol.primal.columns;
+    expect(cols[0]).toBeCloseTo(-4);
+    expect(cols[1]).toBeCloseTo(5);
   });
 });
 
