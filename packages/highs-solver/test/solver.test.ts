@@ -49,7 +49,7 @@ describe('solver', () => {
           objectiveQuadraticWeights: {
             offsets: new Int32Array([0, 2]),
             indices: new Int32Array([0, 1, 1]),
-            values: new Float64Array([2, 2, 4]),
+            values: new Float64Array([1, 2, 2]),
           },
           columnLowerBounds: new Float64Array([-10, -10]),
           columnUpperBounds: new Float64Array([10, 10]),

@@ -60,6 +60,7 @@ export class Solver {
   setModel(model: SolverModel): void {
     this.assertNotSolving();
     this.telemetry.logger.debug('Setting inline model.');
+
     const width = model.columnLowerBounds.length;
     const height = model.rowLowerBounds.length;
     assert(
@@ -73,7 +74,35 @@ export class Solver {
         model.weights.offsets.length <= height,
       'Inconsistent height'
     );
-    this.delegate.passModel({columnCount: width, rowCount: height, ...model});
+
+    const {objectiveQuadraticWeights: weights, ...rest} = model;
+    let hessian: addon.Matrix | undefined;
+    if (weights) {
+      // We multiply diagonal values by 2 to keep effective objective weight
+      // equal to the input weight.
+      const {offsets, indices, values} = weights;
+      const scaledValues = values.slice();
+      for (const [row, ix0] of offsets.entries()) {
+        const ix1 = offsets[row + 1] ?? indices.length;
+        for (let ix = ix0; ix < ix1; ix++) {
+          const col = indices[ix]!;
+          // TODO: Binary search.
+          if (col === row) {
+            scaledValues[ix] = values[ix]! * 2;
+          } else if (col > row) {
+            break;
+          }
+        }
+      }
+      hessian = {offsets, indices, values: scaledValues};
+    }
+
+    this.delegate.passModel({
+      columnCount: width,
+      rowCount: height,
+      objectiveHessian: hessian,
+      ...rest,
+    });
   }
 
   /**
@@ -233,7 +262,17 @@ export interface SolverCreationOptions {
 
 export type SolverInfo = addon.Info;
 
-export type SolverModel = Omit<addon.Model, 'columnCount' | 'rowCount'>;
+export type SolverModel = Omit<
+  addon.Model,
+  'columnCount' | 'rowCount' | 'objectiveHessian'
+> & {
+  /**
+   * Only top-right half (assuming row-wise) entries need be present. The matrix
+   * will be assumed symmetric and entries in the lower-left half will be
+   * ignored.
+   */
+  readonly objectiveQuadraticWeights?: addon.Matrix;
+};
 
 export interface SolverSolution {
   readonly objectiveValue: number;

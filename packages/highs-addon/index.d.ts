@@ -110,7 +110,7 @@ export interface Model {
    * ignored. Note also that the effective objective weight for diagonal entries
    * is 1/2 of their value in this matrix.
    */
-  readonly objectiveQuadraticWeights?: Matrix;
+  readonly objectiveHessian?: Matrix;
 }
 
 export interface Matrix {

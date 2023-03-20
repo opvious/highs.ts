@@ -166,14 +166,14 @@ void Solver::PassModel(const Napi::CallbackInfo& info) {
   Napi::Int32Array matrixOffsets = matrixObj.Get("offsets").As<Napi::Int32Array>();
   Napi::Float64Array matrixVals = matrixObj.Get("values").As<Napi::Float64Array>();
 
-  Napi::Value hessianVal = obj.Get("objectiveQuadraticWeights");
+  Napi::Value hessianVal = obj.Get("objectiveHessian");
   HighsInt hessianNonZeroCount = 0;
   HighsInt *hessianOffsets = nullptr;
   HighsInt *hessianIndices = nullptr;
   double *hessianValues = nullptr;
   if (!hessianVal.IsUndefined()) {
     if (!hessianVal.IsObject()) {
-      ThrowTypeError(env, "Invalid objective quadratic weights");
+      ThrowTypeError(env, "Invalid objective hessian");
       return;
     }
     Napi::Object hessianObj = hessianVal.As<Napi::Object>();
