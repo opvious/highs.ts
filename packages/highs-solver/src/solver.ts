@@ -66,7 +66,7 @@ export class Solver {
     assert(
       model.columnUpperBounds.length === width &&
         (model.columnTypes?.length ?? width) === width &&
-        model.objectiveLinearWeights.length === width &&
+        (model.objectiveLinearWeights?.length ?? width) === width &&
         (model.objectiveQuadraticWeights?.offsets.length ?? width) === width,
       'Inconsistent width'
     );
@@ -76,12 +76,16 @@ export class Solver {
       'Inconsistent height'
     );
 
-    const {objectiveQuadraticWeights: weights, ...rest} = model;
+    const {
+      objectiveLinearWeights: lweights,
+      objectiveQuadraticWeights: qweights,
+      ...rest
+    } = model;
     let hessian: addon.Matrix | undefined;
-    if (weights) {
+    if (qweights) {
       // We multiply diagonal values by 2 to keep effective objective weight
       // equal to the input weight.
-      const {offsets, indices, values} = weights;
+      const {offsets, indices, values} = qweights;
       const scaledValues = values.slice();
       for (const [row, ix0] of offsets.entries()) {
         const ix1 = offsets[row + 1] ?? indices.length;
@@ -101,6 +105,7 @@ export class Solver {
     this.delegate.passModel({
       columnCount: width,
       rowCount: height,
+      objectiveLinearWeights: lweights ?? new Float64Array(width),
       objectiveHessian: hessian,
       ...rest,
     });
@@ -265,8 +270,11 @@ export type SolverInfo = addon.Info;
 
 export type SolverModel = Omit<
   addon.Model,
-  'columnCount' | 'rowCount' | 'objectiveHessian'
+  'columnCount' | 'rowCount' | 'objectiveLinearWeights' | 'objectiveHessian'
 > & {
+  /** Can be omitted if all-zero. */
+  readonly objectiveLinearWeights?: Float64Array;
+
   /**
    * Only top-right half (assuming row-wise) entries need be present. The matrix
    * will be assumed symmetric and entries in the lower-left half will be

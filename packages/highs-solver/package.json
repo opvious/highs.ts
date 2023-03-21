@@ -1,6 +1,6 @@
 {
   "name": "highs-solver",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "repository": "github:opvious/highs.ts",
   "description": "Node.js binding for the HiGHS optimization solver",
   "keywords": [
