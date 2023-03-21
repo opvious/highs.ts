@@ -60,6 +60,28 @@ describe('solve', () => {
     });
   });
 
+  test('handles sample quadratic model', async () => {
+    const sol = await sut.solve({
+      isMaximization: false,
+      objectiveLinearWeights: new Float64Array(3),
+      objectiveQuadraticWeights: {
+        offsets: new Int32Array([0, 2, 3]),
+        indices: new Int32Array([1, 2, 2]),
+        values: new Float64Array([0.5, -0.75, -0.25]),
+      },
+      columnLowerBounds: new Float64Array(3),
+      columnUpperBounds: new Float64Array([1, 1, 1]),
+      rowLowerBounds: new Float64Array([10, -Infinity]),
+      rowUpperBounds: new Float64Array([Infinity, 1]),
+      weights: {
+        offsets: new Int32Array([0, 3]),
+        indices: new Int32Array([0, 1, 2, 0, 1, 2]),
+        values: new Float64Array([8, 3, 12, 1, 1, 1]),
+      },
+    });
+    expect(sol.objectiveValue).toBeCloseTo(-0.1875);
+  });
+
   test('handles unbounded model from file', async () => {
     try {
       await sut.solve(resourcePath('unbounded.mps'));

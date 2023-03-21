@@ -66,7 +66,8 @@ export class Solver {
     assert(
       model.columnUpperBounds.length === width &&
         (model.columnTypes?.length ?? width) === width &&
-        model.objectiveLinearWeights.length === width,
+        model.objectiveLinearWeights.length === width &&
+        (model.objectiveQuadraticWeights?.offsets.length ?? width) === width,
       'Inconsistent width'
     );
     assert(
