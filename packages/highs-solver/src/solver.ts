@@ -253,6 +253,10 @@ export class Solver {
       throw errors.solveInProgress();
     }
   }
+
+  [util.inspect.custom](): string {
+    return `<Solver HiGHS ${addon.solverVersion()}>`;
+  }
 }
 
 export interface SolverCreationOptions {

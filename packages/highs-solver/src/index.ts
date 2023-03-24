@@ -1,9 +1,9 @@
 import {assert} from '@opvious/stl-errors';
 import {MarkPresent} from '@opvious/stl-utils';
 import {readFile} from 'fs/promises';
-import {SolutionStyle} from 'highs-addon';
 import * as tmp from 'tmp-promise';
 
+import {SolutionStyle} from './common';
 import {SolveMonitor} from './monitor';
 import {
   Solver,
