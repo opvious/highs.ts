@@ -1,4 +1,9 @@
-import {assert, errorFactories} from '@opvious/stl-errors';
+import {
+  assert,
+  assertType,
+  errorFactories,
+  errorMessage,
+} from '@opvious/stl-errors';
 import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-addon';
@@ -10,6 +15,13 @@ import {SolveMonitor, SolveTracker} from './monitor';
 
 const [errors, codes] = errorFactories({
   definitions: {
+    nativeMethodFailed: (method: string, cause: unknown) => ({
+      message:
+        `Native method '${method}' failed (message: ${errorMessage(cause)}). ` +
+        'Check solver logs for more information.',
+      tags: {method},
+      cause,
+    }),
     solveFailed: (solver: Solver, cause: unknown) => ({
       message: `Solve failed with status ${currentStatusName(solver)}`,
       tags: {solver, status: solver.getStatus()},
@@ -51,7 +63,7 @@ export class Solver {
     this.assertNotSolving();
     for (const [name, val] of Object.entries(opts)) {
       if (val != null) {
-        this.delegate.setOption(name, val);
+        this.delegated('setOption', name, val);
       }
     }
   }
@@ -102,7 +114,7 @@ export class Solver {
       hessian = {offsets, indices, values: scaledValues};
     }
 
-    this.delegate.passModel({
+    this.delegated('passModel', {
       columnCount: width,
       rowCount: height,
       objectiveLinearWeights: lweights ?? new Float64Array(width),
@@ -120,7 +132,7 @@ export class Solver {
     const {telemetry: tel} = this;
     tel.logger.debug('Setting model from %j...', fp);
     await tel.withActiveSpan({name: 'HiGHS read model file'}, () =>
-      this.promisified('readModel', fp)
+      this.delegatedPromise('readModel', fp)
     );
   }
 
@@ -132,7 +144,7 @@ export class Solver {
     const {telemetry: tel} = this;
     tel.logger.debug('Wring model to %j...', fp);
     await tel.withActiveSpan({name: 'HiGHS write model'}, () =>
-      this.promisified('writeModel', fp)
+      this.delegatedPromise('writeModel', fp)
     );
   }
 
@@ -154,7 +166,9 @@ export class Solver {
     const {telemetry: tel} = this;
     tel.logger.debug('Starting solve...');
 
-    let logPath = this.delegate.getOption('log_file');
+    let logPath = this.delegated('getOption', 'log_file');
+    assertType('string', logPath);
+
     let tempLog: tmp.FileResult | undefined;
     let tracker: SolveTracker | undefined;
     if (opts?.monitor) {
@@ -162,7 +176,7 @@ export class Solver {
         // We need the logs to track progress.
         tempLog = await tmp.file();
         logPath = tempLog.path;
-        this.delegate.setOption('log_file', logPath);
+        this.delegated('setOption', 'log_file', logPath);
       }
       // Make sure the file exists to we can tail it.
       await writeFile(logPath, '', {flag: 'a'});
@@ -173,7 +187,7 @@ export class Solver {
     let status: SolverStatus | undefined;
     try {
       await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
-        await this.promisified('run');
+        await this.delegatedPromise('run');
         status = this.getStatus();
         span.setAttribute('solver.status', SolverStatus[status]);
       });
@@ -182,7 +196,7 @@ export class Solver {
     } finally {
       tracker?.shutdown();
       if (tempLog) {
-        this.delegate.setOption('log_file', '');
+        this.delegated('setOption', 'log_file', '');
         await tempLog.cleanup();
       }
       this.solving = false;
@@ -201,21 +215,21 @@ export class Solver {
 
   /** Returns the current solver status, set from the last solve. */
   getStatus(): SolverStatus {
-    return asSolverStatus(this.delegate.getModelStatus());
+    return asSolverStatus(this.delegated('getModelStatus'));
   }
 
   /** Returns the current solver info, set from the last solve. */
   getInfo(): SolverInfo {
-    return this.delegate.getInfo();
+    return this.delegated('getInfo');
   }
 
   /** Returns the current solution, set from the last solve. */
   getSolution(): SolverSolution | undefined {
-    const sol = this.delegate.getSolution();
+    const sol = this.delegated('getSolution');
     if (!sol.isValueValid) {
       return undefined;
     }
-    const info = this.delegate.getInfo();
+    const info = this.delegated('getInfo');
     return {
       objectiveValue: info.objective_function_value,
       relativeGap: info.mip_node_count > 0 ? info.mip_gap : undefined,
@@ -232,11 +246,28 @@ export class Solver {
     const {telemetry: tel} = this;
     tel.logger.debug('Writing solution to %j...', fp);
     await tel.withActiveSpan({name: 'HiGHS write solution'}, () =>
-      this.promisified('writeSolution', fp, style ?? SolutionStyle.RAW)
+      this.delegatedPromise('writeSolution', fp, style ?? SolutionStyle.RAW)
     );
   }
 
-  private promisified<M extends keyof addon.Solver>(
+  private delegated<M extends keyof addon.Solver>(
+    method: M,
+    ...args: addon.Solver[M] extends (...args: infer A) => any
+      ? A extends [...any, (err: Error) => void]
+        ? never
+        : A
+      : never
+  ): addon.Solver[M] extends (...args: any) => infer R ? R : never {
+    const {delegate} = this;
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      return (delegate[method] as Function).bind(delegate)(...args);
+    } catch (cause) {
+      throw errors.nativeMethodFailed(method, cause);
+    }
+  }
+
+  private async delegatedPromise<M extends keyof addon.Solver>(
     method: M,
     ...args: addon.Solver[M] extends (
       ...args: [...infer A, (err: Error) => void]
@@ -245,7 +276,11 @@ export class Solver {
       : never
   ): Promise<void> {
     const {delegate} = this;
-    return util.promisify(delegate[method]).bind(delegate)(...args);
+    try {
+      return await util.promisify(delegate[method]).bind(delegate)(...args);
+    } catch (cause) {
+      throw errors.nativeMethodFailed(method, cause);
+    }
   }
 
   private assertNotSolving(): void {

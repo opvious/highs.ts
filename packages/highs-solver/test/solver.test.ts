@@ -89,4 +89,16 @@ describe('solver', () => {
     await solver.solve({allowNonOptimal: true});
     expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
   });
+
+  test('wraps native method errors', () => {
+    const solver = sut.Solver.create();
+    try {
+      solver.updateOptions({unknown_option: 123});
+      fail();
+    } catch (err) {
+      expect(err).toMatchObject({
+        code: sut.solverErrorCodes.NativeMethodFailed,
+      });
+    }
+  });
 });
