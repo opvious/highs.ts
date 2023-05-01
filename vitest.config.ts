@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {defineConfig} from 'vitest/config';
 
 export default defineConfig({
@@ -7,5 +8,8 @@ export default defineConfig({
       provider: 'c8',
       reportsDirectory: 'out/coverage',
     },
+    globalSetup: [
+      path.join(__dirname, 'packages/highs-addon/resources/vitest-setup.cjs'),
+    ],
   },
 });
