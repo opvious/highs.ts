@@ -2,7 +2,7 @@ import {errorCode, fail} from '@opvious/stl-errors';
 import {ResourceLoader} from '@opvious/stl-utils/files';
 
 import errorCodes from '../src/index.errors.js';
-import * as sut from '../src/index.js';
+import sut from '../src/index.js';
 
 const loader = ResourceLoader.enclosing(import.meta.url).scoped('test');
 
