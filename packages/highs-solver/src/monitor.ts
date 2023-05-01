@@ -10,12 +10,12 @@ const iterationDataPattern =
   /^\s+\w?\s+\d+\s+\d+\s+\d+\s+\S+\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+\d+\s+\d+\s+(\d+)\s+\S+\s*$/;
 const reportHeaderPattern = /^Solving report$/;
 
-/** Active solve events. */
+/** Active solve events */
 export interface SolveListeners {
   readonly progress: (prog: SolveProgress) => void;
 }
 
-/** Active solve progress notifications. */
+/** Active solve progress notifications */
 export interface SolveProgress {
   readonly relativeGap: number;
   readonly primalBound: number;
@@ -24,10 +24,10 @@ export interface SolveProgress {
   readonly lpIterationCount: number;
 }
 
-/** Typed event-emitter of solve progress events. */
+/** Typed event-emitter of solve progress events */
 export type SolveMonitor = TypedEmitter<SolveListeners>;
 
-/** Creates a new solve monitor. */
+/** Creates a new solve monitor */
 export function solveMonitor(): SolveMonitor {
   return typedEmitter<SolveListeners>();
 }

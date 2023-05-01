@@ -14,7 +14,7 @@
   "engines": {
     "node": ">=16"
   },
-  "main": "index.cjs",
+  "main": "./index.cjs",
   "files": [
     "prebuilds/",
     "src/",
