@@ -27,7 +27,7 @@
     "clean": "rm -rf build node_modules",
     "postinstall": "pkg-prebuilds-verify ./binding-options.js || cmake-js build",
     "rebuild": "cmake-js rebuild",
-    "test": "jest"
+    "test": "vitest"
   },
   "dependencies": {
     "cmake-js": "^7.1.1",
@@ -44,31 +44,5 @@
     "napi_versions": [
       8
     ]
-  },
-  "jest": {
-    "coverageDirectory": "../../out/coverage/highs-addon",
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/test/"
-    ],
-    "setupFilesAfterEnv": [
-      "jest-extended/all"
-    ],
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      ".d.ts",
-      ".js"
-    ],
-    "transform": {
-      "^.+\\.ts$": [
-        "ts-jest",
-        {
-          "babelConfig": {
-            "compact": false
-          },
-          "tsconfig": "test/tsconfig.json"
-        }
-      ]
-    }
   }
 }

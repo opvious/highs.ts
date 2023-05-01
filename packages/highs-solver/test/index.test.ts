@@ -1,7 +1,10 @@
 import {errorCode, fail} from '@opvious/stl-errors';
+import {ResourceLoader} from '@opvious/stl-utils/files';
 
-import * as sut from '../src';
-import {resourcePath} from './helpers';
+import errorCodes from '../src/index.errors.js';
+import * as sut from '../src/index.js';
+
+const loader = ResourceLoader.enclosing(import.meta.url).scoped('test');
 
 describe('solve', () => {
   test('handles inline model', async () => {
@@ -84,10 +87,10 @@ describe('solve', () => {
 
   test('handles unbounded model from file', async () => {
     try {
-      await sut.solve(resourcePath('unbounded.mps'));
+      await sut.solve(loader.localUrl('unbounded.mps'));
       fail();
     } catch (err) {
-      expect(errorCode(err)).toEqual(sut.errorCodes.SolveNonOptimal);
+      expect(errorCode(err)).toEqual(errorCodes.SolveNonOptimal);
     }
   });
 
@@ -96,19 +99,19 @@ describe('solve', () => {
     const monitor = sut.solveMonitor().on('progress', () => {
       progressed = true;
     });
-    await sut.solve(resourcePath('queens-15.lp'), {monitor});
+    await sut.solve(loader.localUrl('queens-15.lp'), {monitor});
     expect(progressed).toBe(true);
   });
 
   test('outputs styled solution', async () => {
-    const sol = await sut.solve(resourcePath('queens-15.lp'), {
+    const sol = await sut.solve(loader.localUrl('queens-15.lp'), {
       style: sut.SolutionStyle.PRETTY,
     });
     expect(sol).toContain('V222');
   });
 
   test('solves QP from LP file', async () => {
-    const sol = await sut.solve(resourcePath('quadratic.lp'));
+    const sol = await sut.solve(loader.localUrl('quadratic.lp'));
     const cols = sol.primal.columns;
     expect(cols[0]).toBeCloseTo(-4);
     expect(cols[1]).toBeCloseTo(5);

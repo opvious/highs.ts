@@ -1,4 +1,5 @@
 import {assert} from '@opvious/stl-errors';
+import {PathLike} from '@opvious/stl-utils/files';
 import {MarkPresent} from '@opvious/stl-utils/objects';
 import {readFile} from 'fs/promises';
 import * as tmp from 'tmp-promise';
@@ -32,19 +33,19 @@ export {Matrix, OptionValue, solverVersion} from 'highs-addon';
  * will throw an error if the solution is not optimal.
  */
 export async function solve(
-  model: SolverModel | string,
+  model: SolverModel | PathLike,
   opts?: SolveOptions
 ): Promise<SolverSolution>;
 export async function solve(
-  model: SolverModel | string,
+  model: SolverModel | PathLike,
   opts: MarkPresent<SolveOptions, 'style'>
 ): Promise<string>;
 export async function solve(
-  model: SolverModel | string,
+  model: SolverModel | PathLike,
   opts?: SolveOptions
 ): Promise<SolverSolution | string> {
   const solver = Solver.create(opts?.options);
-  if (typeof model == 'string') {
+  if (typeof model == 'string' || model instanceof URL) {
     await solver.setModelFromFile(model);
   } else {
     solver.setModel(model);

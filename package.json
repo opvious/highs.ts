@@ -10,23 +10,22 @@
     "clean": "pnpm -r -F !. run clean && rm -rf node_modules out",
     "fix": "prettier --write 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts' && pnpm run lint --fix",
     "lint": "eslint 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts'",
-    "test": "pnpm -r run test --coverage"
+    "test": "pnpm -r run test run --coverage && rm -rf out/coverage && mkdir -p out/coverage && for p in packages/*; do if [ -d \"$p/out/coverage\" ]; then cp -r \"$p/out/coverage\" out/coverage/\"${p#*/}\"; fi; done"
   },
   "devDependencies": {
     "@opvious/eslint-plugin": "^0.1.22",
     "@opvious/prettier-typescript": "^0.1.22",
     "@opvious/tsconfig": "^0.1.22",
-    "@types/jest": "^29.2.2",
     "@types/node": "^18.11.7",
+    "@vitest/coverage-c8": "^0.29.2",
     "eslint": "^8.12.0",
     "husky": "^7.0.4",
-    "jest": "^29.3.1",
-    "jest-extended": "^3.1.0",
     "lint-staged": "^12.1.4",
     "prettier": "^2.6.1",
     "ts-essentials": "^9.3.0",
-    "ts-jest": "^29.0.3",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.5",
+    "vite-tsconfig-paths": "^4.0.5",
+    "vitest": "^0.29.8"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -1,9 +1,12 @@
 import {fail} from '@opvious/stl-errors';
+import {ResourceLoader} from '@opvious/stl-utils/files';
 import {readFile} from 'fs/promises';
 import * as tmp from 'tmp-promise';
 
-import * as sut from '../src/solver';
-import {resourcePath} from './helpers';
+import errorCodes from '../src/index.errors.js';
+import * as sut from '../src/solver.js';
+
+const loader = ResourceLoader.enclosing(import.meta.url).scoped('test');
 
 describe('solver', () => {
   test('returns unset status', () => {
@@ -38,7 +41,7 @@ describe('solver', () => {
   });
 
   test('writes QP to LP format', async () => {
-    const want = await readFile(resourcePath('quadratic.lp'), 'utf8');
+    const want = await readFile(loader.localUrl('quadratic.lp'), 'utf8');
     const solver = sut.Solver.create();
     await tmp.withFile(
       async (res) => {
@@ -71,13 +74,13 @@ describe('solver', () => {
 
   test('solves unbounded problem', async () => {
     const solver = sut.Solver.create();
-    await solver.setModelFromFile(resourcePath('unbounded.mps'));
+    await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
     try {
       await solver.solve();
       fail();
     } catch (err) {
       expect(err).toMatchObject({
-        code: sut.solverErrorCodes.SolveNonOptimal,
+        code: errorCodes.SolveNonOptimal,
         tags: {status: sut.SolverStatus.UNBOUNDED},
       });
     }
@@ -85,7 +88,7 @@ describe('solver', () => {
 
   test('allows non-optimal statuses', async () => {
     const solver = sut.Solver.create();
-    await solver.setModelFromFile(resourcePath('unbounded.mps'));
+    await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
     await solver.solve({allowNonOptimal: true});
     expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
   });
@@ -97,7 +100,7 @@ describe('solver', () => {
       fail();
     } catch (err) {
       expect(err).toMatchObject({
-        code: sut.solverErrorCodes.NativeMethodFailed,
+        code: errorCodes.NativeMethodFailed,
       });
     }
   });
