@@ -10,10 +10,10 @@ import * as addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
 import util from 'util';
 
-import {packageInfo, SolutionStyle} from './common';
-import {SolveMonitor, SolveTracker} from './monitor';
+import {packageInfo, SolutionStyle} from './common.js';
+import {SolveMonitor, SolveTracker} from './monitor.js';
 
-const [errors, codes] = errorFactories({
+const [errors, errorCodes] = errorFactories({
   definitions: {
     nativeMethodFailed: (method: string, cause: unknown) => ({
       message:
@@ -37,7 +37,7 @@ const [errors, codes] = errorFactories({
   prefix: 'ERR_HIGHS_',
 });
 
-export const solverErrorCodes = codes;
+export {errorCodes};
 
 /** Higher level wrapping class around the HiGHS addon. */
 export class Solver {

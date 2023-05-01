@@ -1,6 +1,6 @@
 {
   "name": "highs-solver",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "repository": "github:opvious/highs.ts",
   "description": "Node.js binding for the HiGHS optimization solver",
   "keywords": [
@@ -14,22 +14,26 @@
   "engines": {
     "node": ">=16"
   },
+  "type": "module",
   "files": [
     "lib/"
   ],
-  "main": "lib/",
+  "exports": {
+    ".": "./lib/index.js",
+    "./errors": "./lib/index.errors.js"
+  },
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules",
     "fix": "prettier --write",
-    "prepare": "pnpm run build",
+    "prepare": "pnpm run build && inlinable replace",
     "test": "jest",
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@opvious/stl-errors": "^0.16.1",
-    "@opvious/stl-telemetry": "^0.16.1",
-    "@opvious/stl-utils": "^0.16.1",
+    "@opvious/stl-errors": "^0.17.33",
+    "@opvious/stl-telemetry": "^0.17.33",
+    "@opvious/stl-utils": "^0.17.33",
     "highs-addon": "workspace:*",
     "tail": "^2.2.6",
     "tmp-promise": "^3.0.3"
@@ -39,7 +43,8 @@
   },
   "devDependencies": {
     "@opentelemetry/api": "~1.3.0",
-    "@types/tail": "^2.2.1"
+    "@types/tail": "^2.2.1",
+    "inlinable": "^0.1.11"
   },
   "jest": {
     "coverageDirectory": "../../out/coverage/highs-solver",

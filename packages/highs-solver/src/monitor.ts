@@ -1,7 +1,7 @@
 /** Progress tracking. */
 
 import {assert, check} from '@opvious/stl-errors';
-import {TypedEmitter, typedEmitter} from '@opvious/stl-utils';
+import {TypedEmitter, typedEmitter} from '@opvious/stl-utils/events';
 import {Tail} from 'tail';
 
 const iterationHeaderPattern = /^\s*Proc\. InQueue.*$/;

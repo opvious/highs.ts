@@ -1,20 +1,19 @@
 import {assert} from '@opvious/stl-errors';
-import {MarkPresent} from '@opvious/stl-utils';
+import {MarkPresent} from '@opvious/stl-utils/objects';
 import {readFile} from 'fs/promises';
 import * as tmp from 'tmp-promise';
 
-import {SolutionStyle} from './common';
-import {SolveMonitor} from './monitor';
+import {SolutionStyle} from './common.js';
+import {SolveMonitor} from './monitor.js';
 import {
   Solver,
   SolverCreationOptions,
-  solverErrorCodes,
   SolverModel,
   SolverSolution,
-} from './solver';
+} from './solver.js';
 
-export {ColumnType, SolutionStatus, SolutionStyle} from './common';
-export {SolveMonitor, solveMonitor, SolveProgress} from './monitor';
+export {ColumnType, SolutionStatus, SolutionStyle} from './common.js';
+export {SolveMonitor, solveMonitor, SolveProgress} from './monitor.js';
 export {
   Solver,
   SolverCreationOptions,
@@ -24,11 +23,8 @@ export {
   SolverSolution,
   SolverSolutionValues,
   SolverStatus,
-} from './solver';
+} from './solver.js';
 export {Matrix, OptionValue, solverVersion} from 'highs-addon';
-
-/** All error codes produced by this library. */
-export const errorCodes = solverErrorCodes;
 
 /**
  * Solves an optimization problem asynchronously. The model can be specified
