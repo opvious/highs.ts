@@ -4,11 +4,7 @@
     "composite": true,
     "noImplicitAny": false,
     "outDir": "../out/test",
+    "types": ["vitest/globals"],
     "useUnknownInCatchVariables": false
-  },
-  "references": [
-    {
-      "path": "../src"
-    }
-  ]
+  }
 }

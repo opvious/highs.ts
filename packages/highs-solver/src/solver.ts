@@ -5,15 +5,16 @@ import {
   errorMessage,
 } from '@opvious/stl-errors';
 import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
+import {localPath,PathLike} from '@opvious/stl-utils/files';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
 import util from 'util';
 
-import {packageInfo, SolutionStyle} from './common';
-import {SolveMonitor, SolveTracker} from './monitor';
+import {packageInfo, SolutionStyle} from './common.js';
+import {SolveMonitor, SolveTracker} from './monitor.js';
 
-const [errors, codes] = errorFactories({
+const [errors, errorCodes] = errorFactories({
   definitions: {
     nativeMethodFailed: (method: string, cause: unknown) => ({
       message:
@@ -37,7 +38,7 @@ const [errors, codes] = errorFactories({
   prefix: 'ERR_HIGHS_',
 });
 
-export const solverErrorCodes = codes;
+export {errorCodes};
 
 /** Higher level wrapping class around the HiGHS addon. */
 export class Solver {
@@ -127,12 +128,12 @@ export class Solver {
    * Sets the model to be solved from a file stored on disk. Any format accepted
    * by HiGHS is permissible (e.g. `.lp,` `.mps`).
    */
-  async setModelFromFile(fp: string): Promise<void> {
+  async setModelFromFile(pl: PathLike): Promise<void> {
     this.assertNotSolving();
     const {telemetry: tel} = this;
-    tel.logger.debug('Setting model from %j...', fp);
+    tel.logger.debug('Setting model from %j...', pl);
     await tel.withActiveSpan({name: 'HiGHS read model file'}, () =>
-      this.delegatedPromise('readModel', fp)
+      this.delegatedPromise('readModel', localPath(pl))
     );
   }
 
@@ -140,11 +141,11 @@ export class Solver {
    * Write the current model. The file path must end in one HiGHS' supported
    * extensions (`.lp`, `.mps`, ...).
    */
-  async writeModel(fp: string): Promise<void> {
+  async writeModel(pl: PathLike): Promise<void> {
     const {telemetry: tel} = this;
-    tel.logger.debug('Wring model to %j...', fp);
+    tel.logger.debug('Wring model to %j...', pl);
     await tel.withActiveSpan({name: 'HiGHS write model'}, () =>
-      this.delegatedPromise('writeModel', fp)
+      this.delegatedPromise('writeModel', localPath(pl))
     );
   }
 
@@ -241,12 +242,19 @@ export class Solver {
   }
 
   /** Write the current solution to the given path. */
-  async writeSolution(fp: string, style?: addon.SolutionStyle): Promise<void> {
+  async writeSolution(
+    pl: PathLike,
+    style?: addon.SolutionStyle
+  ): Promise<void> {
     this.assertNotSolving();
     const {telemetry: tel} = this;
-    tel.logger.debug('Writing solution to %j...', fp);
+    tel.logger.debug('Writing solution to %j...', pl);
     await tel.withActiveSpan({name: 'HiGHS write solution'}, () =>
-      this.delegatedPromise('writeSolution', fp, style ?? SolutionStyle.RAW)
+      this.delegatedPromise(
+        'writeSolution',
+        localPath(pl),
+        style ?? SolutionStyle.RAW
+      )
     );
   }
 

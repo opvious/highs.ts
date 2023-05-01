@@ -2,8 +2,10 @@
   "extends": "@opvious/tsconfig",
   "compilerOptions": {
     "composite": true,
+    "module": "node16",
     "noImplicitAny": false,
     "outDir": "../out/test",
+    "types": ["vitest/globals"],
     "useUnknownInCatchVariables": false
   },
   "references": [

@@ -1,7 +1,7 @@
 /** Progress tracking. */
 
 import {assert, check} from '@opvious/stl-errors';
-import {TypedEmitter, typedEmitter} from '@opvious/stl-utils';
+import {TypedEmitter, typedEmitter} from '@opvious/stl-utils/events';
 import {Tail} from 'tail';
 
 const iterationHeaderPattern = /^\s*Proc\. InQueue.*$/;
@@ -10,10 +10,12 @@ const iterationDataPattern =
   /^\s+\w?\s+\d+\s+\d+\s+\d+\s+\S+\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+\d+\s+\d+\s+(\d+)\s+\S+\s*$/;
 const reportHeaderPattern = /^Solving report$/;
 
+/** Active solve events */
 export interface SolveListeners {
   readonly progress: (prog: SolveProgress) => void;
 }
 
+/** Active solve progress notifications */
 export interface SolveProgress {
   readonly relativeGap: number;
   readonly primalBound: number;
@@ -22,8 +24,10 @@ export interface SolveProgress {
   readonly lpIterationCount: number;
 }
 
+/** Typed event-emitter of solve progress events */
 export type SolveMonitor = TypedEmitter<SolveListeners>;
 
+/** Creates a new solve monitor */
 export function solveMonitor(): SolveMonitor {
   return typedEmitter<SolveListeners>();
 }

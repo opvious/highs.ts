@@ -1,6 +1,8 @@
-import {enclosingPackageInfo} from '@opvious/stl-telemetry';
+import __inlinable from 'inlinable';
 
-export const packageInfo = enclosingPackageInfo(__dirname);
+export const packageInfo = __inlinable((ctx) =>
+  ctx.enclosing(import.meta.url).metadata()
+);
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L87
 export enum ColumnType {
