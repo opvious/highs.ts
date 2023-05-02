@@ -21,6 +21,8 @@ class Solver : public Napi::ObjectWrap<Solver> {
   Napi::Value GetModelStatus(const Napi::CallbackInfo& info);
   Napi::Value GetInfo(const Napi::CallbackInfo& info);
   Napi::Value GetSolution(const Napi::CallbackInfo& info);
+  void SetSolution(const Napi::CallbackInfo& info);
+  Napi::Value AssessPrimalSolution(const Napi::CallbackInfo& info);
   void WriteSolution(const Napi::CallbackInfo& info);
 
   std::shared_ptr<Highs> highs_;

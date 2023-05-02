@@ -26,11 +26,15 @@ export declare class Solver {
   getInfo(): Info;
 
   getSolution(): Solution;
+  setSolution(
+    sol: Partial<Pick<Solution, 'columnValues' | 'rowDualValues'>>
+  ): void;
   writeSolution(
     fp: string,
     style: SolutionStyle,
     cb: (err: Error) => void
   ): void;
+  assessPrimalSolution(): SolutionAssessment;
 
   clear(): void;
   clearModel(): void;
@@ -127,6 +131,12 @@ export interface Solution {
   readonly columnDualValues: Float64Array;
   readonly rowValues: Float64Array;
   readonly rowDualValues: Float64Array;
+}
+
+export interface SolutionAssessment {
+  readonly isValid: boolean;
+  readonly isIntegral: boolean;
+  readonly isFeasible: boolean;
 }
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsInfo.h#L152
