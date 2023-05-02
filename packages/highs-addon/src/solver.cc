@@ -6,16 +6,25 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
                   "Solver",
                   {InstanceMethod("setOption", &Solver::SetOption),
                    InstanceMethod("getOption", &Solver::GetOption),
+
                    InstanceMethod("passModel", &Solver::PassModel),
                    InstanceMethod("readModel", &Solver::ReadModel),
                    InstanceMethod("writeModel", &Solver::WriteModel),
+
+                   InstanceMethod("changeObjectiveSense", &Solver::ChangeObjectiveSense),
+                   InstanceMethod("changeObjectiveOffset", &Solver::ChangeObjectiveOffset),
+                   InstanceMethod("changeColsCost", &Solver::ChangeColsCost),
+                   InstanceMethod("addRows", &Solver::AddRows),
+
                    InstanceMethod("run", &Solver::Run),
                    InstanceMethod("getModelStatus", &Solver::GetModelStatus),
                    InstanceMethod("getInfo", &Solver::GetInfo),
+
                    InstanceMethod("getSolution", &Solver::GetSolution),
                    InstanceMethod("setSolution", &Solver::SetSolution),
                    InstanceMethod("writeSolution", &Solver::WriteSolution),
                    InstanceMethod("assessPrimalSolution", &Solver::AssessPrimalSolution),
+
                    InstanceMethod("clearModel", &Solver::ClearModel),
                    InstanceMethod("clearSolver", &Solver::ClearSolver),
                    InstanceMethod("clear", &Solver::Clear)});
@@ -37,6 +46,8 @@ Solver::Solver(const Napi::CallbackInfo& info)
   }
   this->highs_ = std::make_shared<Highs>();
 }
+
+// Options
 
 void Solver::SetOption(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
@@ -119,6 +130,8 @@ Napi::Value Solver::GetOption(const Napi::CallbackInfo& info) {
   }
   return val;
 }
+
+// Model
 
 /** Generic async solver update worker. */
 class UpdateWorker : public Napi::AsyncWorker {
@@ -263,11 +276,100 @@ void Solver::WriteModel(const Napi::CallbackInfo& info) {
     ThrowTypeError(env, "Expected 2 arguments [string, function]");
     return;
   }
+
   std::string path = info[0].As<Napi::String>().Utf8Value();
   Napi::Function cb = info[1].As<Napi::Function>();
   WriteModelWorker* worker = new WriteModelWorker(cb, this->highs_, path);
   worker->Queue();
 }
+
+// Updates
+
+void Solver::ChangeObjectiveSense(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsBoolean()) {
+    ThrowTypeError(env, "Expected 1 argument [boolean]");
+    return;
+  }
+
+  ObjSense sense = ToObjSense(info[0].As<Napi::Boolean>());
+  HighsStatus status = this->highs_->changeObjectiveSense(sense);
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Change objective sense failed");
+    return;
+  }
+}
+
+void Solver::ChangeObjectiveOffset(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsNumber()) {
+    ThrowTypeError(env, "Expected 1 argument [number]");
+    return;
+  }
+
+  double offset = info[0].As<Napi::Number>().DoubleValue();
+  HighsStatus status = this->highs_->changeObjectiveOffset(offset);
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Change objective offset failed");
+    return;
+  }
+}
+
+void Solver::ChangeColsCost(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsTypedArray()) {
+    ThrowTypeError(env, "Expected 1 argument [Float64Array]");
+    return;
+  }
+
+  Napi::Float64Array arr = info[0].As<Napi::Float64Array>();
+  std::vector<HighsInt> mask(arr.ElementLength(), 1);
+  HighsStatus status = this->highs_->changeColsCost(&mask[0], arr.Data());
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Change columns cost failed");
+    return;
+  }
+}
+
+void Solver::AddRows(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (
+    length != 4 ||
+    !info[0].IsNumber() ||
+    !info[1].IsTypedArray() ||
+    !info[2].IsTypedArray() ||
+    !info[3].IsObject()
+  ) {
+    ThrowTypeError(env, "Expected 4 arguments [number, Float64Array, Float64Array, object]");
+    return;
+  }
+
+  double height = info[0].As<Napi::Number>().DoubleValue();
+  Napi::Float64Array lbs = info[1].As<Napi::Float64Array>();
+  Napi::Float64Array ubs = info[2].As<Napi::Float64Array>();
+  Napi::Object weights = info[3].As<Napi::Object>();
+  Napi::Float64Array vals = weights.Get("values").As<Napi::Float64Array>();
+
+  HighsStatus status = this->highs_->addRows(
+    height,
+    lbs.Data(),
+    ubs.Data(),
+    vals.ElementLength(),
+    weights.Get("offsets").As<Napi::Int32Array>().Data(),
+    weights.Get("indices").As<Napi::Int32Array>().Data(),
+    vals.Data()
+  );
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Change columns cost failed");
+    return;
+  }
+}
+
+// Running
 
 class RunWorker : public UpdateWorker {
  public:
@@ -325,6 +427,8 @@ Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
   }
   return obj;
 }
+
+// Solutions
 
 Napi::Value ToFloat64Array(const Napi::Env& env, const std::vector<double>& vec) {
   Napi::Float64Array arr = Napi::Float64Array::New(env, vec.size());
@@ -421,6 +525,8 @@ void Solver::WriteSolution(const Napi::CallbackInfo& info) {
   WriteSolutionWorker* worker = new WriteSolutionWorker(cb, this->highs_, path, (SolutionStyle) style);
   worker->Queue();
 }
+
+// Reset
 
 void Solver::Clear(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();

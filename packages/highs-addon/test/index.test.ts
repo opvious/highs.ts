@@ -75,6 +75,54 @@ describe('solver', () => {
     });
   });
 
+  test('updates model', async () => {
+    await withSolver(async (solver) => {
+      solver.passModel({
+        columnCount: 4,
+        rowCount: 1,
+        isMaximization: false,
+        columnTypes: undefined,
+        columnLowerBounds: new Float64Array([0, -Infinity, -Infinity, 2]),
+        columnUpperBounds: new Float64Array([40, Infinity, Infinity, 3]),
+        objectiveLinearWeights: new Float64Array([10, 20, 30, 0]),
+        objectiveOffset: 100,
+        rowLowerBounds: new Float64Array([-Infinity]),
+        rowUpperBounds: new Float64Array([20]),
+        weights: {
+          offsets: new Int32Array([0]),
+          indices: new Int32Array([0, 1, 2, 3]),
+          values: new Float64Array([-1, 1, 1, 10]),
+        },
+      });
+
+      // Update to match simple.lp
+      solver.changeObjectiveSense(true);
+      solver.changeObjectiveOffset(0);
+      solver.changeColsCost(new Float64Array([1, 2, 4, 1]));
+      solver.addRows(
+        2,
+        new Float64Array([-Infinity, 0]),
+        new Float64Array([30, 0]),
+        {
+          offsets: new Int32Array([0, 3]),
+          indices: new Int32Array([0, 1, 2, 1, 3]),
+          values: new Float64Array([1, -4, 1, 1, -0.5]),
+        }
+      );
+
+      await p(solver, 'run');
+      expect(solver.getModelStatus()).toEqual(7); // Optimal
+      expect(cloneSolution(solver.getSolution())).toEqual({
+        isValueValid: true,
+        isDualValid: true,
+        columnValues: new Float64Array([17.5, 1, 16.5, 2]),
+        columnDualValues: new Float64Array([-0, -0, -0, -8.75]),
+        rowValues: new Float64Array([20, 30, 0]),
+        rowDualValues: new Float64Array([1.5, 2.5, 10.5]),
+      });
+    });
+  });
+
   test('solves reading LP file', async () => {
     await withSolver(async (solver) => {
       await p(solver, 'readModel', resourcePath('simple.lp'));

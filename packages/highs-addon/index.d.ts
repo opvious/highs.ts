@@ -3,8 +3,7 @@ export function solverVersion(): string;
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/Highs.h
 export declare class Solver {
-  // First signature to enable better auto-complete.
-  setOption<N extends keyof CommonOptions>(
+  setOption<N extends keyof CommonOptions>( // Enables better auto-complete
     name: N,
     val: CommonOptions[N]
   ): void;
@@ -20,6 +19,16 @@ export declare class Solver {
   passModel(model: Model): void;
   readModel(fp: string, cb: (err: Error) => void): string;
   writeModel(fp: string, cb: (err: Error) => void): string;
+
+  changeObjectiveSense(isMaximization: boolean): void;
+  changeObjectiveOffset(offset: number): void;
+  changeColsCost(arr: Float64Array): void;
+  addRows(
+    height: number,
+    lowerBounds: Float64Array,
+    upperBounds: Float64Array,
+    weights: Matrix
+  ): void;
 
   run(cb: (err: Error) => void): void;
   getModelStatus(): ModelStatus;
