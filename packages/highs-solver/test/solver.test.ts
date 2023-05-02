@@ -128,7 +128,6 @@ describe('solver', () => {
       isMaximization: true,
       columnLowerBounds: new Float64Array([0, -Infinity, -Infinity, 2]),
       columnUpperBounds: new Float64Array([40, Infinity, Infinity, 3]),
-      objectiveLinearWeights: new Float64Array([10, 20, 30, 0]),
       rowLowerBounds: new Float64Array(),
       rowUpperBounds: new Float64Array(),
       weights: {
@@ -136,6 +135,11 @@ describe('solver', () => {
         indices: new Int32Array(),
         values: new Float64Array(),
       },
+    });
+    solver.updateObjective({
+      isMaximization: true,
+      offset: 0,
+      costs: new Float64Array([10, 20, 30, 0]),
     });
     solver.addRows({
       lowerBounds: new Float64Array([-Infinity, -Infinity, 0]),
