@@ -123,10 +123,42 @@ describe('solver', () => {
         isValueValid: true,
         isDualValid: true,
       });
+      expect(solver.assessPrimalSolution()).toEqual({
+        isValid: true,
+        isIntegral: true,
+        isFeasible: true,
+      });
+
       solver.clearSolver();
       expect(solver.getSolution()).toMatchObject({
         isValueValid: false,
         isDualValid: false,
+      });
+      expect(solver.assessPrimalSolution()).toEqual({
+        isValid: false,
+        isIntegral: false,
+        isFeasible: false,
+      });
+    });
+  });
+
+  test('sets solution', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      expect(solver.assessPrimalSolution()).toEqual({
+        isValid: false,
+        isIntegral: false,
+        isFeasible: false,
+      });
+
+      solver.setSolution({
+        columnValues: new Float64Array([17.5, 1, 15.5, 2]),
+        rowDualValues: new Float64Array([1.5, 2.5, 11.5]),
+      });
+      expect(solver.assessPrimalSolution()).toEqual({
+        isValid: true,
+        isIntegral: true,
+        isFeasible: true,
       });
     });
   });

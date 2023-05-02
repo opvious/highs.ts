@@ -17,3 +17,13 @@ void ThrowError(const Napi::Env& env, const std::string msg) {
 void ThrowTypeError(const Napi::Env& env, const std::string msg) {
   Napi::TypeError::New(env, msg).ThrowAsJavaScriptException();
 }
+
+void AssignToVector(std::vector<double>& vec, Napi::Value val) {
+  if (val.IsUndefined()) {
+    return;
+  }
+  Napi::Float64Array arr = val.As<Napi::Float64Array>();
+  size_t len = arr.ElementLength();
+  double *data = arr.Data();
+  vec.assign(data, data + len);
+}

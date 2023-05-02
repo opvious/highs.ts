@@ -10,4 +10,6 @@ void ThrowError(const Napi::Env& env, const std::string msg);
 
 void ThrowTypeError(const Napi::Env& env, const std::string msg);
 
+void AssignToVector(std::vector<double>& vec, Napi::Value val);
+
 #endif

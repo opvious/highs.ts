@@ -5,7 +5,7 @@ import {
   errorMessage,
 } from '@opvious/stl-errors';
 import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
-import {localPath,PathLike} from '@opvious/stl-utils/files';
+import {localPath, PathLike} from '@opvious/stl-utils/files';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
@@ -16,6 +16,7 @@ import {SolveMonitor, SolveTracker} from './monitor.js';
 
 const [errors, errorCodes] = errorFactories({
   definitions: {
+    invalidWarmStart: 'The solution used to warm-start the model was invalid',
     nativeMethodFailed: (method: string, cause: unknown) => ({
       message:
         `Native method '${method}' failed (message: ${errorMessage(cause)}). ` +
@@ -239,6 +240,29 @@ export class Solver {
         ? {rows: sol.rowDualValues, columns: sol.columnDualValues}
         : undefined,
     };
+  }
+
+  /**
+   * Warm-starts the solver with a solution. By default this method will also
+   * check that the solution is valid if primal column values are added and
+   * throw an illegal warm-start error if not.
+   */
+  setSolutionValues(args: {
+    readonly primalColumns?: Float64Array;
+    readonly dualRows?: Float64Array;
+    /** Do not check that the solution is valid. */
+    readonly allowInvalid?: boolean;
+  }): void {
+    this.delegated('setSolution', {
+      columnValues: args.primalColumns,
+      rowDualValues: args.dualRows,
+    });
+    if (args.primalColumns && !args.allowInvalid) {
+      const {isValid} = this.delegated('assessPrimalSolution');
+      if (!isValid) {
+        throw errors.invalidWarmStart();
+      }
+    }
   }
 
   /** Write the current solution to the given path. */

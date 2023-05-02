@@ -13,7 +13,9 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("getModelStatus", &Solver::GetModelStatus),
                    InstanceMethod("getInfo", &Solver::GetInfo),
                    InstanceMethod("getSolution", &Solver::GetSolution),
+                   InstanceMethod("setSolution", &Solver::SetSolution),
                    InstanceMethod("writeSolution", &Solver::WriteSolution),
+                   InstanceMethod("assessPrimalSolution", &Solver::AssessPrimalSolution),
                    InstanceMethod("clearModel", &Solver::ClearModel),
                    InstanceMethod("clearSolver", &Solver::ClearSolver),
                    InstanceMethod("clear", &Solver::Clear)});
@@ -345,6 +347,46 @@ Napi::Value Solver::GetSolution(const Napi::CallbackInfo& info) {
   obj.Set("columnDualValues", ToFloat64Array(env, sol.col_dual));
   obj.Set("rowValues", ToFloat64Array(env, sol.row_value));
   obj.Set("rowDualValues", ToFloat64Array(env, sol.row_dual));
+  return obj;
+}
+
+void Solver::SetSolution(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsObject()) {
+    ThrowTypeError(env, "Expected 1 argument [object]");
+    return;
+  }
+  Napi::Object obj = info[0].As<Napi::Object>();
+
+  HighsSolution sol;
+  AssignToVector(sol.col_value, obj.Get("columnValues"));
+  AssignToVector(sol.col_dual, obj.Get("columnDualValues"));
+  AssignToVector(sol.row_value, obj.Get("rowValues"));
+  AssignToVector(sol.row_dual, obj.Get("rowDualValues"));
+
+  HighsStatus status = this->highs_->setSolution(sol);
+  if (status != HighsStatus::kOk) {
+    ThrowError(env, "Set solution failed");
+    return;
+  }
+}
+
+Napi::Value Solver::AssessPrimalSolution(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return env.Undefined();
+  }
+
+  bool valid, integral, feasible;
+  Napi::Object obj = Napi::Object::New(env);
+  HighsStatus status = this->highs_->assessPrimalSolution(valid, integral, feasible);
+  bool ok = status == HighsStatus::kOk;
+  obj.Set("isValid", ok && valid);
+  obj.Set("isIntegral", ok && integral);
+  obj.Set("isFeasible", ok && feasible);
   return obj;
 }
 

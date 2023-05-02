@@ -1,4 +1,4 @@
-/** Progress tracking. */
+/** Solve progress tracking */
 
 import {assert, check} from '@opvious/stl-errors';
 import {TypedEmitter, typedEmitter} from '@opvious/stl-utils/events';

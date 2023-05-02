@@ -72,25 +72,54 @@ describe('solver', () => {
     );
   });
 
-  test('solves unbounded problem', async () => {
-    const solver = sut.Solver.create();
-    await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
-    try {
-      await solver.solve();
-      fail();
-    } catch (err) {
-      expect(err).toMatchObject({
-        code: errorCodes.SolveNonOptimal,
-        tags: {status: sut.SolverStatus.UNBOUNDED},
-      });
-    }
+  describe('solve', () => {
+    test('throws on unbounded problem', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
+      try {
+        await solver.solve();
+        fail();
+      } catch (err) {
+        expect(err).toMatchObject({
+          code: errorCodes.SolveNonOptimal,
+          tags: {status: sut.SolverStatus.UNBOUNDED},
+        });
+      }
+    });
+
+    test('allows non-optimal statuses', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
+      await solver.solve({allowNonOptimal: true});
+      expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
+    });
   });
 
-  test('allows non-optimal statuses', async () => {
-    const solver = sut.Solver.create();
-    await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
-    await solver.solve({allowNonOptimal: true});
-    expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
+  describe('warm start', () => {
+    test('accepts valid solution', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('simple.lp'));
+      const primal = new Float64Array([17.5, 1, 15.5, 2]);
+      const dual = new Float64Array([1.5, 2.5, 11.5]);
+      solver.setSolutionValues({primalColumns: primal, dualRows: dual});
+      expect(solver.getSolution()).toMatchObject({
+        primal: {columns: primal},
+        dual: {rows: dual},
+      });
+    });
+
+    test('throws on invalid solution', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('simple.lp'));
+      try {
+        solver.setSolutionValues({
+          primalColumns: new Float64Array([20, 1, 15.5, 2]),
+        });
+        fail();
+      } catch (err) {
+        expect(err).toMatchObject({code: errorCodes.InvalidWarmStart});
+      }
+    });
   });
 
   test('wraps native method errors', () => {
