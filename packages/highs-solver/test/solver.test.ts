@@ -101,7 +101,7 @@ describe('solver', () => {
       await solver.setModelFromFile(loader.localUrl('simple.lp'));
       const primal = new Float64Array([17.5, 1, 15.5, 2]);
       const dual = new Float64Array([1.5, 2.5, 11.5]);
-      solver.setSolutionValues({primalColumns: primal, dualRows: dual});
+      solver.warmStart({primalColumns: primal, dualRows: dual});
       expect(solver.getSolution()).toMatchObject({
         primal: {columns: primal},
         dual: {rows: dual},
@@ -112,13 +112,43 @@ describe('solver', () => {
       const solver = sut.Solver.create();
       await solver.setModelFromFile(loader.localUrl('simple.lp'));
       try {
-        solver.setSolutionValues({
+        solver.warmStart({
           primalColumns: new Float64Array([20, 1, 15.5, 2]),
         });
         fail();
       } catch (err) {
         expect(err).toMatchObject({code: errorCodes.InvalidWarmStart});
       }
+    });
+  });
+
+  test('updates model', async () => {
+    const solver = sut.Solver.create();
+    await solver.setModel({
+      isMaximization: true,
+      columnLowerBounds: new Float64Array([0, -Infinity, -Infinity, 2]),
+      columnUpperBounds: new Float64Array([40, Infinity, Infinity, 3]),
+      objectiveLinearWeights: new Float64Array([10, 20, 30, 0]),
+      rowLowerBounds: new Float64Array(),
+      rowUpperBounds: new Float64Array(),
+      weights: {
+        offsets: new Int32Array(),
+        indices: new Int32Array(),
+        values: new Float64Array(),
+      },
+    });
+    solver.addRows({
+      lowerBounds: new Float64Array([-Infinity, -Infinity, 0]),
+      upperBounds: new Float64Array([20, 30, 0]),
+      weights: {
+        offsets: new Int32Array([0, 4, 7]),
+        indices: new Int32Array([0, 1, 2, 3, 0, 1, 2, 1, 3]),
+        values: new Float64Array([-1, 1, 1, 10, 1, -4, 1, 1, -0.5]),
+      },
+    });
+    await solver.solve();
+    expect(solver.getSolution()).toMatchObject({
+      primal: {columns: new Float64Array([17.5, 1, 16.5, 2])},
     });
   });
 

@@ -11,19 +11,28 @@ class Solver : public Napi::ObjectWrap<Solver> {
  private:
   void SetOption(const Napi::CallbackInfo& info);
   Napi::Value GetOption(const Napi::CallbackInfo& info);
-  void Clear(const Napi::CallbackInfo& info);
-  void ClearModel(const Napi::CallbackInfo& info);
-  void ClearSolver(const Napi::CallbackInfo& info);
+
   void PassModel(const Napi::CallbackInfo& info);
   void ReadModel(const Napi::CallbackInfo& info);
   void WriteModel(const Napi::CallbackInfo& info);
+
+  void ChangeObjectiveSense(const Napi::CallbackInfo& info);
+  void ChangeObjectiveOffset(const Napi::CallbackInfo& info);
+  void ChangeColsCost(const Napi::CallbackInfo& info);
+  void AddRows(const Napi::CallbackInfo& info);
+
   void Run(const Napi::CallbackInfo& info);
   Napi::Value GetModelStatus(const Napi::CallbackInfo& info);
   Napi::Value GetInfo(const Napi::CallbackInfo& info);
+
   Napi::Value GetSolution(const Napi::CallbackInfo& info);
   void SetSolution(const Napi::CallbackInfo& info);
-  Napi::Value AssessPrimalSolution(const Napi::CallbackInfo& info);
   void WriteSolution(const Napi::CallbackInfo& info);
+  Napi::Value AssessPrimalSolution(const Napi::CallbackInfo& info);
+
+  void Clear(const Napi::CallbackInfo& info);
+  void ClearModel(const Napi::CallbackInfo& info);
+  void ClearSolver(const Napi::CallbackInfo& info);
 
   std::shared_ptr<Highs> highs_;
 };

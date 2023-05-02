@@ -6,6 +6,7 @@ import {
 } from '@opvious/stl-errors';
 import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
 import {localPath, PathLike} from '@opvious/stl-utils/files';
+import {ifPresent} from '@opvious/stl-utils/functions';
 import {writeFile} from 'fs/promises';
 import * as addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
@@ -150,6 +151,78 @@ export class Solver {
     );
   }
 
+  updateObjective(args: {
+    readonly isMaximization?: boolean;
+    readonly offset?: number;
+    readonly costs?: Float64Array;
+  }): void {
+    this.assertNotSolving();
+    this.telemetry.logger.debug('Updating objective.');
+
+    ifPresent(
+      args.isMaximization,
+      (s) => void this.delegated('changeObjectiveSense', s)
+    );
+    ifPresent(
+      args.offset,
+      (o) => void this.delegated('changeObjectiveOffset', o)
+    );
+    ifPresent(args.costs, (c) => void this.delegated('changeColsCost', c));
+  }
+
+  /** Adds constraint rows to the loaded model. */
+  addRows(args: {
+    readonly weights: addon.Matrix;
+    readonly lowerBounds: Float64Array;
+    readonly upperBounds: Float64Array;
+  }): void {
+    this.assertNotSolving();
+    this.telemetry.logger.debug('Adding rows.');
+
+    const {weights, lowerBounds: lbs, upperBounds: ubs} = args;
+    const height = weights.offsets.length;
+    assert(
+      lbs.length === height && ubs.length === height,
+      'Inconsistent height'
+    );
+    assert(
+      weights.indices.length === weights.values.length,
+      'Inconsistent width'
+    );
+
+    this.delegated('addRows', height, lbs, ubs, weights);
+  }
+
+  /**
+   * Warm-starts the solver with a solution. By default this method will also
+   * check that the solution is valid and throw an illegal warm-start error if
+   * not.
+   */
+  warmStart(args: {
+    /** New primal solution values. */
+    readonly primalColumns: Float64Array;
+
+    /** Optional dual values. */
+    readonly dualRows?: Float64Array;
+
+    /** Do not check that the solution is valid. */
+    readonly allowInvalid?: boolean;
+  }): void {
+    this.assertNotSolving();
+    this.telemetry.logger.debug('Adding warm-start solution.');
+
+    this.delegated('setSolution', {
+      columnValues: args.primalColumns,
+      rowDualValues: args.dualRows,
+    });
+    if (!args.allowInvalid) {
+      const {isValid} = this.delegated('assessPrimalSolution');
+      if (!isValid) {
+        throw errors.invalidWarmStart();
+      }
+    }
+  }
+
   /**
    * Runs the solver on the last set model using the current options. No
    * mutating operations may be performed on the solver until the returned
@@ -240,29 +313,6 @@ export class Solver {
         ? {rows: sol.rowDualValues, columns: sol.columnDualValues}
         : undefined,
     };
-  }
-
-  /**
-   * Warm-starts the solver with a solution. By default this method will also
-   * check that the solution is valid if primal column values are added and
-   * throw an illegal warm-start error if not.
-   */
-  setSolutionValues(args: {
-    readonly primalColumns?: Float64Array;
-    readonly dualRows?: Float64Array;
-    /** Do not check that the solution is valid. */
-    readonly allowInvalid?: boolean;
-  }): void {
-    this.delegated('setSolution', {
-      columnValues: args.primalColumns,
-      rowDualValues: args.dualRows,
-    });
-    if (args.primalColumns && !args.allowInvalid) {
-      const {isValid} = this.delegated('assessPrimalSolution');
-      if (!isValid) {
-        throw errors.invalidWarmStart();
-      }
-    }
   }
 
   /** Write the current solution to the given path. */
