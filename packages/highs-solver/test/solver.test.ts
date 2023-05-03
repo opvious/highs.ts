@@ -139,7 +139,7 @@ describe('solver', () => {
     solver.updateObjective({
       isMaximization: true,
       offset: 0,
-      costs: new Float64Array([10, 20, 30, 0]),
+      linearWeights: new Float64Array([10, 20, 30, 0]),
     });
     solver.addRows({
       lowerBounds: new Float64Array([-Infinity, -Infinity, 0]),
