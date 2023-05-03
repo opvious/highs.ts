@@ -2,6 +2,7 @@ import {assert} from '@opvious/stl-errors';
 import {PathLike} from '@opvious/stl-utils/files';
 import {MarkPresent} from '@opvious/stl-utils/objects';
 import {readFile} from 'fs/promises';
+import addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
 
 import {SolutionStyle} from './common.js';
@@ -25,7 +26,11 @@ export {
   SolverSolutionValues,
   SolverStatus,
 } from './solver.js';
-export {Matrix, OptionValue, solverVersion} from 'highs-addon';
+// We don't export values here since highs-addon is a CommonJS package and
+// importing this module would otherwise fail.
+export type {Matrix, OptionValue} from 'highs-addon';
+
+export const {solverVersion} = addon;
 
 /**
  * Solves an optimization problem asynchronously. The model can be specified

@@ -8,7 +8,7 @@ import {noopTelemetry, Telemetry} from '@opvious/stl-telemetry';
 import {localPath, PathLike} from '@opvious/stl-utils/files';
 import {ifPresent} from '@opvious/stl-utils/functions';
 import {writeFile} from 'fs/promises';
-import * as addon from 'highs-addon';
+import addon from 'highs-addon';
 import * as tmp from 'tmp-promise';
 import util from 'util';
 
@@ -75,9 +75,7 @@ export class Solver {
    * Retrieves an option's current value. This method will throw if the name
    * does not match a valid option.
    */
-  getOption<N extends keyof addon.CommonOptions>(
-    name: N
-  ): addon.CommonOptions[N];
+  getOption<N extends keyof addon.TypedOptions>(name: N): addon.TypedOptions[N];
   getOption(name: string): addon.OptionValue;
   getOption(name: string): addon.OptionValue {
     return this.delegated('getOption', name);
@@ -440,7 +438,7 @@ export interface SolverSolutionValues {
   readonly columns: Float64Array;
 }
 
-export interface SolverOptions extends addon.CommonOptions {
+export interface SolverOptions extends Partial<addon.TypedOptions> {
   readonly [name: string]: addon.OptionValue | undefined;
 }
 

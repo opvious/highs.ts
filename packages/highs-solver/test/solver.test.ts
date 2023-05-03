@@ -14,6 +14,7 @@ describe('solver', () => {
     expect(solver.getOption('random_seed')).toEqual(123);
     solver.updateOptions({random_seed: 48});
     expect(solver.getOption('random_seed')).toEqual(48);
+    console.log(solver.getOption('time_limit'));
   });
 
   test('returns unset status', () => {

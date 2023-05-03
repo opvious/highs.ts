@@ -3,12 +3,9 @@ export function solverVersion(): string;
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/Highs.h
 export declare class Solver {
-  setOption<N extends keyof CommonOptions>( // Enables better auto-complete
-    name: N,
-    val: CommonOptions[N]
-  ): void;
+  setOption<N extends keyof TypedOptions>(name: N, val: TypedOptions[N]): void; // Enables better auto-complete
   setOption(name: string, val: OptionValue): void;
-  getOption<N extends keyof CommonOptions>(name: N): CommonOptions[N];
+  getOption<N extends keyof TypedOptions>(name: N): TypedOptions[N];
   getOption(name: string): OptionValue;
 
   passModel(model: Model): void;
@@ -48,29 +45,29 @@ export declare class Solver {
 export type OptionValue = boolean | number | string;
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsOptions.h
-export interface CommonOptions {
-  readonly presolve?: 'on' | 'off' | 'choose'; // kPresolveString
-  readonly solver?: 'simplex' | 'choose' | 'ipm'; // kSolverString
-  readonly parallel?: 'on' | 'off' | 'choose'; // kParallelString
-  readonly run_crossover?: 'on' | 'off' | 'choose'; // kRunCrossoverString
-  readonly time_limit?: number; // kTimeLimitString
-  readonly ranging?: 'on' | 'off'; // kRangingString
-  readonly infinite_cost?: number;
-  readonly infinite_bound?: number;
-  readonly small_matrix_value?: number;
-  readonly large_matrix_value?: number;
-  readonly primal_feasibility_tolerance?: number;
-  readonly dual_feasibility_tolerance?: number;
-  readonly ipm_feasibility_tolerance?: number;
-  readonly objective_bound?: number;
-  readonly objective_target?: number;
-  readonly random_seed?: number; // kRandomSeed
-  readonly threads?: number;
-  readonly output_flag?: boolean;
-  readonly log_file?: string; // kLogFileString
-  readonly log_to_console?: boolean;
-  readonly mip_abs_gap?: number;
-  readonly mip_rel_gap?: number;
+export interface TypedOptions {
+  readonly presolve: 'on' | 'off' | 'choose'; // kPresolveString
+  readonly solver: 'simplex' | 'choose' | 'ipm'; // kSolverString
+  readonly parallel: 'on' | 'off' | 'choose'; // kParallelString
+  readonly run_crossover: 'on' | 'off' | 'choose'; // kRunCrossoverString
+  readonly time_limit: number; // kTimeLimitString
+  readonly ranging: 'on' | 'off'; // kRangingString
+  readonly infinite_cost: number;
+  readonly infinite_bound: number;
+  readonly small_matrix_value: number;
+  readonly large_matrix_value: number;
+  readonly primal_feasibility_tolerance: number;
+  readonly dual_feasibility_tolerance: number;
+  readonly ipm_feasibility_tolerance: number;
+  readonly objective_bound: number;
+  readonly objective_target: number;
+  readonly random_seed: number; // kRandomSeed
+  readonly threads: number;
+  readonly output_flag: boolean;
+  readonly log_file: string; // kLogFileString
+  readonly log_to_console: boolean;
+  readonly mip_abs_gap: number;
+  readonly mip_rel_gap: number;
 }
 
 export interface Model {
