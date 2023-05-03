@@ -151,10 +151,19 @@ export class Solver {
     );
   }
 
+  /**
+   * Updates the model's objective, keeping everything else as-is. Any fields
+   * undefined in the input will be left unchanged.
+   */
   updateObjective(args: {
     readonly isMaximization?: boolean;
     readonly offset?: number;
-    readonly costs?: Float64Array;
+
+    /**
+     * New model linear costs. If present, must have length equal to the model's
+     * number of variables.
+     */
+    readonly linearWeights?: Float64Array;
   }): void {
     this.assertNotSolving();
     this.telemetry.logger.debug('Updating objective.');
@@ -167,7 +176,10 @@ export class Solver {
       args.offset,
       (o) => void this.delegated('changeObjectiveOffset', o)
     );
-    ifPresent(args.costs, (c) => void this.delegated('changeColsCost', c));
+    ifPresent(
+      args.linearWeights,
+      (c) => void this.delegated('changeColsCost', c)
+    );
   }
 
   /** Adds constraint rows to the loaded model. */
