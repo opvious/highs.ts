@@ -7,14 +7,9 @@ export declare class Solver {
     name: N,
     val: CommonOptions[N]
   ): void;
-  setOption<N extends string>(
-    name: N,
-    val: N extends keyof CommonOptions ? CommonOptions[N] : OptionValue
-  ): void;
+  setOption(name: string, val: OptionValue): void;
   getOption<N extends keyof CommonOptions>(name: N): CommonOptions[N];
-  getOption<N extends string>(
-    name: N
-  ): N extends keyof CommonOptions ? CommonOptions[N] : OptionValue;
+  getOption(name: string): OptionValue;
 
   passModel(model: Model): void;
   readModel(fp: string, cb: (err: Error) => void): string;

@@ -71,6 +71,15 @@ export class Solver {
     }
   }
 
+  /** Retrieves an option's current value. */
+  getOption<N extends keyof addon.CommonOptions>(
+    name: N
+  ): addon.CommonOptions[N];
+  getOption(name: string): addon.OptionValue;
+  getOption(name: string): addon.OptionValue {
+    return this.delegated('getOption', name);
+  }
+
   /** Sets the model to be solved. */
   setModel(model: SolverModel): void {
     this.assertNotSolving();

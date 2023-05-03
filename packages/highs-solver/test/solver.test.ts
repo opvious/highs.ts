@@ -9,6 +9,13 @@ import * as sut from '../src/solver.js';
 const loader = ResourceLoader.enclosing(import.meta.url).scoped('test');
 
 describe('solver', () => {
+  test('updates and gets options', async () => {
+    const solver = sut.Solver.create({options: {random_seed: 123}});
+    expect(solver.getOption('random_seed')).toEqual(123);
+    solver.updateOptions({random_seed: 48});
+    expect(solver.getOption('random_seed')).toEqual(48);
+  });
+
   test('returns unset status', () => {
     const solver = sut.Solver.create();
     expect(solver.getStatus()).toEqual(sut.SolverStatus.NOT_SET);
