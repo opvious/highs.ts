@@ -71,7 +71,10 @@ export class Solver {
     }
   }
 
-  /** Retrieves an option's current value. */
+  /**
+   * Retrieves an option's current value. This method will throw if the name
+   * does not match a valid option.
+   */
   getOption<N extends keyof addon.CommonOptions>(
     name: N
   ): addon.CommonOptions[N];
