@@ -19,6 +19,7 @@ export {SolveMonitor, solveMonitor, SolveProgress} from './monitor.js';
 export {
   Solver,
   SolverCreationOptions,
+  solverErrorTag,
   SolverInfo,
   SolverModel,
   SolverOptions,

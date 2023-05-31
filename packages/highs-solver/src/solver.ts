@@ -15,6 +15,9 @@ import util from 'util';
 import {packageInfo, SolutionStyle} from './common.js';
 import {SolveMonitor, SolveTracker} from './monitor.js';
 
+/** Symbol used as key to store the active server in error tags. */
+export const solverErrorTag = Symbol('solver');
+
 const [errors, errorCodes] = errorFactories({
   definitions: {
     invalidWarmStart: 'The solution used to warm-start the model was invalid',
@@ -27,14 +30,14 @@ const [errors, errorCodes] = errorFactories({
     }),
     solveFailed: (solver: Solver, cause: unknown) => ({
       message: `Solve failed with status ${currentStatusName(solver)}`,
-      tags: {solver, status: solver.getStatus()},
+      tags: {[solverErrorTag]: solver, status: solver.getStatus()},
       cause,
     }),
     solveInProgress: 'No mutations may be performed while a solve is running',
     solveNonOptimal: (solver: Solver) => ({
       message:
         'Solve ended with non-optimal status ' + currentStatusName(solver),
-      tags: {solver, status: solver.getStatus()},
+      tags: {[solverErrorTag]: solver, status: solver.getStatus()},
     }),
   },
   prefix: 'ERR_HIGHS_',
