@@ -7,7 +7,7 @@ import util from 'util';
 import * as sut from '../';
 
 test('vendor version', () => {
-  expect(sut.solverVersion()).toMatch(/v.+/);
+  expect(sut.solverVersion()).toMatch(/\d+\.\d+\.\d+/);
 });
 
 describe('solver', () => {
