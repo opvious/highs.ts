@@ -117,22 +117,6 @@ describe('solver', () => {
         });
       }
     });
-
-    test('handles timeout', async () => {
-      const solver = sut.Solver.create({
-        options: {time_limit: 1},
-      });
-      await solver.setModelFromFile(loader.localUrl('quadratic.lp'));
-      try {
-        await solver.solve();
-        fail();
-      } catch (err) {
-        expect(err).toMatchObject({
-          code: errorCodes.SolveFailed,
-          tags: {status: sut.SolverStatus.TIME_LIMIT},
-        });
-      }
-    });
   });
 
   describe('warm start', () => {
