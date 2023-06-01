@@ -16,6 +16,11 @@ describe('solver', () => {
     expect(solver.getOption('random_seed')).toEqual(48);
   });
 
+  test('is not solving initially', () => {
+    const solver = sut.Solver.create();
+    expect(solver.isSolving()).toBe(false);
+  });
+
   test('returns unset status', () => {
     const solver = sut.Solver.create();
     expect(solver.getStatus()).toEqual(sut.SolverStatus.NOT_SET);
@@ -99,6 +104,18 @@ describe('solver', () => {
       await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
       await solver.solve({allowNonOptimal: true});
       expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
+    });
+
+    test('throws on empty model', async () => {
+      const solver = sut.Solver.create();
+      try {
+        await solver.solve({allowNonOptimal: true});
+      } catch (err) {
+        expect(err).toMatchObject({
+          code: errorCodes.SolveFailed,
+          tags: {status: sut.SolverStatus.MODEL_EMPTY},
+        });
+      }
     });
   });
 

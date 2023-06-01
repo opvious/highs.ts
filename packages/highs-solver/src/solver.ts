@@ -28,16 +28,20 @@ const [errors, errorCodes] = errorFactories({
       tags: {method},
       cause,
     }),
-    solveFailed: (solver: Solver, cause: unknown) => ({
-      message: `Solve failed with status ${currentStatusName(solver)}`,
-      tags: {[solverErrorTag]: solver, status: solver.getStatus()},
+    solveFailed: (solver: Solver, status: SolverStatus, cause?: unknown) => ({
+      message: `Solve failed with status ${SolverStatus[status]}`,
+      tags: {[solverErrorTag]: solver, status},
       cause,
     }),
     solveInProgress: 'No mutations may be performed while a solve is running',
-    solveNonOptimal: (solver: Solver) => ({
-      message:
-        'Solve ended with non-optimal status ' + currentStatusName(solver),
-      tags: {[solverErrorTag]: solver, status: solver.getStatus()},
+    solveNonOptimal: (
+      solver: Solver,
+      status: SolverStatus,
+      cause?: unknown
+    ) => ({
+      message: 'Solve ended with non-optimal status ' + SolverStatus[status],
+      tags: {[solverErrorTag]: solver, status},
+      cause,
     }),
   },
   prefix: 'ERR_HIGHS_',
@@ -253,8 +257,8 @@ export class Solver {
    * mutating operations may be performed on the solver until the returned
    * promise is resolved (i.e. the solve ends).
    *
-   * This method will throw if the solver did not find an optimal solution. See
-   * the `allowNonOptimal` option to change this behavior.
+   * By default this method will throw if the solver did not find an optimal
+   * solution. See the `allowNonOptimal` option to change this behavior.
    */
   async solve(opts?: {
     /** Solver status event consumer. */
@@ -284,28 +288,45 @@ export class Solver {
     }
 
     this.solving = true;
+    let err: unknown | undefined;
     let status: SolverStatus | undefined;
-    try {
-      await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
+    await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
+      try {
         await this.delegatedPromise('run');
-        status = this.getStatus();
-        span.setAttribute('solver.status', SolverStatus[status]);
-      });
-    } catch (cause) {
-      throw errors.solveFailed(this, cause);
-    } finally {
+      } catch (cause) {
+        err = cause;
+      }
+
+      this.solving = false;
       tracker?.shutdown();
       if (tempLog) {
         this.delegated('setOption', 'log_file', '');
         await tempLog.cleanup();
       }
-      this.solving = false;
-    }
+
+      status = this.getStatus();
+      span.setAttribute('solver.status', SolverStatus[status]);
+      switch (status) {
+        case SolverStatus.OPTIMAL:
+        case SolverStatus.INFEASIBLE:
+        case SolverStatus.ITERATION_LIMIT:
+        case SolverStatus.OBJECTIVE_BOUND:
+        case SolverStatus.OBJECTIVE_TARGET:
+        case SolverStatus.SOLUTION_LIMIT:
+        case SolverStatus.TIME_LIMIT:
+        case SolverStatus.UNBOUNDED:
+        case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
+          break; // Do not throw here
+        default:
+          throw errors.solveFailed(this, status, err);
+      }
+    });
     assert(status != null, 'Missing status');
-    if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
-      throw errors.solveNonOptimal(this);
-    }
+
     tel.logger.info('Solve ended with status %s.', SolverStatus[status]);
+    if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
+      throw errors.solveNonOptimal(this, status, err);
+    }
   }
 
   /** Returns true if the solver is currently solving the model. */
@@ -469,8 +490,4 @@ export enum SolverStatus {
 function asSolverStatus(num: number): SolverStatus {
   assert(SolverStatus[num] != null, 'Invalid status: %s', num);
   return num as SolverStatus;
-}
-
-function currentStatusName(solver: Solver): string {
-  return SolverStatus[solver.getStatus()];
 }
