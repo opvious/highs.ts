@@ -34,9 +34,14 @@ const [errors, errorCodes] = errorFactories({
       cause,
     }),
     solveInProgress: 'No mutations may be performed while a solve is running',
-    solveNonOptimal: (solver: Solver, status: SolverStatus) => ({
+    solveNonOptimal: (
+      solver: Solver,
+      status: SolverStatus,
+      cause?: unknown
+    ) => ({
       message: 'Solve ended with non-optimal status ' + SolverStatus[status],
       tags: {[solverErrorTag]: solver, status},
+      cause,
     }),
   },
   prefix: 'ERR_HIGHS_',
@@ -283,9 +288,9 @@ export class Solver {
     }
 
     this.solving = true;
+    let err: unknown | undefined;
     let status: SolverStatus | undefined;
     await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
-      let err;
       try {
         await this.delegatedPromise('run');
       } catch (cause) {
@@ -320,7 +325,7 @@ export class Solver {
 
     tel.logger.info('Solve ended with status %s.', SolverStatus[status]);
     if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
-      throw errors.solveNonOptimal(this, status);
+      throw errors.solveNonOptimal(this, status, err);
     }
   }
 
