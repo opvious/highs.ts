@@ -252,8 +252,8 @@ export class Solver {
    * mutating operations may be performed on the solver until the returned
    * promise is resolved (i.e. the solve ends).
    *
-   * This method will throw if the solver did not find an optimal solution. See
-   * the `allowNonOptimal` option to change this behavior.
+   * By default this method will throw if the solver did not find an optimal
+   * solution. See the `allowNonOptimal` option to change this behavior.
    */
   async solve(opts?: {
     /** Solver status event consumer. */
@@ -311,17 +311,17 @@ export class Solver {
         case SolverStatus.TIME_LIMIT:
         case SolverStatus.UNBOUNDED:
         case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
-          break; // Do not throw
+          break; // Do not throw here
         default:
           throw errors.solveFailed(this, status, err);
       }
     });
     assert(status != null, 'Missing status');
 
+    tel.logger.info('Solve ended with status %s.', SolverStatus[status]);
     if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
       throw errors.solveNonOptimal(this, status);
     }
-    tel.logger.info('Solve ended with status %s.', SolverStatus[status]);
   }
 
   /** Returns true if the solver is currently solving the model. */
