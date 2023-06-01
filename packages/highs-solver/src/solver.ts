@@ -292,7 +292,20 @@ export class Solver {
         span.setAttribute('solver.status', SolverStatus[status]);
       });
     } catch (cause) {
-      throw errors.solveFailed(this, cause);
+      switch (this.getStatus()) {
+        case SolverStatus.INFEASIBLE:
+        case SolverStatus.ITERATION_LIMIT:
+        case SolverStatus.OBJECTIVE_BOUND:
+        case SolverStatus.OBJECTIVE_TARGET:
+        case SolverStatus.SOLUTION_LIMIT:
+        case SolverStatus.TIME_LIMIT:
+        case SolverStatus.UNBOUNDED:
+        case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
+          tel.logger.debug({err: cause}, 'Solve method aborted.');
+          break; // Use default handling below
+        default:
+          throw errors.solveFailed(this, cause);
+      }
     } finally {
       tracker?.shutdown();
       if (tempLog) {
