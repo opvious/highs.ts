@@ -100,6 +100,12 @@ describe('solver', () => {
       await solver.solve({allowNonOptimal: true});
       expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
     });
+
+    test('throws on empty model', async () => {
+      const solver = sut.Solver.create();
+      await solver.solve({allowNonOptimal: true});
+      expect(solver.getStatus()).toEqual(sut.SolverStatus.MODEL_EMPTY);
+    });
   });
 
   describe('warm start', () => {

@@ -285,35 +285,40 @@ export class Solver {
 
     this.solving = true;
     let status: SolverStatus | undefined;
-    try {
-      await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
+    await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
+      try {
         await this.delegatedPromise('run');
+      } catch (cause) {
         status = this.getStatus();
+        switch (status) {
+          case SolverStatus.INFEASIBLE:
+          case SolverStatus.ITERATION_LIMIT:
+          case SolverStatus.OBJECTIVE_BOUND:
+          case SolverStatus.OBJECTIVE_TARGET:
+          case SolverStatus.SOLUTION_LIMIT:
+          case SolverStatus.TIME_LIMIT:
+          case SolverStatus.UNBOUNDED:
+          case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
+            tel.logger.debug(
+              {err: cause},
+              'Solve method aborted with status %s.',
+              SolverStatus[status]
+            );
+            break; // Use default handling below
+          default:
+            throw errors.solveFailed(this, cause);
+        }
+      } finally {
+        status ??= this.getStatus();
         span.setAttribute('solver.status', SolverStatus[status]);
-      });
-    } catch (cause) {
-      switch (this.getStatus()) {
-        case SolverStatus.INFEASIBLE:
-        case SolverStatus.ITERATION_LIMIT:
-        case SolverStatus.OBJECTIVE_BOUND:
-        case SolverStatus.OBJECTIVE_TARGET:
-        case SolverStatus.SOLUTION_LIMIT:
-        case SolverStatus.TIME_LIMIT:
-        case SolverStatus.UNBOUNDED:
-        case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
-          tel.logger.debug({err: cause}, 'Solve method aborted.');
-          break; // Use default handling below
-        default:
-          throw errors.solveFailed(this, cause);
+        tracker?.shutdown();
+        if (tempLog) {
+          this.delegated('setOption', 'log_file', '');
+          await tempLog.cleanup();
+        }
+        this.solving = false;
       }
-    } finally {
-      tracker?.shutdown();
-      if (tempLog) {
-        this.delegated('setOption', 'log_file', '');
-        await tempLog.cleanup();
-      }
-      this.solving = false;
-    }
+    });
     assert(status != null, 'Missing status');
     if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
       throw errors.solveNonOptimal(this);
