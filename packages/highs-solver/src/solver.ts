@@ -28,16 +28,15 @@ const [errors, errorCodes] = errorFactories({
       tags: {method},
       cause,
     }),
-    solveFailed: (solver: Solver, cause: unknown) => ({
-      message: `Solve failed with status ${currentStatusName(solver)}`,
-      tags: {[solverErrorTag]: solver, status: solver.getStatus()},
+    solveFailed: (solver: Solver, status: SolverStatus, cause?: unknown) => ({
+      message: `Solve failed with status ${SolverStatus[status]}`,
+      tags: {[solverErrorTag]: solver, status},
       cause,
     }),
     solveInProgress: 'No mutations may be performed while a solve is running',
-    solveNonOptimal: (solver: Solver) => ({
-      message:
-        'Solve ended with non-optimal status ' + currentStatusName(solver),
-      tags: {[solverErrorTag]: solver, status: solver.getStatus()},
+    solveNonOptimal: (solver: Solver, status: SolverStatus) => ({
+      message: 'Solve ended with non-optimal status ' + SolverStatus[status],
+      tags: {[solverErrorTag]: solver, status},
     }),
   },
   prefix: 'ERR_HIGHS_',
@@ -286,42 +285,41 @@ export class Solver {
     this.solving = true;
     let status: SolverStatus | undefined;
     await tel.withActiveSpan({name: 'HiGHS solve'}, async (span) => {
+      let err;
       try {
         await this.delegatedPromise('run');
       } catch (cause) {
-        status = this.getStatus();
-        switch (status) {
-          case SolverStatus.INFEASIBLE:
-          case SolverStatus.ITERATION_LIMIT:
-          case SolverStatus.OBJECTIVE_BOUND:
-          case SolverStatus.OBJECTIVE_TARGET:
-          case SolverStatus.SOLUTION_LIMIT:
-          case SolverStatus.TIME_LIMIT:
-          case SolverStatus.UNBOUNDED:
-          case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
-            tel.logger.debug(
-              {err: cause},
-              'Solve method aborted with status %s.',
-              SolverStatus[status]
-            );
-            break; // Use default handling below
-          default:
-            throw errors.solveFailed(this, cause);
-        }
-      } finally {
-        status ??= this.getStatus();
-        span.setAttribute('solver.status', SolverStatus[status]);
-        tracker?.shutdown();
-        if (tempLog) {
-          this.delegated('setOption', 'log_file', '');
-          await tempLog.cleanup();
-        }
-        this.solving = false;
+        err = cause;
+      }
+
+      this.solving = false;
+      tracker?.shutdown();
+      if (tempLog) {
+        this.delegated('setOption', 'log_file', '');
+        await tempLog.cleanup();
+      }
+
+      status = this.getStatus();
+      span.setAttribute('solver.status', SolverStatus[status]);
+      switch (status) {
+        case SolverStatus.OPTIMAL:
+        case SolverStatus.INFEASIBLE:
+        case SolverStatus.ITERATION_LIMIT:
+        case SolverStatus.OBJECTIVE_BOUND:
+        case SolverStatus.OBJECTIVE_TARGET:
+        case SolverStatus.SOLUTION_LIMIT:
+        case SolverStatus.TIME_LIMIT:
+        case SolverStatus.UNBOUNDED:
+        case SolverStatus.UNBOUNDED_OR_INFEASIBLE:
+          break; // Do not throw
+        default:
+          throw errors.solveFailed(this, status, err);
       }
     });
     assert(status != null, 'Missing status');
+
     if (!opts?.allowNonOptimal && status !== SolverStatus.OPTIMAL) {
-      throw errors.solveNonOptimal(this);
+      throw errors.solveNonOptimal(this, status);
     }
     tel.logger.info('Solve ended with status %s.', SolverStatus[status]);
   }
@@ -487,8 +485,4 @@ export enum SolverStatus {
 function asSolverStatus(num: number): SolverStatus {
   assert(SolverStatus[num] != null, 'Invalid status: %s', num);
   return num as SolverStatus;
-}
-
-function currentStatusName(solver: Solver): string {
-  return SolverStatus[solver.getStatus()];
 }

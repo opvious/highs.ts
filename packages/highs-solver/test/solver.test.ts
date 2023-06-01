@@ -16,6 +16,11 @@ describe('solver', () => {
     expect(solver.getOption('random_seed')).toEqual(48);
   });
 
+  test('is not solving initially', () => {
+    const solver = sut.Solver.create();
+    expect(solver.isSolving()).toBe(false);
+  });
+
   test('returns unset status', () => {
     const solver = sut.Solver.create();
     expect(solver.getStatus()).toEqual(sut.SolverStatus.NOT_SET);
@@ -103,8 +108,29 @@ describe('solver', () => {
 
     test('throws on empty model', async () => {
       const solver = sut.Solver.create();
-      await solver.solve({allowNonOptimal: true});
-      expect(solver.getStatus()).toEqual(sut.SolverStatus.MODEL_EMPTY);
+      try {
+        await solver.solve({allowNonOptimal: true});
+      } catch (err) {
+        expect(err).toMatchObject({
+          code: errorCodes.SolveFailed,
+          tags: {status: sut.SolverStatus.MODEL_EMPTY},
+        });
+      }
+    });
+
+    test('allows timeout', async () => {
+      const solver = sut.Solver.create({
+        options: {time_limit: 1},
+      });
+      await solver.setModelFromFile(loader.localUrl('quadratic.lp'));
+      try {
+        await solver.solve();
+      } catch (err) {
+        expect(err).toMatchObject({
+          code: errorCodes.SolveFailed,
+          tags: {status: sut.SolverStatus.TIME_LIMIT},
+        });
+      }
     });
   });
 
