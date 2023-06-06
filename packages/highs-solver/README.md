@@ -58,11 +58,13 @@ number of LP iterations, ...
 
 ```typescript
 const solver = highs.Solver.create();
-solver.setModel(/* Model instance */); // Or set from file.
+solver.setModel(/* Model instance */);
 solver.warmStart({primalColumns: new Float64Array(/* Starting point */)});
 await solver.solve();
 const solution = solver.getSolution();
 ```
+
+Models set from a file can be warmstarted similarly.
 
 
 [highs]: https://github.com/ERGO-COde/HiGHS
