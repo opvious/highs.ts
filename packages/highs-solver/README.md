@@ -8,6 +8,7 @@ Node.js binding for the [HiGHS optimization solver][highs].
   directly
 + Non-blocking solves, optionally emitting progress updates (optimality gap,
   LP iterations, ...)
++ Performance boosters: warm start, live objective and constraint updates, ...
 
 ## Installation
 
@@ -52,6 +53,17 @@ const solution = await highs.solve('my-large-model.mps', {
 
 The monitor's `'progress'` event includes information such as optimality gap,
 number of LP iterations, ...
+
+### Warm start
+
+```typescript
+const solver = highs.Solver.create();
+solver.setModel(/* Model instance */); // Or set from file.
+solver.warmStart({primalColumns: new Float64Array(/* Starting point */)});
+await solver.solve();
+const solution = solver.getSolution();
+```
+
 
 [highs]: https://github.com/ERGO-COde/HiGHS
 [highs-options]: https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsOptions.h
