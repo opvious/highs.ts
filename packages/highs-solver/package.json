@@ -27,7 +27,7 @@
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write",
-    "prepare": "pnpm run build && inlinable replace",
+    "prepare": "pnpm run build && inlinable e",
     "test": "vitest",
     "watch": "tsc -b -w src test"
   },
