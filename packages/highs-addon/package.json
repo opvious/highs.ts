@@ -1,6 +1,6 @@
 {
   "name": "highs-addon",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "repository": "github:opvious/highs.ts",
   "description": "Low-level Node.js binding for the HiGHS optimization solver",
   "keywords": [
@@ -31,9 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "cmake-js": "^7.2.1",
-    "node-addon-api": "^5.1.0",
     "pkg-prebuilds": "^0.1.0"
+  },
+  "optionalDependencies": {
+    "cmake-js": "^7.2.1",
+    "node-addon-api": "^5.1.0"
   },
   "devDependencies": {
     "tmp-promise": "^3.0.3"
