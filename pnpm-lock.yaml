@@ -9,14 +9,14 @@ importers:
   .:
     devDependencies:
       '@opvious/eslint-plugin':
-        specifier: ^0.1.23
-        version: 0.1.23(eslint@8.32.0)(typescript@5.0.2)
+        specifier: ^0.1.24
+        version: 0.1.24(eslint@8.32.0)(typescript@5.0.2)
       '@opvious/prettier-typescript':
-        specifier: ^0.1.23
-        version: 0.1.23
+        specifier: ^0.1.24
+        version: 0.1.24
       '@opvious/tsconfig':
-        specifier: ^0.1.23
-        version: 0.1.23
+        specifier: ^0.1.24
+        version: 0.1.24
       '@types/node':
         specifier: ^18.11.7
         version: 18.11.18
@@ -437,8 +437,8 @@ packages:
     resolution: {integrity: sha512-O2yRJce1GOc6PAy3QxFM4NzFiWzvScDC1/5ihYBL6BUEVdq0XMWN01sppE+H6bBXbaFYipjwFLEWLg5PaSOThA==}
     engines: {node: '>=8.0.0'}
 
-  /@opvious/eslint-plugin@0.1.23(eslint@8.32.0)(typescript@5.0.2):
-    resolution: {integrity: sha512-XlP9Oy4ZUSWHKQ1dBK6SiWu4oDEH/lqQKZ4erz0QtmW6nH9jGXNeyptlQ7uqBojB0xNI02AHFv5xOSUX4j2qfg==, tarball: https://npm.pkg.github.com/download/@opvious/eslint-plugin/0.1.23/0b45ff5bd800ae449c525628fd5aae8f1207e167}
+  /@opvious/eslint-plugin@0.1.24(eslint@8.32.0)(typescript@5.0.2):
+    resolution: {integrity: sha512-4adcSVokQz3VjKZ+oMBXG9c0FU6wLQS9dTl1rKai3IbRsRsuZGZIlhQaVOarBCoY+mDt+kuLGLWW7D6AnvAAZw==, tarball: https://npm.pkg.github.com/download/@opvious/eslint-plugin/0.1.24/72ac970409528e008f8ead3982b81b6a3dd2658e}
     peerDependencies:
       eslint: ^8.10.0
     dependencies:
@@ -452,8 +452,8 @@ packages:
       - typescript
     dev: true
 
-  /@opvious/prettier-typescript@0.1.23:
-    resolution: {integrity: sha512-dcCyvGb2Eppb0TUVCVBVr8ut50q1R18xnRwTa3UqXJvaIiTUXYWfgj00OnYIngZYuxzhsGHkUg5t9iTp8vz8uw==, tarball: https://npm.pkg.github.com/download/@opvious/prettier-typescript/0.1.23/f0b4b2f9f56a93766f21d7c47d2f3e9765cae538}
+  /@opvious/prettier-typescript@0.1.24:
+    resolution: {integrity: sha512-trFB0eSf/fotLWedE44Wm5X5fPz+V9qMdsk9VnSwyjoumZO5LKjsbCsrr9asiWhyAxYip2mJzurmeGWIom0xOw==, tarball: https://npm.pkg.github.com/download/@opvious/prettier-typescript/0.1.24/423420a68f328c78f11b0bc88cf91bfb7d48f860}
     dev: true
 
   /@opvious/stl-errors@0.21.8:
@@ -487,8 +487,8 @@ packages:
       untruncate-json: 0.0.1
       upper-case-first: 2.0.2
 
-  /@opvious/tsconfig@0.1.23:
-    resolution: {integrity: sha512-mGQXwKLMrlIyk3eux+llwkbIHWjj233VfYaSMeTmD88d+t69f9p+b+ugZIeO1pg1MKS9tDZ6VM13NMJiVAxm4Q==, tarball: https://npm.pkg.github.com/download/@opvious/tsconfig/0.1.23/c970f7e997ddae4bf1dd002cd7acf994533d5af5}
+  /@opvious/tsconfig@0.1.24:
+    resolution: {integrity: sha512-Dr94V5dTdhZbU48RlDJhhJI9h4XHQHgdFNLDDTdU/tJG6aHGqA/RU6RDJiaQDZJeOyfs0CxQnPecvEpj+9Lbew==, tarball: https://npm.pkg.github.com/download/@opvious/tsconfig/0.1.24/398dd39ef4e8d45442a83f02c539678f33d036ba}
     dev: true
 
   /@pkgjs/parseargs@0.11.0:
@@ -719,12 +719,12 @@ packages:
       event-target-shim: 5.0.1
     dev: false
 
-  /acorn-jsx@5.3.2(acorn@8.8.2):
+  /acorn-jsx@5.3.2(acorn@8.10.0):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
-      acorn: 8.8.2
+      acorn: 8.10.0
     dev: true
 
   /acorn-walk@8.2.0:
@@ -1445,8 +1445,8 @@ packages:
     resolution: {integrity: sha512-XwctdmTO6SIvCzd9810yyNzIrOrqNYV9Koizx4C/mRhf9uq0o4yHoCEU/670pOxOL/MSraektvSAji79kX90Vg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
-      acorn: 8.8.2
-      acorn-jsx: 5.3.2(acorn@8.8.2)
+      acorn: 8.10.0
+      acorn-jsx: 5.3.2(acorn@8.10.0)
       eslint-visitor-keys: 3.3.0
     dev: true
 
