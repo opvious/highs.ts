@@ -113,11 +113,18 @@ jobs:
     strategy:
       matrix:
         include:
-          # TODO: darwin-arm64-glibc
           - key: linux-x64-musl
-            image: node:16-alpine
+            image: node:18-alpine
             platform: linux/amd64
             libc: musl
+          - key: linux-arm64-musl
+            image: node:18-alpine
+            platform: linux/arm64
+            libc: musl
+          - key: linux-arm64-glibc
+            image: node:18
+            platform: linux/arm64
+            libc: glibc
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 25
     runs-on: ubuntu-latest
@@ -126,6 +133,10 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
