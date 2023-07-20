@@ -10,8 +10,18 @@ API.
 npm i highs-addon
 ```
 
-If your system's architecture doesn't match one of the prebuilt addons, the
-addon will be built automatically during installation. This requires a toolchain
-capable of compiling [HiGHS][highs] and native Node.js addons.
+This package ships with pre-built binaries for several common environments:
+
+| Platform | Architecture | C library |
+| --- | --- | --- |
+| `darwin` | `x64` | n/a |
+| `linux` | `x64` | `glibc` |
+| `linux` | `x64` | `musl` |
+| `linux` | `arm64` | `glibc` |
+| `linux` | `arm64` | `musl` |
+
+If your system doesn't match one of the environments above, a binary will be
+built automatically during installation. This requires a toolchain capable of
+compiling [HiGHS][highs] and native Node.js addons.
 
 [highs]: https://github.com/ERGO-COde/HiGHS
