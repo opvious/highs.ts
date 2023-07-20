@@ -71,11 +71,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - key: linux
+          - key: linux-x64
             os: ubuntu-22.04
-          - key: darwin
+          - key: darwin-x64
             os: macos-12
-          # TODO: darwin-arm64-glibc (https://github.com/github/roadmap/issues/528)
+          # TODO: darwin-arm64 (https://github.com/github/roadmap/issues/528)
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 25
     runs-on: ${{ matrix.os }}
@@ -127,7 +127,7 @@ jobs:
             platform: linux/arm64
             libc: musl
     name: Prebuild ${{ matrix.key }}
-    timeout-minutes: 45
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     needs: test
     if: needs.test.outputs.tagged == 'true'
