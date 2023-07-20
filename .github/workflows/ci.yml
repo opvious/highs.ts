@@ -75,6 +75,7 @@ jobs:
             os: ubuntu-22.04
           - key: darwin
             os: macos-12
+          # TODO: darwin-arm64-glibc (https://github.com/github/roadmap/issues/528)
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 25
     runs-on: ${{ matrix.os }}
