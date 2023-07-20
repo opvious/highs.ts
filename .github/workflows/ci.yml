@@ -117,16 +117,16 @@ jobs:
             image: node:18-alpine
             platform: linux/amd64
             libc: musl
+          - key: linux-arm64
+            image: node:18
+            platform: linux/arm64
+            libc: glibc
           - key: linux-arm64-musl
             image: node:18-alpine
             platform: linux/arm64
             libc: musl
-          - key: linux-arm64-glibc
-            image: node:18
-            platform: linux/arm64
-            libc: glibc
     name: Prebuild ${{ matrix.key }}
-    timeout-minutes: 25
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     needs: test
     if: needs.test.outputs.tagged == 'true'
@@ -160,9 +160,12 @@ jobs:
             -e NAPI_VERSION
             -e BINDING_NAME
           run: |
-            if command -v apk &>/dev/null; then
+            if command -v apk; then
               apk update
               apk add clang clang-dev cmake gcc git g++ libc-dev libstdc++ linux-headers make
+            elif command -v apt-get; then
+              apt-get update
+              apt-get -y install cmake
             fi
             cd workspace/packages/highs-addon
             npm run build
