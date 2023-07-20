@@ -49,14 +49,14 @@ jobs:
             image: node:18-alpine
             platform: linux/amd64
             libc: musl
+          - key: linux-arm64
+            image: node:18
+            platform: linux/arm64
+            libc: glibc
           - key: linux-arm64-musl
             image: node:18-alpine
             platform: linux/arm64
             libc: musl
-          - key: linux-arm64-glibc
-            image: node:18
-            platform: linux/arm64
-            libc: glibc
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 25
     runs-on: ubuntu-latest
@@ -95,6 +95,9 @@ jobs:
             if command -v apk &>/dev/null; then
               apk update
               apk add clang clang-dev cmake gcc git g++ libc-dev libstdc++ linux-headers make
+            elif command -v apt-get &>/dev/null; then
+              apt-get update
+              apt-get -y clang clang-dev cmake gcc git g++ libc-dev libstdc++ linux-headers make
             fi
             cd workspace/packages/highs-addon
             npm run build
