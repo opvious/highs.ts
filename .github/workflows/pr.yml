@@ -92,12 +92,12 @@ jobs:
             -e NAPI_VERSION
             -e BINDING_NAME
           run: |
-            if command -v apk &>/dev/null; then
+            if command -v apk; then
               apk update
               apk add clang clang-dev cmake gcc git g++ libc-dev libstdc++ linux-headers make
-            elif command -v apt-get &>/dev/null; then
+            elif command -v apt-get; then
               apt-get update
-              apt-get -y clang clang-dev cmake gcc git g++ libc-dev libstdc++ linux-headers make
+              apt-get -y install cmake
             fi
             cd workspace/packages/highs-addon
             npm run build
