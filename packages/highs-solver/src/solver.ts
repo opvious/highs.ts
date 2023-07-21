@@ -353,7 +353,7 @@ export class Solver {
     const info = this.delegated('getInfo');
     return {
       objectiveValue: info.objective_function_value,
-      relativeGap: info.mip_node_count > 0 ? info.mip_gap : undefined,
+      relativeGap: info.mip_node_count >= 0 ? info.mip_gap : undefined,
       primal: {rows: sol.rowValues, columns: sol.columnValues},
       dual: sol.isDualValid
         ? {rows: sol.rowDualValues, columns: sol.columnDualValues}
