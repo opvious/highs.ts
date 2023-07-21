@@ -65,14 +65,14 @@ importers:
   packages/highs-solver:
     dependencies:
       '@opvious/stl-errors':
-        specifier: ^0.21.8
-        version: 0.21.8
+        specifier: ^0.21.14
+        version: 0.21.14
       '@opvious/stl-telemetry':
-        specifier: ^0.21.8
-        version: 0.21.8(@opentelemetry/api@1.4.1)
+        specifier: ^0.21.14
+        version: 0.21.14(@opentelemetry/api@1.4.1)
       '@opvious/stl-utils':
-        specifier: ^0.21.8
-        version: 0.21.8
+        specifier: ^0.21.14
+        version: 0.21.14
       highs-addon:
         specifier: workspace:*
         version: link:../highs-addon
@@ -456,30 +456,30 @@ packages:
     resolution: {integrity: sha512-trFB0eSf/fotLWedE44Wm5X5fPz+V9qMdsk9VnSwyjoumZO5LKjsbCsrr9asiWhyAxYip2mJzurmeGWIom0xOw==, tarball: https://npm.pkg.github.com/download/@opvious/prettier-typescript/0.1.24/423420a68f328c78f11b0bc88cf91bfb7d48f860}
     dev: true
 
-  /@opvious/stl-errors@0.21.8:
-    resolution: {integrity: sha512-eYlbaCvHu7zXqXFotUNIlFVIZxlvV4Z7MDt5GM58WXVLZxb0AJWZSjExc3di1fUl4+QkLzHAfSLSqOIUZwuPIg==, tarball: https://npm.pkg.github.com/download/@opvious/stl-errors/0.21.8/95f0f1041241659f7f41fdc947b5635f6347ea97}
+  /@opvious/stl-errors@0.21.14:
+    resolution: {integrity: sha512-AuRSoGM7hydWL2AXbAIA/H/bAKKajGqb1csCGsg8vgW4C9y7551IVKmLoU51m4eA1/viutkfn4sKNuHVdodhjQ==, tarball: https://npm.pkg.github.com/download/@opvious/stl-errors/0.21.14/c03661a6df2678b79a3bc3c72d8738d6c448f39d}
     dependencies:
       change-case: 4.1.2
       upper-case-first: 2.0.2
 
-  /@opvious/stl-telemetry@0.21.8(@opentelemetry/api@1.4.1):
-    resolution: {integrity: sha512-21a79RbNRM5Ij3IUsua9RcJvQT8mIKdWQfGj+DlGLAZ1KOA/UTh4wpizR8QEkTnAGoZ0ZEHd3whgWjZw+O5tmQ==, tarball: https://npm.pkg.github.com/download/@opvious/stl-telemetry/0.21.8/4d297b0d99f15b7f87fb9f574c0c0e647a0e53e1}
+  /@opvious/stl-telemetry@0.21.14(@opentelemetry/api@1.4.1):
+    resolution: {integrity: sha512-TrW1tCoyTk84IsYFz1Xc/ecugoBQ/eFMgBF89tuXiY9DEvNDAM/F/f8dHByf58vK9TjFr71INLFIQ9ENt4J8hQ==, tarball: https://npm.pkg.github.com/download/@opvious/stl-telemetry/0.21.14/eb447ba0b6e5e4026d10ed3daf118bd29cc8a847}
     peerDependencies:
       '@opentelemetry/api': ~1.4.1
     dependencies:
       '@opentelemetry/api': 1.4.1
-      '@opvious/stl-errors': 0.21.8
-      '@opvious/stl-utils': 0.21.8
+      '@opvious/stl-errors': 0.21.14
+      '@opvious/stl-utils': 0.21.14
       inlinable-runtime: 0.2.6
       pino: 8.14.1
       pino-std-serializers: 6.2.2
     dev: false
 
-  /@opvious/stl-utils@0.21.8:
-    resolution: {integrity: sha512-XEdW6phKkNYNbDEn6HfUUln4un7a4r4tJ+D5cuMXPZ3w1gJZrJvlAQ3Ikqqnk7GkzX/UgHJdghuvsRZ39zW3Bw==, tarball: https://npm.pkg.github.com/download/@opvious/stl-utils/0.21.8/851c55273260ff4f6e090009f8d95fb9499429cf}
+  /@opvious/stl-utils@0.21.14:
+    resolution: {integrity: sha512-eDxWAQS9bxSF79EiA6WnVPUA7wmf9S5bA6saZ4omM/0UuFDxu9kxm02sYghydD6ueTRKY4Nb1hQKA+mfEHiHHw==, tarball: https://npm.pkg.github.com/download/@opvious/stl-utils/0.21.14/0a74c2b0571a80d1f764aa9556227a61699d40c4}
     dependencies:
       '@avro/types': 1.0.25
-      '@opvious/stl-errors': 0.21.8
+      '@opvious/stl-errors': 0.21.14
       change-case: 4.1.2
       fast-deep-equal: 3.1.3
       inlinable-runtime: 0.2.6
@@ -1873,8 +1873,8 @@ packages:
     resolution: {integrity: sha512-RXCmZkaAwV9+cryXyf2kpv5P0I+84FFrMCKy5VaejQuqNSlaAkxFbcwu+tKkS+/LiV93+1aePJUxbD5Q16B3Dw==}
     hasBin: true
     dependencies:
-      '@opvious/stl-errors': 0.21.8
-      '@opvious/stl-utils': 0.21.8
+      '@opvious/stl-errors': 0.21.14
+      '@opvious/stl-utils': 0.21.14
       acorn: 8.10.0
       ast-types: 0.14.2
       commander: 10.0.1
