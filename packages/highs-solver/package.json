@@ -32,9 +32,9 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@opvious/stl-errors": "^0.21.14",
-    "@opvious/stl-telemetry": "^0.21.14",
-    "@opvious/stl-utils": "^0.21.14",
+    "@opvious/stl-errors": "^0.22.15",
+    "@opvious/stl-telemetry": "^0.22.15",
+    "@opvious/stl-utils": "^0.22.15",
     "highs-addon": "workspace:*",
     "tail": "^2.2.6",
     "tmp-promise": "^3.0.3"
