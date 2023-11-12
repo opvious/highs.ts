@@ -22,6 +22,10 @@ export declare class Solver {
     weights: Matrix
   ): void;
 
+  setCallback(cb: Callback): void;
+  startCallback(tp: CallbackType): void;
+  stopCallback(tp: CallbackType): void;
+
   run(cb: (err: Error) => void): void;
   getModelStatus(): ModelStatus;
   getInfo(): Info;
@@ -168,3 +172,31 @@ export type SolutionStatus = number;
 
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L127
 export type SolutionStyle = number;
+
+// https://ergo-code.github.io/HiGHS/stable/callbacks/
+export type Callback = (inputs: CallbackInputs) => CallbackOutputs;
+
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L209
+export type CallbackType = number;
+
+export interface CallbackInputs {
+  // Simplex interrupt
+  readonly simplex_iteration_count?: number;
+  // IPM interrupt
+  readonly ipm_iteration_count?: number;
+  // MIP improving solution
+  readonly mip_solution?: unknown;
+  // MIP interrupt
+  readonly running_time?: number;
+  readonly objective_function_value?: number;
+  readonly num_nodes?: number;
+  readonly primal_bound?: number;
+  readonly dual_bound?: number;
+  readonly mip_gap?: number;
+  // Unknown
+  readonly [name: string]: unknown;
+}
+
+export interface CallbackOutputs {
+  readonly user_interrupt: number;
+}
