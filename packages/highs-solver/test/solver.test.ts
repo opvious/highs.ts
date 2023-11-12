@@ -191,4 +191,11 @@ describe('solver', () => {
       });
     }
   });
+
+  describe('handles callbacks', () => {
+    test('simple', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('simple.lp'));
+    });
+  });
 });
