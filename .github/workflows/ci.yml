@@ -100,8 +100,9 @@ jobs:
       - name: Generate addon prebuild
         run: |
           pnpm -F highs-addon exec pkg-prebuilds-copy \
+            --baseDir=buid/Release \
+            --source=$BINDING_NAME.node \
             --napi_version=$NAPI_VERSION \
-            --source build/Release/$BINDING_NAME.node \
             --name=$BINDING_NAME \
             --strip
       - name: Upload prebuild
@@ -171,8 +172,9 @@ jobs:
             cd workspace/packages/highs-addon
             npm run build
             npm exec pkg-prebuilds-copy -- \
+              --baseDir=buid/Release \
+              --source=$BINDING_NAME.node \
               --napi_version=$NAPI_VERSION \
-              --source build/Release/$BINDING_NAME.node \
               --name=$BINDING_NAME \
               --libc=${{ matrix.libc }} \
               --strip
