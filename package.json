@@ -1,6 +1,6 @@
 {
   "name": "highs-packages",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "private": true,
   "repository": "github:opvious/highs.ts",
   "author": "Opvious Engineering <oss@opvious.io>",

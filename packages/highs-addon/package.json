@@ -1,6 +1,6 @@
 {
   "name": "highs-addon",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "repository": "github:opvious/highs.ts",
   "description": "Low-level Node.js binding for the HiGHS optimization solver",
   "keywords": [
