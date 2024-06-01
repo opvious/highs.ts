@@ -1,12 +1,11 @@
 {
   "name": "highs-packages",
-  "version": "0.6.6",
+  "version": "0.0.0",
   "private": true,
   "repository": "github:opvious/highs.ts",
   "author": "Opvious Engineering <oss@opvious.io>",
   "license": "Apache-2.0",
   "scripts": {
-    "bump": "pnpm -r --include-workspace-root exec npm version ${BUMP:-patch}",
     "clean": "pnpm -r -F !. run clean && rm -rf node_modules out",
     "fix": "prettier --write 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts' && pnpm run lint --fix",
     "lint": "eslint 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts'",
