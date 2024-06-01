@@ -15,6 +15,7 @@ This package ships with pre-built binaries for several common environments:
 | Platform | Architecture | C library |
 | --- | --- | --- |
 | `darwin` | `x64` | n/a |
+| `darwin` | `arm64` | n/a |
 | `linux` | `x64` | `glibc` |
 | `linux` | `x64` | `musl` |
 | `linux` | `arm64` | `glibc` |
