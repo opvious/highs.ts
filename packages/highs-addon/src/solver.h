@@ -21,6 +21,10 @@ class Solver : public Napi::ObjectWrap<Solver> {
   void ChangeColsCost(const Napi::CallbackInfo& info);
   void AddRows(const Napi::CallbackInfo& info);
 
+  void SetCallback(const Napi::CallbackInfo& info);
+  void StartCallback(const Napi::CallbackInfo& info);
+  void StopCallback(const Napi::CallbackInfo& info);
+
   void Run(const Napi::CallbackInfo& info);
   Napi::Value GetModelStatus(const Napi::CallbackInfo& info);
   Napi::Value GetInfo(const Napi::CallbackInfo& info);
