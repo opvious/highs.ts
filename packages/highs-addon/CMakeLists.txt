@@ -14,7 +14,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(ExternalProject)
 ExternalProject_Add(highs_download
   GIT_REPOSITORY https://github.com/ERGO-Code/HiGHS.git
-  GIT_TAG "21da9b90e0dceeb22ef9e35e5ff2c3ab17dc5232" # v1.6.0
+  GIT_TAG "50670fd4c634c3c9e54bf615e84bd4024d129754" # v1.7.0
   CMAKE_ARGS
     -DCI=OFF
     -DFAST_BUILD=OFF
