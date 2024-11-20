@@ -61,8 +61,8 @@ jobs:
         include:
           - key: linux-x64
             os: ubuntu-22.04
-          - key: darwin-x64
-            os: macos-12
+          # - key: darwin-x64
+          #   os: macos-12
           - key: darwin-arm64
             os: macos-14
     name: Prebuild ${{ matrix.key }}
