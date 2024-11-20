@@ -6,7 +6,7 @@ import {Tail} from 'tail';
 
 const iterationHeaderPattern = /^\s*Proc\. InQueue.*$/;
 const iterationDataPattern =
-  // eslint-disable-next-line max-len
+
   /^\s+\w?\s+\d+\s+\d+\s+\d+\s+\S+\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+\d+\s+\d+\s+(\d+)\s+\S+\s*$/;
 const reportHeaderPattern = /^Solving report$/;
 
@@ -91,6 +91,6 @@ function parseNumber(arg: string): number {
   return arg === 'inf'
     ? Infinity
     : arg.endsWith('%')
-    ? +arg.slice(0, -1) / 100
-    : +arg;
+      ? +arg.slice(0, -1) / 100
+      : +arg;
 }
