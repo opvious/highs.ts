@@ -388,7 +388,6 @@ export class Solver {
   ): addon.Solver[M] extends (...args: any) => infer R ? R : never {
     const {delegate} = this;
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-types
       return (delegate[method] as Function).bind(delegate)(...args);
     } catch (cause) {
       throw errors.nativeMethodFailed(method, cause);

@@ -5,6 +5,7 @@
   "repository": "github:opvious/highs.ts",
   "author": "Opvious Engineering <oss@opvious.io>",
   "license": "Apache-2.0",
+  "type": "module",
   "scripts": {
     "clean": "pnpm -r -F !. run clean && rm -rf node_modules out",
     "fix": "prettier --write 'packages/*/*.ts' 'packages/*/{src,test}/**/*.ts' && pnpm run lint --fix",
@@ -12,18 +13,18 @@
     "test": "pnpm -r run test run --coverage && rm -rf out/coverage && mkdir -p out/coverage && for p in packages/*; do if [ -d \"$p/out/coverage\" ]; then cp -r \"$p/out/coverage\" out/coverage/\"${p#*/}\"; fi; done"
   },
   "devDependencies": {
-    "@opvious/eslint-plugin": "^0.1.28",
-    "@opvious/prettier-typescript": "^0.1.28",
-    "@opvious/tsconfig": "^0.1.28",
-    "@types/node": "^18.11.18",
-    "@vitest/coverage-v8": "^1.6.0",
-    "eslint": "^8.51.0",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.5",
-    "prettier": "^3.2.5",
-    "ts-essentials": "^10.0.0",
-    "typescript": "^5.2.2",
-    "vitest": "^1.6.0"
+    "@opvious/eslint-plugin": "^0.9.1",
+    "@opvious/prettier-typescript": "^0.9.1",
+    "@opvious/tsconfig": "^0.9.1",
+    "@types/node": "^18.19.64",
+    "@vitest/coverage-v8": "^2.1.5",
+    "eslint": "^9.15.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "ts-essentials": "^10.0.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
