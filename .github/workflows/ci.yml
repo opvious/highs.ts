@@ -52,6 +52,7 @@ jobs:
         id: bump-version
         uses: mathieudutour/github-tag-action@v6.2
         with:
+          custom_release_rules: build:patch,deps:patch,refactor:patch
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: false
   prebuild-native:
