@@ -428,6 +428,49 @@ Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
   return obj;
 }
 
+// Callbacks
+
+void Solver::SetCallback(const Napi::CallbackInfo& info) {
+  // TODO. Need to figure out how best to call JS from worker.
+}
+
+int ToCallbackType(const Napi::Env& env, const Napi::Value& val) {
+  int tp = val.As<Napi::Number>().Int32Value();
+  if (tp < 0 || tp > HighsCallbackType::kNumCallbackType) {
+    ThrowError(env, "Unexpected callback type");
+    return -1;
+  }
+  return tp;
+}
+
+void Solver::StartCallback(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsNumber()) {
+    ThrowTypeError(env, "Expected 1 argument [number]");
+    return;
+  }
+  int tp = ToCallbackType(env, info[0]);
+  if (tp < 0) {
+    return;
+  }
+  this->highs_->startCallback(tp);
+}
+
+void Solver::StopCallback(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 1 || !info[0].IsNumber()) {
+    ThrowTypeError(env, "Expected 1 argument [number]");
+    return;
+  }
+  int tp = ToCallbackType(env, info[0]);
+  if (tp < 0) {
+    return;
+  }
+  this->highs_->stopCallback(tp);
+}
+
 // Solutions
 
 Napi::Value ToFloat64Array(const Napi::Env& env, const std::vector<double>& vec) {
