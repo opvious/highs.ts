@@ -35,7 +35,7 @@
   },
   "optionalDependencies": {
     "cmake-js": "^7.3.0",
-    "node-addon-api": "^8.2.2"
+    "node-addon-api": "^8.3.0"
   },
   "devDependencies": {
     "tmp-promise": "^3.0.3"
