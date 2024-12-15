@@ -16,15 +16,15 @@
     "@opvious/eslint-plugin": "^0.12.0",
     "@opvious/prettier-typescript": "^0.12.0",
     "@opvious/tsconfig": "^0.12.0",
-    "@types/node": "^18.19.64",
-    "@vitest/coverage-v8": "^2.1.5",
-    "eslint": "^9.15.0",
+    "@types/node": "^18.19.68",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.17.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
+    "lint-staged": "^15.2.11",
+    "prettier": "^3.4.2",
     "ts-essentials": "^10.0.3",
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.5"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
