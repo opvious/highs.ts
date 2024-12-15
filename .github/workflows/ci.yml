@@ -30,7 +30,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: pnpm
-          registry-url: https://npm.pkg.github.com
       - name: Install
         run: pnpm i --ignore-scripts
         env:
@@ -81,7 +80,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: pnpm
-          registry-url: https://npm.pkg.github.com
       - name: Install
         run: pnpm i
         env:
@@ -136,7 +134,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: pnpm
-          registry-url: https://npm.pkg.github.com
       - name: Install
         run: pnpm i --ignore-scripts
         env:
@@ -192,7 +189,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: pnpm
-          registry-url: https://npm.pkg.github.com
       - name: Install
         run: pnpm i --ignore-scripts
         env:
@@ -207,11 +203,6 @@ jobs:
         run: |
           mv out/prebuilds/*/* packages/highs-addon/prebuilds
           ls packages/highs-addon/prebuilds
-      - name: Point to NPM registry
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
       - name: Publish
         run: |
           pnpm -r exec pnpm version ${{ needs.test.outputs.new-version }}

@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: pnpm
-          registry-url: https://npm.pkg.github.com
       - name: Install
         run: pnpm i --ignore-scripts
         env:
