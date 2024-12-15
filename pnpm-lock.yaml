@@ -358,32 +358,32 @@ packages:
     engines: {node: '>=8.0.0'}
 
   '@opvious/eslint-plugin@0.12.0':
-    resolution: {integrity: sha512-ZDuvouklrkN71C78IucVTRLtPZElX5JyreV2unDHxaAA4YV06b4CrHts3fMHgXL00WmlSulQ330ET2cK6cVgiw==, tarball: https://npm.pkg.github.com/download/@opvious/eslint-plugin/0.12.0/e8282bc8c112620060b6da0bdcaea9cbc4918ddf}
+    resolution: {integrity: sha512-ZDuvouklrkN71C78IucVTRLtPZElX5JyreV2unDHxaAA4YV06b4CrHts3fMHgXL00WmlSulQ330ET2cK6cVgiw==}
     peerDependencies:
       eslint: ^9.15.0
 
   '@opvious/prettier-typescript@0.12.0':
-    resolution: {integrity: sha512-1JemZpzrqkAbxyqVA7Rl2a89t9/PULbb1dJgJt4Y+HSQ4GE1TXh7bcxQHNm5NqhHorm7Cgh9hFoZcCAkyNTQdQ==, tarball: https://npm.pkg.github.com/download/@opvious/prettier-typescript/0.12.0/e2e78b2e214990625411dd1cab77e02b12b94448}
+    resolution: {integrity: sha512-1JemZpzrqkAbxyqVA7Rl2a89t9/PULbb1dJgJt4Y+HSQ4GE1TXh7bcxQHNm5NqhHorm7Cgh9hFoZcCAkyNTQdQ==}
 
   '@opvious/stl-errors@0.26.4':
-    resolution: {integrity: sha512-nNHgeDA5cH52VYwYggmvNZRp445ZHrfOJDGWFEGrhpaLrTElUwY8Ft/B0kOdEjxCtjhxLtql6N22e5IgcnsoKQ==, tarball: https://npm.pkg.github.com/download/@opvious/stl-errors/0.26.4/5733e5212a1412faac6418feef4690f7cd90a252}
+    resolution: {integrity: sha512-nNHgeDA5cH52VYwYggmvNZRp445ZHrfOJDGWFEGrhpaLrTElUwY8Ft/B0kOdEjxCtjhxLtql6N22e5IgcnsoKQ==}
 
   '@opvious/stl-errors@0.27.3':
-    resolution: {integrity: sha512-THscviXD65K3Fn+z4hnPGHFUuUcd6QKFK09UoOLJuMzs3btHw9+EcTI82RXUwyQEQxtybL2xjujijErqwo5PWQ==, tarball: https://npm.pkg.github.com/download/@opvious/stl-errors/0.27.3/27550b04b2604c4a302b9d2c81429ff814c13fca}
+    resolution: {integrity: sha512-THscviXD65K3Fn+z4hnPGHFUuUcd6QKFK09UoOLJuMzs3btHw9+EcTI82RXUwyQEQxtybL2xjujijErqwo5PWQ==}
 
   '@opvious/stl-telemetry@0.27.3':
-    resolution: {integrity: sha512-kfqO/t7e4tN5w1avAfQpNyPu/jHl/6yy0juca0xbtVg/MVD13aGa0Xcgy3yjabN6OT3KLVCBfdCOWAOrCxk7bg==, tarball: https://npm.pkg.github.com/download/@opvious/stl-telemetry/0.27.3/6a0dc06bf53f0481568929e7bb31632d5cbff15a}
+    resolution: {integrity: sha512-kfqO/t7e4tN5w1avAfQpNyPu/jHl/6yy0juca0xbtVg/MVD13aGa0Xcgy3yjabN6OT3KLVCBfdCOWAOrCxk7bg==}
     peerDependencies:
       '@opentelemetry/api': ~1.9.0
 
   '@opvious/stl-utils@0.26.4':
-    resolution: {integrity: sha512-Dbt61GiaRcvMCsn5bBfpfK+2ZMbvvrc6GLC1NWLaLjtb66rTztAoZ1nvBkHti+eObPyv/+3c/lYyN5g5qPDPdA==, tarball: https://npm.pkg.github.com/download/@opvious/stl-utils/0.26.4/5fb3cba6bc0ece28696d83de5f411f9ff4d0138c}
+    resolution: {integrity: sha512-Dbt61GiaRcvMCsn5bBfpfK+2ZMbvvrc6GLC1NWLaLjtb66rTztAoZ1nvBkHti+eObPyv/+3c/lYyN5g5qPDPdA==}
 
   '@opvious/stl-utils@0.27.3':
-    resolution: {integrity: sha512-1L58pwoh4vcN/+IeF4smVRxGG2RP5R81tdiMpgl05W5jqxc3YCmSTjlv3rSOBBe3yaojqvN43Rk08MKKG4XdKA==, tarball: https://npm.pkg.github.com/download/@opvious/stl-utils/0.27.3/e2937a9adb0ab53a439b7a36bc2f4dec3bcc17c4}
+    resolution: {integrity: sha512-1L58pwoh4vcN/+IeF4smVRxGG2RP5R81tdiMpgl05W5jqxc3YCmSTjlv3rSOBBe3yaojqvN43Rk08MKKG4XdKA==}
 
   '@opvious/tsconfig@0.12.0':
-    resolution: {integrity: sha512-pYXS7nEpnDi0uohtLgsTYfdhdBxe+UD/GmilOvU6C8Ow5E8Xs7Exqf0fR2zRMRWcHCbo8uMff2TXlaWn74T7kQ==, tarball: https://npm.pkg.github.com/download/@opvious/tsconfig/0.12.0/40f71ef374e2828c064faafd70a4394d1dfe49e9}
+    resolution: {integrity: sha512-pYXS7nEpnDi0uohtLgsTYfdhdBxe+UD/GmilOvU6C8Ow5E8Xs7Exqf0fR2zRMRWcHCbo8uMff2TXlaWn74T7kQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
