@@ -364,7 +364,7 @@ void Solver::AddRows(const Napi::CallbackInfo& info) {
     vals.Data()
   );
   if (status != HighsStatus::kOk) {
-    ThrowError(env, "Change columns cost failed");
+    ThrowError(env, "Adding rows failed");
     return;
   }
 }
