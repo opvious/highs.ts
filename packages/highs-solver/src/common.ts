@@ -1,10 +1,15 @@
-import __inlinable from 'inlinable';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-export const packageInfo = __inlinable((ctx) =>
-  ctx.enclosing(import.meta.url).metadata()
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L87
+export const packageInfo = require(join(__dirname, '..', 'package.json'));
+
+// enum class HighsVarType
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L96
 export enum ColumnType {
   CONTINUOUS = 0,
   INTEGER,
@@ -13,13 +18,16 @@ export enum ColumnType {
   IMPLICIT_INTEGER,
 }
 
+// enum SolutionStatus
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L131
 export enum SolutionStatus {
   NO_SOLUTION = 0,
   INFEASIBLE,
   FEASIBLE,
 }
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L127
+// enum SolutionStyle
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L146
 export enum SolutionStyle {
   RAW = 0,
   PRETTY,

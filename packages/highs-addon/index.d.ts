@@ -47,7 +47,7 @@ export type OptionValue = boolean | number | string;
 // https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsOptions.h
 export interface TypedOptions {
   readonly presolve: 'on' | 'off' | 'choose'; // kPresolveString
-  readonly solver: 'simplex' | 'choose' | 'ipm'; // kSolverString
+  readonly solver: 'simplex' | 'choose' | 'ipm' | 'pdlp'; // kSolverString
   readonly parallel: 'on' | 'off' | 'choose'; // kParallelString
   readonly run_crossover: 'on' | 'off' | 'choose'; // kRunCrossoverString
   readonly time_limit: number; // kTimeLimitString
@@ -61,7 +61,7 @@ export interface TypedOptions {
   readonly ipm_feasibility_tolerance: number;
   readonly objective_bound: number;
   readonly objective_target: number;
-  readonly random_seed: number; // kRandomSeed
+  readonly random_seed: number; // kRandomSeedString
   readonly threads: number;
   readonly output_flag: boolean;
   readonly log_file: string; // kLogFileString
@@ -124,7 +124,8 @@ export interface Matrix {
   readonly values: Float64Array;
 }
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HStruct.h#L30
+// struct HighsSolution
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HStruct.h#L26
 export interface Solution {
   readonly isValueValid: boolean;
   readonly isDualValid: boolean;
@@ -140,12 +141,17 @@ export interface SolutionAssessment {
   readonly isFeasible: boolean;
 }
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsInfo.h#L152
+// struct HighsInfoStruct
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HighsInfo.h#L92
 export interface Info {
   readonly basis_validity: number;
   readonly simplex_iteration_count: number;
   readonly ipm_iteration_count: number;
+  readonly crossover_iteration_count: number;
+  readonly pdlp_iteration_count: number;
   readonly qp_iteration_count: number;
+  readonly primal_solution_status: number;
+  readonly dual_solution_status: number;
   readonly objective_function_value: number;
   readonly mip_gap: number;
   readonly mip_dual_bound: number;
@@ -155,16 +161,22 @@ export interface Info {
 
 // Enums placeholders (not included here since this is a declaration file only)
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L87
+// enum class HighsVarType
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L96
 // 0 = continuous, 1 = integer, ...
 export type ColumnType = number;
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L162
+// enum class HighsModelStatus
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L187
+// 0 = NotSet, 1 = LoadError, ...
 export type ModelStatus = number;
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L112
-// 0 = no solution, 1 = infeasible, 2 = feasible
+// enum SolutionStatus
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L131
+// 0 = no solution, 1 = infeasible, 2 = feasible, ...
 export type SolutionStatus = number;
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L127
+//enum SolutionStyle
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L146
+// -1 = OldRaw, 0 = Raw, 1 = Pretty, ...
 export type SolutionStyle = number;

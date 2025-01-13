@@ -1,7 +1,7 @@
 {
   "name": "highs-solver",
-  "version": "0.0.0",
-  "repository": "github:opvious/highs.ts",
+  "version": "1.9.0",
+  "repository": "github:southworks/highs.ts",
   "description": "Node.js binding for the HiGHS optimization solver",
   "keywords": [
     "highs",
@@ -12,7 +12,7 @@
   "author": "Opvious Engineering <oss@opvious.io>",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "type": "module",
   "files": [
@@ -27,7 +27,7 @@
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write",
-    "prepare": "pnpm run build && inlinable r",
+    "prepare": "pnpm run build",
     "test": "vitest",
     "watch": "tsc -b -w src test"
   },
@@ -44,7 +44,6 @@
   },
   "devDependencies": {
     "@opentelemetry/api": "^1.9.0",
-    "@types/tail": "^2.2.3",
-    "inlinable": "^0.3.5"
+    "@types/tail": "^2.2.3"
   }
 }

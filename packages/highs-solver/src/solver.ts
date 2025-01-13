@@ -465,7 +465,8 @@ export interface SolverOptions extends Partial<addon.TypedOptions> {
   readonly [name: string]: addon.OptionValue | undefined;
 }
 
-// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L162
+// enum class HighsModelStatus
+// https://github.com/ERGO-Code/HiGHS/blob/master/src/lp_data/HConst.h#L187
 export enum SolverStatus {
   NOT_SET = 0,
   LOAD_ERROR,
@@ -484,6 +485,8 @@ export enum SolverStatus {
   ITERATION_LIMIT,
   UNKNOWN,
   SOLUTION_LIMIT,
+  INTERRUPT,
+  MEMORY_LIMIT,
 }
 
 function asSolverStatus(num: number): SolverStatus {
