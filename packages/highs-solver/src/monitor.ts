@@ -2,12 +2,12 @@
 
 import {assert, check} from '@mtth/stl-errors';
 import {TypedEmitter, typedEmitter} from '@mtth/stl-utils/events';
+import {atMostOnce, resolvable} from '@mtth/stl-utils/functions';
 import {Tail} from 'tail';
 
-const iterationHeaderPattern = /^\s*Proc\. InQueue.*$/;
+const iterationHeaderPattern = /^\s*.*Proc\. InQueue.*$/;
 const iterationDataPattern =
-
-  /^\s+\w?\s+\d+\s+\d+\s+\d+\s+\S+\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+\d+\s+\d+\s+(\d+)\s+\S+\s*$/;
+  /^\s+(\w\s+)?\d+\s+\d+\s+\d+\s+\S+\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+\d+\s+\d+\s+(\d+)\s+\S+\s*$/;
 const reportHeaderPattern = /^Solving report$/;
 
 /** Active solve events */
@@ -36,22 +36,29 @@ export class SolveTracker {
   private state: ProgressState = ProgressState.PREPARATION;
   constructor(
     private readonly monitor: SolveMonitor,
-    private readonly tail: Tail
-  ) {
-    tail.on('line', (line) => {
-      this.ingest(line);
-    });
-  }
+    private readonly done: Promise<void>,
+    private readonly setDone: (err?: unknown) => void
+  ) {}
 
   static create(args: {
     readonly monitor: SolveMonitor;
     readonly logPath: string;
+    readonly fromBeginning?: boolean;
   }): SolveTracker {
-    return new SolveTracker(args.monitor, new Tail(args.logPath));
+    const tail = new Tail(args.logPath, {fromBeginning: args.fromBeginning});
+    const [done, setDone] = resolvable(atMostOnce(() => void tail.unwatch()));
+    const tracker = new SolveTracker(args.monitor, done, setDone);
+    tail.on('line', (line) => void tracker.ingest(line));
+    tail.on('error', setDone);
+    return tracker;
   }
 
   shutdown(): void {
-    this.tail.unwatch();
+    this.setDone();
+  }
+
+  wait(): Promise<void> {
+    return this.done;
   }
 
   private ingest(line: string): void {
@@ -59,19 +66,13 @@ export class SolveTracker {
       this.state = ProgressState.ITERATION;
     } else if (reportHeaderPattern.test(line)) {
       this.state = ProgressState.REPORT;
+      this.setDone();
     } else {
       switch (this.state) {
         case ProgressState.ITERATION: {
-          const match = iterationDataPattern.exec(line);
-          if (match) {
-            assert(match.length === 6, 'Bad match', match);
-            this.monitor.emit('progress', {
-              relativeGap: parseNumber(check.isPresent(match[3])),
-              primalBound: parseNumber(check.isPresent(match[2])),
-              dualBound: parseNumber(check.isPresent(match[1])),
-              cutCount: +check.isPresent(match[4]),
-              lpIterationCount: +check.isPresent(match[5]),
-            });
+          const progress = parseProgress(line);
+          if (progress) {
+            this.monitor.emit('progress', progress);
           }
           break;
         }
@@ -93,4 +94,19 @@ function parseNumber(arg: string): number {
     : arg.endsWith('%')
       ? +arg.slice(0, -1) / 100
       : +arg;
+}
+
+export function parseProgress(line: string): SolveProgress | undefined {
+  const match = iterationDataPattern.exec(line);
+  if (!match) {
+    return undefined;
+  }
+  assert(match.length === 7, 'Bad match', match);
+  return {
+    relativeGap: parseNumber(check.isPresent(match[4])),
+    primalBound: parseNumber(check.isPresent(match[3])),
+    dualBound: parseNumber(check.isPresent(match[2])),
+    cutCount: +check.isPresent(match[5]),
+    lpIterationCount: +check.isPresent(match[6]),
+  };
 }

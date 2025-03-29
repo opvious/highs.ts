@@ -148,7 +148,7 @@ describe('solver', () => {
 
   test('updates model', async () => {
     const solver = sut.Solver.create();
-    await solver.setModel({
+    solver.setModel({
       isMaximization: true,
       columnLowerBounds: new Float64Array([0, -Infinity, -Infinity, 2]),
       columnUpperBounds: new Float64Array([40, Infinity, Infinity, 3]),
