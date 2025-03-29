@@ -32,7 +32,7 @@
       "eslint --fix"
     ]
   },
-  "prettier": "@opvious/prettier-typescript",
+  "prettier": "@mtth/prettier-typescript",
   "pnpm": {
     "overrides": {
       "axios": ">=1.8.2",
