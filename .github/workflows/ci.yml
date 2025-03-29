@@ -58,8 +58,8 @@ jobs:
             os: ubuntu-24.04
           # - key: darwin-x64
           #   os: macos-12
-          # - key: darwin-arm64
-          #   os: macos-14
+          - key: darwin-arm64
+            os: macos-14
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 25
     runs-on: ${{ matrix.os }}
