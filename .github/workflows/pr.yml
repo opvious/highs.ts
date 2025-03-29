@@ -31,7 +31,6 @@ jobs:
         run: pnpm run lint
       - name: Build addon binding
         run: |
-          cmake --version
           pnpm -F highs-addon run build \
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Test
