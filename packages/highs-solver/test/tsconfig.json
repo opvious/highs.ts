@@ -1,5 +1,5 @@
 {
-  "extends": "@opvious/tsconfig",
+  "extends": "@mtth/tsconfig",
   "compilerOptions": {
     "composite": true,
     "module": "node16",
