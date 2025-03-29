@@ -2,7 +2,7 @@
 
 import {assert, check} from '@mtth/stl-errors';
 import {TypedEmitter, typedEmitter} from '@mtth/stl-utils/events';
-import {resolvable} from '@mtth/stl-utils/functions';
+import {atMostOnce, resolvable} from '@mtth/stl-utils/functions';
 import {Tail} from 'tail';
 
 const iterationHeaderPattern = /^\s*.*Proc\. InQueue.*$/;
@@ -37,7 +37,7 @@ export class SolveTracker {
   constructor(
     private readonly monitor: SolveMonitor,
     private readonly done: Promise<void>,
-    private readonly setDone: () => void
+    private readonly setDone: (err?: unknown) => void
   ) {}
 
   static create(args: {
@@ -46,10 +46,10 @@ export class SolveTracker {
     readonly fromBeginning?: boolean;
   }): SolveTracker {
     const tail = new Tail(args.logPath, {fromBeginning: args.fromBeginning});
-    const [done, setDone] = resolvable(() => void tail.unwatch());
+    const [done, setDone] = resolvable(atMostOnce(() => void tail.unwatch()));
     const tracker = new SolveTracker(args.monitor, done, setDone);
-    const onLine = (line: string) => void tracker.ingest(line);
-    tail.on('line', onLine);
+    tail.on('line', (line) => void tracker.ingest(line));
+    tail.on('error', setDone);
     return tracker;
   }
 
