@@ -2,6 +2,7 @@
 
 import {assert, check} from '@mtth/stl-errors';
 import {TypedEmitter, typedEmitter} from '@mtth/stl-utils/events';
+import {resolvable} from '@mtth/stl-utils/functions';
 import {Tail} from 'tail';
 
 const iterationHeaderPattern = /^\s*.*Proc\. InQueue.*$/;
@@ -12,7 +13,6 @@ const reportHeaderPattern = /^Solving report$/;
 /** Active solve events */
 export interface SolveListeners {
   readonly progress: (prog: SolveProgress) => void;
-  readonly done: () => void;
 }
 
 /** Active solve progress notifications */
@@ -36,28 +36,29 @@ export class SolveTracker {
   private state: ProgressState = ProgressState.PREPARATION;
   constructor(
     private readonly monitor: SolveMonitor,
-    private readonly tail: Tail
-  ) {
-    tail.on('line', (line) => {
-      this.ingest(line);
-    });
-  }
+    private readonly done: Promise<void>,
+    private readonly setDone: () => void
+  ) {}
 
   static create(args: {
     readonly monitor: SolveMonitor;
     readonly logPath: string;
     readonly fromBeginning?: boolean;
   }): SolveTracker {
-    return new SolveTracker(
-      args.monitor,
-      new Tail(args.logPath, {
-        fromBeginning: args.fromBeginning,
-      })
-    );
+    const tail = new Tail(args.logPath, {fromBeginning: args.fromBeginning});
+    const [done, setDone] = resolvable(() => void tail.unwatch());
+    const tracker = new SolveTracker(args.monitor, done, setDone);
+    const onLine = (line: string) => void tracker.ingest(line);
+    tail.on('line', onLine);
+    return tracker;
   }
 
   shutdown(): void {
-    this.tail.unwatch();
+    this.setDone();
+  }
+
+  wait(): Promise<void> {
+    return this.done;
   }
 
   private ingest(line: string): void {
@@ -65,8 +66,7 @@ export class SolveTracker {
       this.state = ProgressState.ITERATION;
     } else if (reportHeaderPattern.test(line)) {
       this.state = ProgressState.REPORT;
-      this.shutdown();
-      this.monitor.emit('done');
+      this.setDone();
     } else {
       switch (this.state) {
         case ProgressState.ITERATION: {

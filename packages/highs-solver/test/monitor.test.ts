@@ -1,4 +1,3 @@
-import {waitForEvent} from '@mtth/stl-utils/events';
 import {ResourceLoader} from '@mtth/stl-utils/files';
 
 import * as sut from '../src/monitor.js';
@@ -34,8 +33,7 @@ test('tracker', async () => {
     logPath: loader.localUrl('queens-15.log').pathname,
     fromBeginning: true,
   });
-  await waitForEvent(monitor, 'done');
-  tracker.shutdown();
+  await tracker.wait();
   expect(events).toMatchObject([
     {lpIterationCount: 0},
     {lpIterationCount: 57},
