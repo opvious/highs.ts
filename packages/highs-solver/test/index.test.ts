@@ -1,5 +1,5 @@
-import {errorCode, fail} from '@opvious/stl-errors';
-import {ResourceLoader} from '@opvious/stl-utils/files';
+import {errorCode, fail} from '@mtth/stl-errors';
+import {ResourceLoader} from '@mtth/stl-utils/files';
 
 import errorCodes from '../src/index.errors.js';
 import * as sut from '../src/index.js';
