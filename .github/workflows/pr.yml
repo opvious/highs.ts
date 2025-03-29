@@ -34,8 +34,6 @@ jobs:
           cmake --version
           pnpm -F highs-addon run build \
             --CDCMAKE_CXX_COMPILER_LAUNCHER=ccache
-        env:
-          CMAKE_GENERATOR: Unix Makefiles
       - name: Test
         run: pnpm t
       - name: Upload coverage
