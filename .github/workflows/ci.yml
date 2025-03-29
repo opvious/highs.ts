@@ -51,9 +51,7 @@ jobs:
         id: bump-version
         uses: mathieudutour/github-tag-action@v6.2
         with:
-          custom_release_rules: build:patch,deps:patch,refactor:patch
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          default_bump: false
   prebuild-native:
     strategy:
       matrix:
@@ -93,7 +91,7 @@ jobs:
             --name=$BINDING_NAME \
             --strip
       - name: Upload prebuild
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: native-${{ matrix.key }}-prebuilds
           path: packages/highs-addon/prebuilds
@@ -165,7 +163,7 @@ jobs:
               --libc=${{ matrix.libc }} \
               --strip
       - name: Upload prebuild
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-${{ matrix.key }}-prebuilds
           path: packages/highs-addon/prebuilds
@@ -196,7 +194,7 @@ jobs:
       - name: Create prebuild directories
         run: mkdir -p out/prebuilds packages/highs-addon/prebuilds
       - name: Download prebuilds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: out/prebuilds
       - name: Flatten prebuilds
