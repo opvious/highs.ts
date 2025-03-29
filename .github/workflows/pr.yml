@@ -54,8 +54,6 @@ jobs:
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 25
     runs-on: ${{ matrix.os }}
-    needs: test
-    if: needs.test.outputs.new-version != ''
     steps:
       - name: Check out
         uses: actions/checkout@v4
