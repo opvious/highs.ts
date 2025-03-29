@@ -38,3 +38,39 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: out/coverage
+  prebuild-native:
+    strategy:
+      matrix:
+        include:
+          - key: linux-x64
+            os: ubuntu-24.04
+          - key: darwin-x64
+            os: macos-12
+          - key: darwin-arm64
+            os: macos-14
+    name: Prebuild ${{ matrix.key }}
+    timeout-minutes: 25
+    runs-on: ${{ matrix.os }}
+    needs: test
+    if: needs.test.outputs.new-version != ''
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+      - name: Install
+        run: pnpm i
+      - name: Generate addon prebuild
+        run: |
+          pnpm -F highs-addon exec pkg-prebuilds-copy \
+            --baseDir=build/Release \
+            --source=$BINDING_NAME.node \
+            --napi_version=$NAPI_VERSION \
+            --name=$BINDING_NAME \
+            --strip
