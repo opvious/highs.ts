@@ -25,8 +25,6 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm i --ignore-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GPR_RO_TOKEN }}
       - name: Lint
         run: pnpm run lint
       - name: Build addon binding
