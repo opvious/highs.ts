@@ -57,7 +57,7 @@ export async function solve(
   } else {
     solver.setModel(model);
   }
-  await solver.solve({monitor: monitor});
+  await solver.solve({monitor});
   if (opts?.style != null) {
     return intoFile((fp) => solver.writeSolution(fp, style));
   }
