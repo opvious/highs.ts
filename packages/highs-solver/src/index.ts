@@ -50,15 +50,16 @@ export async function solve(
   model: SolverModel | PathLike,
   opts?: SolveOptions
 ): Promise<SolverSolution | string> {
-  const solver = Solver.create(opts?.options);
+  const {monitor, style, ...options} = opts ?? {};
+  const solver = Solver.create(options);
   if (typeof model == 'string' || model instanceof URL) {
     await solver.setModelFromFile(model);
   } else {
     solver.setModel(model);
   }
-  await solver.solve({monitor: opts?.monitor});
+  await solver.solve({monitor: monitor});
   if (opts?.style != null) {
-    return intoFile((fp) => solver.writeSolution(fp, opts?.style));
+    return intoFile((fp) => solver.writeSolution(fp, style));
   }
   const sol = solver.getSolution();
   assert(sol, 'Missing solution');
@@ -66,12 +67,9 @@ export async function solve(
 }
 
 /** Solving options. */
-export interface SolveOptions {
+export interface SolveOptions extends SolverCreationOptions {
   /** Listening hooks for solver events. */
   readonly monitor?: SolveMonitor;
-
-  /** Underlying solver creation options. */
-  readonly options?: SolverCreationOptions;
 
   /**
    * Solution formatting style. If omitted, the solution will be returned in
