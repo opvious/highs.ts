@@ -55,7 +55,7 @@ jobs:
       matrix:
         include:
           - key: linux-x64
-            os: ubuntu-22.04
+            os: ubuntu-24.04
           # - key: darwin-x64
           #   os: macos-12
           # - key: darwin-arm64
@@ -97,17 +97,17 @@ jobs:
       matrix:
         include:
           - key: linux-x64-musl
-            image: node:18-alpine
+            image: node:22-alpine
             platform: linux/amd64
             libc: musl
-          # - key: linux-arm64
-          #   image: node:18
-          #   platform: linux/arm64
-          #   libc: glibc
-          # - key: linux-arm64-musl
-          #   image: node:18-alpine
-          #   platform: linux/arm64
-          #   libc: musl
+          - key: linux-arm64
+            image: node:22
+            platform: linux/arm64
+            libc: glibc
+          - key: linux-arm64-musl
+            image: node:22-alpine
+            platform: linux/arm64
+            libc: musl
     name: Prebuild ${{ matrix.key }}
     timeout-minutes: 90
     runs-on: ubuntu-latest
