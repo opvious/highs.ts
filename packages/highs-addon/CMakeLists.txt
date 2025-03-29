@@ -14,7 +14,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(ExternalProject)
 ExternalProject_Add(highs_download
   GIT_REPOSITORY https://github.com/ERGO-Code/HiGHS.git
-  GIT_TAG "fd8665394edfd096c4f847c4a6fbc187364ef474" # v1.10.0
+  GIT_TAG "21da9b90e0dceeb22ef9e35e5ff2c3ab17dc5232" # v1.6.0
   CMAKE_ARGS
     -DCI=OFF
     -DFAST_BUILD=OFF
@@ -22,6 +22,7 @@ ExternalProject_Add(highs_download
     -DCMAKE_CXX_COMPILER_LAUNCHER=${CMAKE_CXX_COMPILER_LAUNCHER}
   BUILD_COMMAND ${CMAKE_COMMAND} --build . --target libhighs
   INSTALL_COMMAND ""
+  BUILD_BYPRODUCTS <BINARY_DIR>/lib/libhighs.so
 )
 ExternalProject_Get_Property(highs_download source_dir)
 ExternalProject_Get_Property(highs_download binary_dir)
@@ -30,5 +31,6 @@ ExternalProject_Get_Property(highs_download binary_dir)
 include_directories(${CMAKE_JS_INC} ${source_dir}/src ${binary_dir})
 file(GLOB SOURCE_FILES "src/*.cc")
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
+add_dependencies(${PROJECT_NAME} highs_download)
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${binary_dir}/lib/libhighs.a)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${binary_dir}/lib/libhighs.so)
