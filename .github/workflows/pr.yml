@@ -45,8 +45,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - key: linux-x64
-            os: ubuntu-24.04
           - key: darwin-x64
             os: macos-12
           - key: darwin-arm64
@@ -75,3 +73,5 @@ jobs:
             --napi_version=$NAPI_VERSION \
             --name=$BINDING_NAME \
             --strip
+      - name: Test
+        run: pnpm t
