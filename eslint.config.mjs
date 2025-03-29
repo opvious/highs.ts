@@ -1,5 +1,3 @@
 import configs from '@mtth/eslint-plugin';
 
-export default [
-  ...configs,
-];
+export default configs;

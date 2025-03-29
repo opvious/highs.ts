@@ -32,5 +32,11 @@
       "eslint --fix"
     ]
   },
-  "prettier": "@opvious/prettier-typescript"
+  "prettier": "@opvious/prettier-typescript",
+  "pnpm": {
+    "overrides": {
+      "axios": ">=1.8.2",
+      "esbuild": ">=0.25.0"
+    }
+  }
 }
