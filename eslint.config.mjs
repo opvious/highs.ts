@@ -1,4 +1,4 @@
-import configs from '@opvious/eslint-plugin';
+import configs from '@mtth/eslint-plugin';
 
 export default [
   ...configs,
