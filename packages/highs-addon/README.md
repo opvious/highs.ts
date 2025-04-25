@@ -20,15 +20,13 @@ This package ships with pre-built binaries for several common environments:
 | `linux` | `arm64` | `glibc` |
 | `linux` | `arm64` | `musl` |
 
-When using one of these pre-built binaries, consider installing without optional
-dependencies:
+If your system doesn't match one of the environments above, a binary will be
+built automatically during installation. This requires a toolchain capable of
+compiling [HiGHS][highs] and native Node.js addons. Otherwise when using one of
+these pre-built binaries, consider installing without optional dependencies:
 
 ```sh
 npm i highs-addon --omit=optional
 ```
-
-If your system doesn't match one of the environments above, a binary will be
-built automatically during installation. This requires a toolchain capable of
-compiling [HiGHS][highs] and native Node.js addons.
 
 [highs]: https://github.com/ERGO-COde/HiGHS
