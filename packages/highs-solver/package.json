@@ -20,8 +20,7 @@
   ],
   "exports": {
     ".": "./lib/index.js",
-    "./errors": "./lib/index.errors.js",
-    "./setup": "./lib/setup.js"
+    "./errors": "./lib/index.errors.js"
   },
   "scripts": {
     "build": "tsc -p src",
