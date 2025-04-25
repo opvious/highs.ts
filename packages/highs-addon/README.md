@@ -14,12 +14,18 @@ This package ships with pre-built binaries for several common environments:
 
 | Platform | Architecture | C library |
 | --- | --- | --- |
-| `darwin` | `x64` | n/a |
 | `darwin` | `arm64` | n/a |
 | `linux` | `x64` | `glibc` |
 | `linux` | `x64` | `musl` |
 | `linux` | `arm64` | `glibc` |
 | `linux` | `arm64` | `musl` |
+
+When using one of these pre-built binaries, consider installing without optional
+dependencies:
+
+```sh
+npm i highs-addon --omit=optional
+```
 
 If your system doesn't match one of the environments above, a binary will be
 built automatically during installation. This requires a toolchain capable of
