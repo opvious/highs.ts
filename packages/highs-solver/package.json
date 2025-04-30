@@ -22,6 +22,7 @@
     ".": "./lib/index.js",
     "./errors": "./lib/index.errors.js"
   },
+  "types": "./lib/index.d.ts",
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
