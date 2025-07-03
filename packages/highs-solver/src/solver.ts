@@ -270,6 +270,8 @@ export class Solver {
     const {telemetry: tel} = this;
     tel.logger.debug('Starting solve...');
 
+    this.delegated('zeroAllClocks');
+
     let logPath = this.delegated('getOption', 'log_file');
     assertType('string', logPath);
 
@@ -332,6 +334,11 @@ export class Solver {
   /** Returns true if the solver is currently solving the model. */
   isSolving(): boolean {
     return this.solving;
+  }
+
+  /** Returns the cumulative wall-clock time spent in the last solve */
+  getRunTime(): number {
+    return this.delegated('getRunTime');
   }
 
   /** Returns the current solver status, set from the last solve. */
