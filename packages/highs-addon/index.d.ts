@@ -7,7 +7,6 @@ export declare class Solver {
   setOption(name: string, val: OptionValue): void;
   getOption<N extends keyof TypedOptions>(name: N): TypedOptions[N];
   getOption(name: string): OptionValue;
-  zeroAllClocks(): void;
   getRunTime(): number;
 
   passModel(model: Model): void;
