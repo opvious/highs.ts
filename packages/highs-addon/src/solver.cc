@@ -434,12 +434,11 @@ Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
 Napi::Value Solver::GetRunTime(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
   int length = info.Length();
-  if (length != 0)
-  {
+  if (length != 0) {
     ThrowTypeError(env, "Expected 0 arguments");
     return env.Undefined();
   }
-  return Napi::Number::New(env, (double)this->highs_->getRunTime());
+  return Napi::Number::New(env, (double) this->highs_->getRunTime());
 }
 
 // Solutions
