@@ -25,6 +25,7 @@ export declare class Solver {
   run(cb: (err: Error) => void): void;
   getModelStatus(): ModelStatus;
   getInfo(): Info;
+  getRunTime(): number;
 
   getSolution(): Solution;
   setSolution(
