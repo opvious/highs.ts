@@ -41,6 +41,8 @@ export declare class Solver {
   clear(): void;
   clearModel(): void;
   clearSolver(): void;
+
+  zeroAllClocks(): void;
 }
 
 export type OptionValue = boolean | number | string;
