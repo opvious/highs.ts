@@ -25,6 +25,7 @@ export declare class Solver {
   run(cb: (err: Error) => void): void;
   getModelStatus(): ModelStatus;
   getInfo(): Info;
+  getRunTime(): number;
 
   getSolution(): Solution;
   setSolution(
@@ -40,6 +41,8 @@ export declare class Solver {
   clear(): void;
   clearModel(): void;
   clearSolver(): void;
+
+  zeroAllClocks(): void;
 }
 
 export type OptionValue = boolean | number | string;

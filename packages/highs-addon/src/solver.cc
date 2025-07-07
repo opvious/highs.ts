@@ -19,7 +19,8 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("run", &Solver::Run),
                    InstanceMethod("getModelStatus", &Solver::GetModelStatus),
                    InstanceMethod("getInfo", &Solver::GetInfo),
-
+                   InstanceMethod("getRunTime", &Solver::GetRunTime),
+                   
                    InstanceMethod("getSolution", &Solver::GetSolution),
                    InstanceMethod("setSolution", &Solver::SetSolution),
                    InstanceMethod("writeSolution", &Solver::WriteSolution),
@@ -27,7 +28,9 @@ void Solver::Init(Napi::Env env, Napi::Object exports) {
 
                    InstanceMethod("clearModel", &Solver::ClearModel),
                    InstanceMethod("clearSolver", &Solver::ClearSolver),
-                   InstanceMethod("clear", &Solver::Clear)});
+                   InstanceMethod("clear", &Solver::Clear),
+
+                   InstanceMethod("zeroAllClocks", &Solver::ZeroAllClocks)});
 
   Napi::FunctionReference* constructor = new Napi::FunctionReference();
   *constructor = Napi::Persistent(func);
@@ -428,6 +431,16 @@ Napi::Value Solver::GetInfo(const Napi::CallbackInfo& info) {
   return obj;
 }
 
+Napi::Value Solver::GetRunTime(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return env.Undefined();
+  }
+  return Napi::Number::New(env, (double) this->highs_->getRunTime());
+}
+
 // Solutions
 
 Napi::Value ToFloat64Array(const Napi::Env& env, const std::vector<double>& vec) {
@@ -568,4 +581,14 @@ void Solver::ClearSolver(const Napi::CallbackInfo& info) {
     ThrowError(env, "Clear solver failed");
     return;
   }
+}
+
+void Solver::ZeroAllClocks(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  int length = info.Length();
+  if (length != 0) {
+    ThrowTypeError(env, "Expected 0 arguments");
+    return;
+  }
+  this->highs_->zeroAllClocks();
 }

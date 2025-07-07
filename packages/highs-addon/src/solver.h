@@ -24,6 +24,7 @@ class Solver : public Napi::ObjectWrap<Solver> {
   void Run(const Napi::CallbackInfo& info);
   Napi::Value GetModelStatus(const Napi::CallbackInfo& info);
   Napi::Value GetInfo(const Napi::CallbackInfo& info);
+  Napi::Value GetRunTime(const Napi::CallbackInfo &info);
 
   Napi::Value GetSolution(const Napi::CallbackInfo& info);
   void SetSolution(const Napi::CallbackInfo& info);
@@ -33,6 +34,8 @@ class Solver : public Napi::ObjectWrap<Solver> {
   void Clear(const Napi::CallbackInfo& info);
   void ClearModel(const Napi::CallbackInfo& info);
   void ClearSolver(const Napi::CallbackInfo& info);
+
+  void ZeroAllClocks(const Napi::CallbackInfo &info);
 
   std::shared_ptr<Highs> highs_;
 };
