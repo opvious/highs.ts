@@ -265,12 +265,16 @@ export class Solver {
     readonly monitor?: SolveMonitor;
     /** Do not throw if the underlying solver exited with non-OPTIMAL status. */
     readonly allowNonOptimal?: boolean;
+    /** If true, the solver will not reset all clocks before solving. */
+    readonly keepClocks?: boolean;
   }): Promise<void> {
     this.assertNotSolving();
     const {telemetry: tel} = this;
     tel.logger.debug('Starting solve...');
 
-    this.delegated('zeroAllClocks');
+    if (opts?.keepClocks !== true) {
+      this.delegated('zeroAllClocks');
+    }
 
     let logPath = this.delegated('getOption', 'log_file');
     assertType('string', logPath);
