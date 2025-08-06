@@ -340,7 +340,7 @@ export class Solver {
     return this.solving;
   }
 
-  /** Returns the cumulative wall-clock time spent in the last solve */
+  /** Returns the cumulative wall-clock time spent in the last solve. */
   getRunTime(): number {
     return this.delegated('getRunTime');
   }
