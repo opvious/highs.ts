@@ -94,8 +94,8 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       inlinable:
-        specifier: ^0.7.1
-        version: 0.7.1
+        specifier: ^0.8.2
+        version: 0.8.2
 
 packages:
 
@@ -367,9 +367,6 @@ packages:
   '@mtth/prettier-typescript@0.8.2':
     resolution: {integrity: sha512-Vy+GYFEmt8IpxHQd9TzIn9fGeL9X96+Vk4NKyoRRtWmVMx6vkdr8Hr1bkdScIXskeMt9X9wc7QWhMY8u/QEA1g==}
 
-  '@mtth/stl-errors@0.7.1':
-    resolution: {integrity: sha512-v3Lag1pBFGAt6z6gZ7nu4yIOK8tO/vWhS/DdWP3YAsgU+hp+dIUZ2I6X+gZD5YRXQt4YFADQeBFO6uN6GgnBnA==}
-
   '@mtth/stl-errors@0.8.2':
     resolution: {integrity: sha512-LPoGM5N/ShU6PcGk1hLGKgqRMhZAjWmOeFU94SzLHpmqkTYE0qvGOcNvfPei7bhWiRhcP7OgiWVT2yJc/fL/ug==}
 
@@ -377,9 +374,6 @@ packages:
     resolution: {integrity: sha512-2u+WQ9k+kEzS8g92ec4VfgYfSllBR6hczgSM2Vvvn2u5le+uZpVMkpgdBdcmpMCZi0wybPN16r4P1CxYlYf1Lg==}
     peerDependencies:
       '@opentelemetry/api': ~1.9.0
-
-  '@mtth/stl-utils@0.7.1':
-    resolution: {integrity: sha512-5Ut0XV4KPmV/PCfbUbhiltQKYt6PkWAlnAKSgqeTBQO3bBaX4SXat3x8eg666wlZcQB6K9A/VKNXHxPu3o+ztg==}
 
   '@mtth/stl-utils@0.8.2':
     resolution: {integrity: sha512-BNuA9STJfCGFuCtliDhmJMwRNfLyO6+7Wc4cb896x8DFq+yB9LUNez2VkcIFyZpCIoQ27uakTHdk4ztRsomh/w==}
@@ -1143,14 +1137,11 @@ packages:
   ini@1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
 
-  inlinable-runtime@0.7.1:
-    resolution: {integrity: sha512-JtLrzXimpeXm047z3BXmSkF30IDoMiKQjdhaPUU36CdQVwN04Hrf3MJFHF6t45msJJ4QV5ujUE1j0jp8kTjHlQ==}
-
   inlinable-runtime@0.8.2:
     resolution: {integrity: sha512-/YVAHgfXrZs4XewfHeSQYgwHWMyVX6DSOa+4s4iDNTRAs1MfmuPgWRWz0YsePp0iBNV3jEQBdGlxQ+KojxjQUw==}
 
-  inlinable@0.7.1:
-    resolution: {integrity: sha512-gsR92mzuwB4zQCosxRWp3CpF6/IZ2a7BOz9sLxJg9rbyLg3OStGcZEgGQIfHpWardPByDBQBXTlQpJmh/jbygA==}
+  inlinable@0.8.2:
+    resolution: {integrity: sha512-/sPsCt5YjSani9Idi4y/b+QDF8W/D8TSG986f6/B6r8fi7tpb1E6NSiQBGGwg8wCmEeuzamtlSMw8NISa2+2og==}
     hasBin: true
 
   is-extglob@2.1.1:
@@ -2068,10 +2059,6 @@ snapshots:
 
   '@mtth/prettier-typescript@0.8.2': {}
 
-  '@mtth/stl-errors@0.7.1':
-    dependencies:
-      change-case: 5.4.4
-
   '@mtth/stl-errors@0.8.2':
     dependencies:
       change-case: 5.4.4
@@ -2084,15 +2071,6 @@ snapshots:
       inlinable-runtime: 0.8.2
       pino: 9.7.0
       pino-std-serializers: 7.0.0
-
-  '@mtth/stl-utils@0.7.1':
-    dependencies:
-      '@mtth/stl-errors': 0.7.1
-      change-case: 5.4.4
-      fast-deep-equal: 3.1.3
-      inlinable-runtime: 0.7.1
-      picomatch: 4.0.3
-      untruncate-json: 0.0.1
 
   '@mtth/stl-utils@0.8.2':
     dependencies:
@@ -2921,23 +2899,19 @@ snapshots:
   ini@1.3.8:
     optional: true
 
-  inlinable-runtime@0.7.1:
-    dependencies:
-      fflate: 0.8.2
-
   inlinable-runtime@0.8.2:
     dependencies:
       fflate: 0.8.2
 
-  inlinable@0.7.1:
+  inlinable@0.8.2:
     dependencies:
-      '@mtth/stl-errors': 0.7.1
-      '@mtth/stl-utils': 0.7.1
+      '@mtth/stl-errors': 0.8.2
+      '@mtth/stl-utils': 0.8.2
       acorn: 8.15.0
       ast-types: 0.14.2
       commander: 12.1.0
       glob: 10.4.5
-      inlinable-runtime: 0.7.1
+      inlinable-runtime: 0.8.2
       ora: 8.2.0
       recast: 0.23.11
 
