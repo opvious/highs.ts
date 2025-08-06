@@ -31,9 +31,9 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@mtth/stl-errors": "^0.7.0",
-    "@mtth/stl-telemetry": "^0.7.0",
-    "@mtth/stl-utils": "^0.7.0",
+    "@mtth/stl-errors": "^0.8.2",
+    "@mtth/stl-telemetry": "^0.8.2",
+    "@mtth/stl-utils": "^0.8.2",
     "highs-addon": "workspace:*",
     "tail": "^2.2.6",
     "tmp-promise": "^3.0.3"
@@ -44,6 +44,6 @@
   "devDependencies": {
     "@opentelemetry/api": "^1.9.0",
     "@types/tail": "^2.2.3",
-    "inlinable": "^0.7.0"
+    "inlinable": "^0.8.2"
   }
 }
