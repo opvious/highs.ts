@@ -106,6 +106,24 @@ describe('solver', () => {
       expect(solver.getStatus()).toEqual(sut.SolverStatus.UNBOUNDED);
     });
 
+    test('checks solver get run time', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
+      expect(solver.getRunTime()).toEqual(0);
+      await solver.solve({allowNonOptimal: true});
+      expect(solver.getRunTime()).toBeGreaterThan(0);
+    });
+
+    test('zero all solver clocks manually', async () => {
+      const solver = sut.Solver.create();
+      await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
+      expect(solver.getRunTime()).toEqual(0);
+      await solver.solve({allowNonOptimal: true, keepClocks: true});
+      expect(solver.getRunTime()).toBeGreaterThan(0);
+      solver.zeroAllClocks();
+      expect(solver.getRunTime()).toEqual(0);
+    });
+
     test('throws on empty model', async () => {
       const solver = sut.Solver.create();
       try {
