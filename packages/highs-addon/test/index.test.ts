@@ -224,6 +224,17 @@ describe('solver', () => {
       );
     });
   });
+
+  test('checks solver get run time and zero all solver clocks', async () => {
+    await withSolver(async (solver) => {
+      await p(solver, 'readModel', resourcePath('simple.lp'));
+      expect(solver.getRunTime()).toEqual(0);
+      await p(solver, 'run');
+      expect(solver.getRunTime()).toBeGreaterThan(0);
+      solver.zeroAllClocks();
+      expect(solver.getRunTime()).toEqual(0);
+    });
+  });
 });
 
 function cloneSolution(sol: sut.Solution): sut.Solution {

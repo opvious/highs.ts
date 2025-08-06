@@ -94,6 +94,24 @@ describe('solve', () => {
     }
   });
 
+  test('checks solver get run time', async () => {
+    const solver = sut.Solver.create();
+    await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
+    expect(solver.getRunTime()).toEqual(0);
+    await solver.solve({allowNonOptimal: true});
+    expect(solver.getRunTime()).toBeGreaterThan(0);
+  });
+
+  test('zero all solver clocks manually', async () => {
+    const solver = sut.Solver.create();
+    await solver.setModelFromFile(loader.localUrl('unbounded.mps'));
+    expect(solver.getRunTime()).toEqual(0);
+    await solver.solve({allowNonOptimal: true, keepClocks: true});
+    expect(solver.getRunTime()).toBeGreaterThan(0);
+    solver.zeroAllClocks();
+    expect(solver.getRunTime()).toEqual(0);
+  });
+
   test('monitors progress', async () => {
     let progressed = false;
     const monitor = sut.solveMonitor().on('progress', () => {
