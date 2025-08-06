@@ -272,7 +272,7 @@ export class Solver {
     const {telemetry: tel} = this;
     tel.logger.debug('Starting solve...');
 
-    if (opts?.keepClocks !== true) {
+    if (!opts?.keepClocks) {
       this.delegated('zeroAllClocks');
     }
 
