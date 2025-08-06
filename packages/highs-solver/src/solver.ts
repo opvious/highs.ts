@@ -345,6 +345,11 @@ export class Solver {
     return this.delegated('getRunTime');
   }
 
+  /** Reset all internal solver clocks to zero. */
+  zeroAllClocks(): void {
+    this.delegated('zeroAllClocks');
+  }
+
   /** Returns the current solver status, set from the last solve. */
   getStatus(): SolverStatus {
     return asSolverStatus(this.delegated('getModelStatus'));
