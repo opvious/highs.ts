@@ -14,7 +14,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(ExternalProject)
 ExternalProject_Add(highs_download
   GIT_REPOSITORY https://github.com/ERGO-Code/HiGHS.git
-  GIT_TAG "fd8665394edfd096c4f847c4a6fbc187364ef474" # v1.10.0
+  GIT_TAG "v1.11.0"
   CMAKE_ARGS
     -DBUILD_SHARED_LIBS=OFF
     -DBUILD_TESTING=OFF
@@ -30,7 +30,7 @@ ExternalProject_Get_Property(highs_download source_dir)
 ExternalProject_Get_Property(highs_download binary_dir)
 
 # Build binding
-include_directories(${CMAKE_JS_INC} ${source_dir}/src ${binary_dir})
+include_directories(${CMAKE_JS_INC} ${source_dir}/highs ${binary_dir})
 file(GLOB SOURCE_FILES "src/*.cc")
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 add_dependencies(${PROJECT_NAME} highs_download)
