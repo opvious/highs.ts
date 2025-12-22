@@ -22,14 +22,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
+      - name: Set up mise
+        uses: jdx/mise-action@v3
       - name: Install
         run: pnpm i --ignore-scripts
       - name: Lint
@@ -68,14 +62,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
+      - name: Set up mise
+        uses: jdx/mise-action@v3
       - name: Install
         run: pnpm i
       - name: Generate addon prebuild
@@ -120,14 +108,8 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
+      - name: Set up mise
+        uses: jdx/mise-action@v3
       - name: Install
         run: pnpm i --ignore-scripts
       - name: Generate addon prebuild via Docker
@@ -173,10 +155,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Set up mise
+        uses: jdx/mise-action@v3
       - name: Set up Node
         uses: actions/setup-node@v4
         with:

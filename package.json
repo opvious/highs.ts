@@ -19,24 +19,19 @@
     "@types/node": "^18.19.121",
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.32.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.2",
     "prettier": "^3.6.2",
     "ts-essentials": "^10.1.1",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ]
   },
   "prettier": "@mtth/prettier-typescript",
   "pnpm": {
     "overrides": {
       "axios": ">=1.8.2",
       "esbuild": ">=0.25.0"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
