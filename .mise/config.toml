@@ -1,0 +1,5 @@
+[tools]
+cmake = "4"
+pre-commit = "4.3.0"
+node = "22"
+pnpm = "10"
